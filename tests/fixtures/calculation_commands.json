@@ -1,0 +1,30 @@
+{
+  "valid_sum_path": {
+    "actor_id": "player-001",
+    "operation_key": "sum",
+    "path_context": {"mode": "single"},
+    "input_payload": {"a": 5, "b": 3},
+    "ui_origin": "calculator_screen"
+  },
+  "missing_actor": {
+    "actor_id": "",
+    "operation_key": "sum",
+    "path_context": {"mode": "single"},
+    "input_payload": {"a": 5, "b": 3},
+    "ui_origin": "calculator_screen"
+  },
+  "unknown_operation": {
+    "actor_id": "player-001",
+    "operation_key": "unknown",
+    "path_context": {"mode": "single"},
+    "input_payload": {"a": 5, "b": 3},
+    "ui_origin": "calculator_screen"
+  },
+  "multi_failure": {
+    "actor_id": "",
+    "operation_key": "",
+    "path_context": {},
+    "input_payload": {},
+    "ui_origin": "calculator_screen"
+  }
+}
