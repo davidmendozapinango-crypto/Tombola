@@ -13,6 +13,7 @@ from src.core.dependencies import check_dependency
 from src.core.error_messages import MESSAGES, build_error_response
 from src.core.path_rules import select_rule
 from src.core.precondition_evaluator import evaluate_preconditions
+from src.persistence.impact_records import save_impact_records
 
 
 def make_engine_context(
@@ -21,6 +22,7 @@ def make_engine_context(
     dependency_checker: Dict[str, Any],
     error_catalog: Optional[Dict[str, Dict[str, str]]] = None,
     impact_store: Optional[List[Dict[str, Any]]] = None,
+    impact_persistence: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Create an engine context dictionary holding all collaborators."""
     return {
@@ -31,6 +33,7 @@ def make_engine_context(
         "impact_store": impact_store
         if impact_store is not None
         else make_impact_store(),
+        "impact_persistence": impact_persistence,
     }
 
 
@@ -131,13 +134,14 @@ def _record_impact(
         before_behavior = "No calculation error recorded"
         after_behavior = f"Calculation rejected: {failure['precondition_id'] if failure else 'precondition_failed'}"
     validation_reference = f"command:{command['command_id']}"
-    add_impact_record(
-        context["impact_store"],
-        make_impact_record(
-            impact_id=impact_id,
-            interaction_point=interaction_point,
-            before_behavior=before_behavior,
-            after_behavior=after_behavior,
-            validation_reference=validation_reference,
-        ),
+    record = make_impact_record(
+        impact_id=impact_id,
+        interaction_point=interaction_point,
+        before_behavior=before_behavior,
+        after_behavior=after_behavior,
+        validation_reference=validation_reference,
     )
+    add_impact_record(context["impact_store"], record)
+    persistence = context.get("impact_persistence")
+    if persistence is not None:
+        save_impact_records(persistence, [record])

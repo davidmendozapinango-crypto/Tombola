@@ -244,3 +244,16 @@ Task: "T035 [US3] GUI impact indicators in src/ui/screens/calculation_screen.py"
 - [x] T055 Rewrite all `src/persistence/` modules to remove classes and use functions per Constitution IV (contradicts)
 - [x] T056 Update all `tests/` to use the new functional APIs and keep full coverage per FR-009 (contradicts)
 - [x] T057 Run `pytest` and verify all tests pass after OOP removal per Constitution III (contradicts)
+
+---
+
+## Phase 9: Convergence
+
+**Purpose**: Close remaining gaps identified between the feature spec/plan and the current implementation.
+
+- [x] T058 CRITICAL: Fix impact record append serialization bug and add load validation per Constitution IV (contradicts)
+- [x] T059 Wire impact record persistence into calculation flow and engine per T033 / FR-006 / SC-005 (missing)
+- [x] T060 Implement Tombola-domain calculation paths with card/game/SDG context per FR-001 / FR-003 / US3/AC1 (partial)
+- [x] T061 Integrate `calculation_screen` focus helpers with Pygame event flow per T052 / Constitution V (partial)
+- [x] T062 Enforce precondition `priority_rank` uniqueness in precondition evaluator per data-model (partial)
+- [x] T063 Enforce path rule priority uniqueness per operation scope in path registry per data-model (partial)

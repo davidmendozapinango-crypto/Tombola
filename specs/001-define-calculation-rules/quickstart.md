@@ -72,7 +72,7 @@ Run tests:
 pytest
 ```
 
-Latest test run: **35 passed**.
+Latest test run: **46 passed**.
 
 Implementation style: all `src/` modules use a non-OOP, function-and-dict design.
 
@@ -83,6 +83,7 @@ Focus validation on:
 - Integration flow tests for GUI-triggered internal command execution
 - Business-result detail tests
 - Application-impact traceability tests
+- Impact record persistence tests
 - Performance target smoke tests
 - Keyboard accessibility tests
 
@@ -94,14 +95,16 @@ Focus validation on:
 | FR-003 Decision rules by paths | `src/core/calculation_rules.py`, `tests/unit/calculation/test_path_selection.py`, `tests/integration/calculation/test_path_coverage.py` | ✅ |
 | FR-004 Internal dependencies | `src/core/dependencies.py`, `tests/unit/calculation/test_dependency_failures.py` | ✅ |
 | FR-005 Highest-priority precondition failure | `src/core/precondition_evaluator.py`, `tests/integration/calculation/test_precondition_failure_flow.py` | ✅ |
-| FR-006 Application-interface impact | `src/core/application_impact.py`, `tests/integration/calculation/test_application_impact_traceability.py` | ✅ |
+| FR-006 Application-interface impact | `src/core/application_impact.py`, `src/persistence/impact_records.py`, `tests/integration/calculation/test_application_impact_traceability.py`, `tests/integration/calculation/test_impact_persistence.py` | ✅ |
 | FR-007 No partial success on blocking failure | `src/core/calculation_engine.py`, `tests/integration/calculation/test_precondition_failure_flow.py` | ✅ |
 | FR-009 Complete test set | Entire `tests/` suite | ✅ |
 | FR-012 No API endpoint | `src/core/calculation_engine.py`, `tests/integration/calculation/test_no_endpoint_invocation.py` | ✅ |
-| FR-013 GUI-triggered internal commands | `src/ui/flows/calculation_flow.py`, `tests/integration/calculation/test_gui_trigger_success.py` | ✅ |
+| FR-013 GUI-triggered internal commands | `src/ui/flows/calculation_flow.py`, `src/ui/screens/calculation_demo_screen.py`, `tests/integration/calculation/test_gui_trigger_success.py` | ✅ |
 | SC-002 Path outcome verification | `tests/unit/calculation/test_path_selection.py`, `tests/integration/calculation/test_path_coverage.py` | ✅ |
 | SC-003 Distinct clear messages | `src/core/error_messages.py`, `tests/integration/calculation/test_error_messages_spanish.py` | ✅ |
-| SC-005 Interface-impact validation | `tests/integration/calculation/test_application_impact_traceability.py` | ✅ |
+| SC-005 Interface-impact validation | `tests/integration/calculation/test_application_impact_traceability.py`, `tests/integration/calculation/test_impact_persistence.py` | ✅ |
+| Data model priority uniqueness | `src/core/path_rules.py`, `src/core/precondition_evaluator.py`, `tests/unit/calculation/test_path_selection.py`, `tests/unit/calculation/test_precondition_priority.py` | ✅ |
+| Constitution V visible focus | `src/ui/screens/calculation_screen.py`, `src/ui/screens/calculation_demo_screen.py`, `src/ui/common.py`, `tests/integration/calculation/test_keyboard_accessibility.py` | ✅ |
 
 ## FR-001 Objective/Context Verification Checklist
 

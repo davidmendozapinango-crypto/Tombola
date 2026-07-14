@@ -35,10 +35,25 @@ def make_registry() -> Dict[str, Any]:
     return {"rules": {}}
 
 
+def _operation_key(path_id: str) -> str:
+    """Return the operation key prefix of a path id."""
+    return path_id.split(":", 1)[0]
+
+
 def register_rule(registry: Dict[str, Any], rule: Dict[str, Any]) -> None:
     """Register a rule in the registry."""
     if rule["path_id"] in registry["rules"]:
         raise ValueError(f"Duplicate path_id: {rule['path_id']}")
+    operation = _operation_key(rule["path_id"])
+    for existing in registry["rules"].values():
+        if (
+            _operation_key(existing["path_id"]) == operation
+            and existing["priority"] == rule["priority"]
+        ):
+            raise ValueError(
+                f"Duplicate priority {rule['priority']} for operation '{operation}' "
+                f"between '{existing['path_id']}' and '{rule['path_id']}'"
+            )
     registry["rules"][rule["path_id"]] = rule
 
 

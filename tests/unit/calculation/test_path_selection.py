@@ -49,3 +49,16 @@ def test_no_match_returns_none(registry):
 def test_highest_priority_wins(registry):
     rule = select_rule(registry, "sum", {"mode": "single"}, {"a": 1, "b": 2})
     assert rule["priority"] == 10
+
+
+def test_duplicate_priority_per_operation_is_rejected(registry):
+    with pytest.raises(ValueError, match="Duplicate priority"):
+        register_rule(
+            registry,
+            make_rule(
+                path_id="sum:extra",
+                priority=10,
+                entry_conditions=[lambda ctx, payload: ctx.get("mode") == "extra"],
+                output_definition={"impact_marker": "sum_extra"},
+            ),
+        )
