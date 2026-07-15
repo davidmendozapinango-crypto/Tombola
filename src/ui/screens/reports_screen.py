@@ -1,4 +1,4 @@
-"""Reports screen (non-OOP) with date filtering and txt export."""
+"""Reports screen (non-OOP) with section selection and individual txt export."""
 
 from collections import Counter
 from datetime import datetime
@@ -15,6 +15,7 @@ from src.config import (
     WINDOW_HEIGHT,
     WINDOW_WIDTH,
 )
+from src.core.card import card_sum
 from src.ods.data import get_sdg_name
 from src.persistence.games import calculate_game_summary, load_games
 from src.persistence.players import load_players
@@ -28,6 +29,22 @@ from src.ui.common import (
 )
 
 
+_REPORT_SECTIONS = [
+    ("players", "Jugadores y partidas"),
+    ("top", "TOP 5 jugadores"),
+    ("frequency", "Numeros mas frecuentes"),
+    ("history", "Historial de partidas"),
+]
+
+
+_SECTION_LABELS = {
+    "players": "Jugadores y partidas",
+    "top": "TOP 5 jugadores por puntos",
+    "frequency": "Numeros mas frecuentes",
+    "history": "Historial de partidas",
+}
+
+
 def _layout() -> Dict[str, pygame.Rect]:
     """Return the UI rectangles for the reports screen."""
     center_x = WINDOW_WIDTH // 2
@@ -36,6 +53,10 @@ def _layout() -> Dict[str, pygame.Rect]:
         "date_end": pygame.Rect(center_x + 20, 90, 200, 32),
         "apply": pygame.Rect(center_x - 100, 130, 90, 32),
         "clear": pygame.Rect(center_x + 10, 130, 90, 32),
+        "players": pygame.Rect(60, 185, 190, 35),
+        "top": pygame.Rect(60, 225, 190, 35),
+        "frequency": pygame.Rect(60, 265, 190, 35),
+        "history": pygame.Rect(60, 305, 190, 35),
         "export": pygame.Rect(center_x - 160, WINDOW_HEIGHT - 80, 150, 45),
         "back": pygame.Rect(center_x + 10, WINDOW_HEIGHT - 80, 150, 45),
     }
@@ -49,11 +70,16 @@ def init_reports(state: Dict[str, Any]) -> None:
         "date_end",
         "apply",
         "clear",
+        "players",
+        "top",
+        "frequency",
+        "history",
         "export",
         "back",
     ]
     state["focus_index"] = 4
     state["rects"] = _layout()
+    state["selected_report"] = "players"
     state["players"] = load_players()
     state["all_games"] = load_games()
     state["filtered_games"] = state["all_games"]
@@ -106,18 +132,41 @@ def _player_game_counts(players, games):
     ]
 
 
-def _top_players(games, limit=5):
-    """Return top players by accumulated total points (calculated from raw data)."""
+def _player_lookup(players) -> Dict[str, Dict[str, Any]]:
+    """Return a mapping from player_id to player record."""
+    return {player["player_id"]: player for player in players}
+
+
+def _top_players(players, games, limit=5):
+    """Return top players by accumulated total points.
+
+    Each entry contains: (player_id, full_name, state_code, game_count, points).
+    """
+    player_info = {
+        player["player_id"]: (
+            player.get("full_name", player["player_id"]),
+            player.get("state_code", "?"),
+        )
+        for player in players
+    }
     totals = Counter()
-    names = {}
+    game_counts = Counter()
     for game in games:
         pid = game.get("player_id")
         summary = calculate_game_summary(game)
         totals[pid] += summary["total_points"]
-        if pid not in names:
-            names[pid] = pid
+        game_counts[pid] += 1
     sorted_totals = totals.most_common(limit)
-    return [(pid, names.get(pid, pid), points) for pid, points in sorted_totals]
+    return [
+        (
+            pid,
+            player_info.get(pid, (pid, "?"))[0],
+            player_info.get(pid, (pid, "?"))[1],
+            game_counts.get(pid, 0),
+            points,
+        )
+        for pid, points in sorted_totals
+    ]
 
 
 def _gantt_numbers(games, limit=10):
@@ -129,77 +178,173 @@ def _gantt_numbers(games, limit=10):
     return counter.most_common(limit)
 
 
-def _build_report_text(players, games, date_start: str = "", date_end: str = "") -> str:
-    """Build a text report with all report sections."""
+def _report_header(title: str, date_start: str = "", date_end: str = "") -> List[str]:
+    """Return the standard header lines for a report."""
     lines: List[str] = []
     lines.append("=" * 60)
-    lines.append("REPORTE TOMBOLA - ODS")
+    lines.append(f"REPORTE TOMBOLA - ODS: {title.upper()}")
     lines.append(f"Generado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     if date_start or date_end:
         lines.append(f"Rango de fechas: {date_start or 'inicio'} - {date_end or 'fin'}")
     lines.append("=" * 60)
+    return lines
 
+
+def _build_players_report(
+    players, games, date_start: str = "", date_end: str = ""
+) -> str:
+    """Build the players and games report as a table."""
+    lines = _report_header("Jugadores y partidas", date_start, date_end)
     lines.append("")
-    lines.append("JUGADORES Y PARTIDAS")
-    lines.append("-" * 40)
+    lines.append("JUGADORES Y PARTIDAS REGISTRADOS")
+    lines.append("")
+    lines.append(
+        f"{'CEDULA':<15} {'JUGADOR':<28} {'ESTADO':<10} {'PARTIDAS JUGADAS':<20}"
+    )
+    lines.append("-" * 80)
     if players:
         for pid, name, count in _player_game_counts(players, games):
-            lines.append(f"{pid} - {name}: {count} partidas")
+            partidas = "partida" if count == 1 else "partidas"
+            player = _player_lookup(players).get(pid, {})
+            state_code = player.get("state_code", "?")
+            lines.append(f"{pid:<15} {name:<28} {state_code:<10} {count} {partidas}")
     else:
         lines.append("No hay jugadores registrados.")
-
-    lines.append("")
-    lines.append("TOP 5 JUGADORES POR PUNTOS ACUMULADOS")
-    lines.append("-" * 40)
-    top = _top_players(games)
-    if top:
-        for rank, (pid, name, points) in enumerate(top, start=1):
-            lines.append(f"{rank}. {name} - {points} pts")
-    else:
-        lines.append("No hay partidas registradas.")
-
-    lines.append("")
-    lines.append("NUMEROS MAS FRECUENTES")
-    lines.append("-" * 40)
-    gantt = _gantt_numbers(games)
-    if gantt:
-        for rank, (number, count) in enumerate(gantt, start=1):
-            lines.append(f"{rank}. Numero {number}: {count} veces")
-    else:
-        lines.append("No hay sorteos registrados.")
-
-    lines.append("")
-    lines.append("HISTORIAL DE PARTIDAS")
-    lines.append("-" * 40)
-    if games:
-        for game in games:
-            played_at = game.get("played_at")
-            date_text = played_at.strftime("%Y-%m-%d %H:%M") if played_at else "?"
-            sdg_name = get_sdg_name(game.get("sdg_id", 1))
-            summary = calculate_game_summary(game)
-            lines.append(
-                f"{date_text} - {game.get('player_id')} - {sdg_name} "
-                f"- ganador: {summary['winning_card']} "
-                f"- principal: {summary['main_points']} pts "
-                f"- complemento: {summary['complement_points']} pts"
-            )
-    else:
-        lines.append("No hay partidas registradas.")
-
     lines.append("")
     lines.append("=" * 60)
     return "\n".join(lines)
 
 
+def _build_top_report(players, games, date_start: str = "", date_end: str = "") -> str:
+    """Build the TOP 5 players report."""
+    lines = _report_header("TOP 5 jugadores", date_start, date_end)
+    lines.append("")
+    lines.append("TOP 5: JUGADORES DESTACADOS")
+    lines.append("Lideres acumulados registrados en JUGADORES.bin")
+    lines.append("-" * 40)
+    top = _top_players(players, games)
+    if top:
+        for rank, (pid, name, state_code, game_count, points) in enumerate(
+            top, start=1
+        ):
+            partidas = "partida" if game_count == 1 else "partidas"
+            lines.append(
+                f"{rank}. {name} - Region: {state_code} - "
+                f"{game_count} {partidas} - {points} ODS puntos"
+            )
+    else:
+        lines.append("No hay partidas registradas.")
+    lines.append("")
+    lines.append("=" * 60)
+    return "\n".join(lines)
+
+
+def _build_frequency_report(games, date_start: str = "", date_end: str = "") -> str:
+    """Build the most frequent numbers report."""
+    lines = _report_header("Frecuencia de numeros", date_start, date_end)
+    lines.append("")
+    lines.append("FRECUENCIA DE NUMEROS (TOP 10)")
+    lines.append("-" * 40)
+    gantt = _gantt_numbers(games)
+    if gantt:
+        for rank, (number, count) in enumerate(gantt, start=1):
+            sorteos = "sorteo" if count == 1 else "sorteos"
+            lines.append(f"#{rank:2} Numero {number:2}: {count} {sorteos}")
+    else:
+        lines.append("No hay sorteos registrados.")
+    lines.append("")
+    lines.append("Nota del Algoritmo:")
+    lines.append(
+        "La aleatoriedad de la tombola se aproxima a la campana estadistica "
+        "en sesiones largas. Los datos se actualizan dinamicamente."
+    )
+    lines.append("")
+    lines.append("=" * 60)
+    return "\n".join(lines)
+
+
+def _build_history_report(
+    players, games, date_start: str = "", date_end: str = ""
+) -> str:
+    """Build the game history report as a table."""
+    player_map = _player_lookup(players)
+    lines = _report_header("Historial historico de partidas", date_start, date_end)
+    lines.append("")
+    lines.append("HISTORIAL HISTORICO DE PARTIDAS (JUEGOS.BIN)")
+    lines.append("Bitacora de auditoria Federal del juego educativo")
+    lines.append("")
+    lines.append(
+        f"{'FECHA':<12} {'CODIGO':<10} {'JUGADOR':<25} {'EST':<6} "
+        f"{'BASE':<6} {'TEMA ODS SORTEADO':<28} {'SORTEOS':<12} "
+        f"{'CARTON GANADOR':<18} {'PUNTAJE':<10}"
+    )
+    lines.append("-" * 140)
+    if games:
+        for index, game in enumerate(games, start=1):
+            played_at = game.get("played_at")
+            date_text = played_at.strftime("%Y-%m-%d") if played_at else "?"
+            log_code = f"g-{index:03d}"
+            pid = game.get("player_id", "?")
+            player = player_map.get(pid, {})
+            player_name = player.get("full_name", pid)
+            state_code = player.get("state_code", "?")
+            dimension = game.get("dimension", 5)
+            base = f"{dimension}x{dimension}"
+            sdg_name = get_sdg_name(game.get("sdg_id", 1))
+            drawn_count = len(game.get("drawn_numbers", []))
+            sorteos_text = f"{drawn_count} bolos"
+            summary = calculate_game_summary(game)
+            winner = summary["winning_card"]
+            if winner == "main":
+                carton = "Tablero 1"
+                winning_card = game.get("main_card", [])
+            elif winner == "complement":
+                carton = "Tablero 2"
+                winning_card = game.get("complement_card", [])
+            else:
+                carton = "Ninguno"
+                winning_card = []
+            winning_sum = card_sum(winning_card)
+            carton_text = f"{carton} ({winning_sum})"
+            puntaje = f"+{summary['total_points']}"
+            lines.append(
+                f"{date_text:<12} {log_code:<10} {player_name:<25} {state_code:<6} "
+                f"{base:<6} {sdg_name:<28} {sorteos_text:<12} "
+                f"{carton_text:<18} {puntaje:<10}"
+            )
+    else:
+        lines.append("No hay partidas registradas.")
+    lines.append("")
+    lines.append("=" * 60)
+    return "\n".join(lines)
+
+
+def _build_report_text(
+    players, games, section: str, date_start: str = "", date_end: str = ""
+) -> str:
+    """Build the report text for the selected section."""
+    if section == "players":
+        return _build_players_report(players, games, date_start, date_end)
+    if section == "top":
+        return _build_top_report(players, games, date_start, date_end)
+    if section == "frequency":
+        return _build_frequency_report(games, date_start, date_end)
+    if section == "history":
+        return _build_history_report(players, games, date_start, date_end)
+    return _build_players_report(players, games, date_start, date_end)
+
+
 def _export_reports(state: Dict[str, Any]) -> str:
-    """Export all reports to a physical text file and return the path."""
+    """Export the selected report to a physical text file and return the path."""
     report_dir = Path("reports")
     report_dir.mkdir(exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    file_path = report_dir / f"reporte_tombola_{timestamp}.txt"
+    section = state.get("selected_report", "all")
+    file_path = report_dir / f"reporte_{section}_{timestamp}.txt"
     text = _build_report_text(
         state["players"],
         state["filtered_games"],
+        section,
         state["inputs"].get("date_start", ""),
         state["inputs"].get("date_end", ""),
     )
@@ -221,6 +366,12 @@ def _apply_date_filter(state: Dict[str, Any]) -> None:
         return
     state["filtered_games"] = games
     state["error_message"] = ""
+
+
+def _select_report(state: Dict[str, Any], section: str) -> None:
+    """Switch the currently selected report section."""
+    state["selected_report"] = section
+    state["report_export_path"] = None
 
 
 def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
@@ -247,6 +398,9 @@ def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
                     state["filtered_games"] = state["all_games"]
                     state["error_message"] = ""
                     return state["current_screen"]
+                if name in dict(_REPORT_SECTIONS):
+                    _select_report(state, name)
+                    return state["current_screen"]
                 if name == "back":
                     return "menu"
                 return state["current_screen"]
@@ -271,6 +425,9 @@ def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
                 state["filtered_games"] = state["all_games"]
                 state["error_message"] = ""
                 return state["current_screen"]
+            if focused in dict(_REPORT_SECTIONS):
+                _select_report(state, focused)
+                return state["current_screen"]
             if focused == "back":
                 return "menu"
             return state["current_screen"]
@@ -281,6 +438,458 @@ def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
                 state["inputs"][focused] += event.unicode
 
     return state["current_screen"]
+
+
+def _draw_section_button(
+    surface: pygame.Surface,
+    label: str,
+    rect: pygame.Rect,
+    hovered: bool,
+    focused: bool,
+    selected: bool,
+) -> None:
+    """Draw a report section selection button."""
+    bg_color = COLOR_PINE if selected else COLOR_WHITE
+    text_color = COLOR_WHITE if selected else COLOR_CHARCOAL
+    border_color = COLOR_PINE if (focused or selected) else COLOR_CHARCOAL
+    pygame.draw.rect(surface, bg_color, rect)
+    pygame.draw.rect(surface, border_color, rect, width=2)
+    draw_text(surface, label, rect.center, font_size=16, color=text_color, center=True)
+    if hovered and not selected:
+        pygame.draw.rect(surface, COLOR_PINE, rect, width=2)
+
+
+def _draw_players_report(surface, players, games, content_x, content_y, content_w):
+    """Draw the players and games report as a table."""
+    draw_text(
+        surface,
+        "JUGADORES Y PARTIDAS REGISTRADOS",
+        (content_x, content_y),
+        font_size=18,
+        color=COLOR_PINE,
+    )
+    draw_text(
+        surface,
+        f"Registros totales: {len(players)}",
+        (content_x + content_w - 140, content_y + 5),
+        font_size=12,
+        color=COLOR_CHARCOAL,
+    )
+
+    columns = [
+        ("CEDULA", 140),
+        ("JUGADOR", 250),
+        ("ESTADO", 100),
+        ("PARTIDAS JUGADAS", 140),
+    ]
+
+    col_x = [content_x]
+    for _, width in columns[:-1]:
+        col_x.append(col_x[-1] + width)
+
+    table_y = content_y + 35
+    row_height = 26
+    header_height = 26
+
+    header_rect = pygame.Rect(content_x, table_y, content_w, header_height)
+    pygame.draw.rect(surface, COLOR_PINE, header_rect)
+    for idx, (label, width) in enumerate(columns):
+        x = col_x[idx] + 4
+        draw_text(
+            surface,
+            label,
+            (x, table_y + header_height // 2),
+            font_size=11,
+            color=COLOR_WHITE,
+        )
+    table_y += header_height
+
+    if not players:
+        draw_text(
+            surface,
+            "No hay jugadores registrados.",
+            (content_x, table_y + 8),
+            font_size=18,
+        )
+        return
+
+    for pid, name, count in _player_game_counts(players, games):
+        row_rect = pygame.Rect(content_x, table_y, content_w, row_height)
+        pygame.draw.rect(surface, COLOR_WHITE, row_rect)
+        pygame.draw.rect(surface, COLOR_CHARCOAL, row_rect, width=1)
+
+        player = _player_lookup(players).get(pid, {})
+        state_code = player.get("state_code", "?")
+        partidas = "partida" if count == 1 else "partidas"
+        partidas_text = f"{count} {partidas}"
+
+        row_values = [pid, name, state_code, partidas_text]
+        for idx, (value, width) in enumerate(zip(row_values, [c[1] for c in columns])):
+            x = col_x[idx] + 4
+            text_y = table_y + row_height // 2
+            for line in wrap_text(value, width - 8, font_size=11):
+                draw_text(
+                    surface,
+                    line,
+                    (x, text_y),
+                    font_size=11,
+                    color=COLOR_CHARCOAL,
+                )
+                break
+
+        table_y += row_height
+
+
+def _draw_top_report(surface, players, games, content_x, content_y, content_w):
+    """Draw the TOP 5 players report as styled ranking cards."""
+    draw_text(
+        surface,
+        "TOP 5: JUGADORES DESTACADOS",
+        (content_x, content_y),
+        font_size=22,
+        color=COLOR_PINE,
+    )
+    draw_text(
+        surface,
+        "Lideres acumulados registrados en JUGADORES.bin",
+        (content_x, content_y + 26),
+        font_size=12,
+        color=COLOR_CHARCOAL,
+    )
+    y = content_y + 55
+    top = _top_players(players, games)
+    if not top:
+        draw_text(
+            surface,
+            "No hay partidas registradas.",
+            (content_x, y),
+            font_size=18,
+        )
+        return
+
+    rank_colors = {
+        1: (255, 215, 0),  # gold
+        2: (192, 192, 192),  # silver
+        3: (205, 127, 50),  # bronze
+    }
+    card_height = 54
+    card_gap = 10
+
+    for rank, (pid, name, state_code, game_count, points) in enumerate(top, start=1):
+        card_rect = pygame.Rect(content_x, y, content_w, card_height)
+        pygame.draw.rect(surface, COLOR_WHITE, card_rect)
+        pygame.draw.rect(surface, COLOR_CHARCOAL, card_rect, width=1)
+
+        # Rank circle
+        circle_color = rank_colors.get(rank, (220, 220, 220))
+        circle_center = (content_x + 26, y + card_height // 2)
+        pygame.draw.circle(surface, circle_color, circle_center, 16)
+        draw_text(
+            surface,
+            str(rank),
+            circle_center,
+            font_size=16,
+            color=COLOR_CHARCOAL,
+            center=True,
+        )
+
+        # Player name
+        draw_text(
+            surface,
+            name,
+            (content_x + 55, y + 10),
+            font_size=18,
+            color=COLOR_CHARCOAL,
+        )
+
+        # Region and game count
+        partidas = "partida" if game_count == 1 else "partidas"
+        draw_text(
+            surface,
+            f"Region: {state_code} · {game_count} {partidas}",
+            (content_x + 55, y + 32),
+            font_size=13,
+            color=COLOR_CHARCOAL,
+        )
+
+        # Points
+        draw_text(
+            surface,
+            str(points),
+            (content_x + content_w - 70, y + 10),
+            font_size=22,
+            color=COLOR_PINE,
+        )
+        draw_text(
+            surface,
+            "ODS",
+            (content_x + content_w - 35, y + 10),
+            font_size=10,
+            color=COLOR_CHARCOAL,
+        )
+        draw_text(
+            surface,
+            "PUNTOS",
+            (content_x + content_w - 48, y + 32),
+            font_size=10,
+            color=COLOR_CHARCOAL,
+        )
+
+        y += card_height + card_gap
+
+
+def _draw_frequency_report(surface, games, content_x, content_y, content_w):
+    """Draw a Gantt-style bar chart for the most frequent drawn numbers."""
+    draw_text(
+        surface,
+        "Frecuencia de numeros (TOP 10)",
+        (content_x, content_y),
+        font_size=22,
+        color=COLOR_PINE,
+    )
+    y = content_y + 35
+    gantt = _gantt_numbers(games)
+    if not gantt:
+        draw_text(
+            surface,
+            "No hay sorteos registrados.",
+            (content_x, y),
+            font_size=18,
+        )
+        return
+
+    max_count = max(count for _, count in gantt)
+    row_height = 28
+    number_box_size = 24
+    rank_width = 35
+    number_offset = 45
+    bar_x = content_x + number_offset + number_box_size + 12
+    bar_max_width = content_w - (bar_x - content_x) - 100
+    bar_height = 18
+    track_color = (220, 220, 220)
+
+    for rank, (number, count) in enumerate(gantt, start=1):
+        # Rank label
+        draw_text(
+            surface,
+            f"#{rank}",
+            (content_x, y + 2),
+            font_size=14,
+            color=COLOR_CHARCOAL,
+        )
+
+        # Number box
+        number_rect = pygame.Rect(
+            content_x + number_offset,
+            y,
+            number_box_size,
+            number_box_size,
+        )
+        pygame.draw.rect(surface, COLOR_PINE, number_rect)
+        draw_text(
+            surface,
+            str(number),
+            number_rect.center,
+            font_size=14,
+            color=COLOR_WHITE,
+            center=True,
+        )
+
+        # Bar track
+        track_rect = pygame.Rect(bar_x, y + 3, bar_max_width, bar_height)
+        pygame.draw.rect(surface, track_color, track_rect)
+
+        # Bar fill
+        fill_width = int(bar_max_width * count / max_count) if max_count else 0
+        fill_rect = pygame.Rect(bar_x, y + 3, fill_width, bar_height)
+        pygame.draw.rect(surface, COLOR_PINE, fill_rect)
+
+        # Count label
+        sorteos_text = f"{count} sorteo" if count == 1 else f"{count} sorteos"
+        draw_text(
+            surface,
+            sorteos_text,
+            (bar_x + bar_max_width + 10, y + 3),
+            font_size=14,
+            color=COLOR_CHARCOAL,
+        )
+
+        y += row_height
+
+    note_y = y + 10
+    draw_text(
+        surface,
+        "Nota del Algoritmo:",
+        (content_x, note_y),
+        font_size=14,
+        color=COLOR_PINE,
+    )
+    note_lines = wrap_text(
+        "La aleatoriedad de la tombola se aproxima a la campana estadistica en "
+        "sesiones largas. Los datos se actualizan dinamicamente.",
+        content_w,
+        font_size=12,
+    )
+    for line in note_lines:
+        note_y += 18
+        draw_text(
+            surface,
+            line,
+            (content_x, note_y),
+            font_size=12,
+            color=COLOR_CHARCOAL,
+        )
+
+
+def _draw_history_report(surface, players, games, content_x, content_y, content_w):
+    """Draw the game history report as a table."""
+    player_map = _player_lookup(players)
+    draw_text(
+        surface,
+        "HISTORIAL HISTORICO DE PARTIDAS (JUEGOS.BIN)",
+        (content_x, content_y),
+        font_size=18,
+        color=COLOR_PINE,
+    )
+    draw_text(
+        surface,
+        "Bitacora de auditoria Federal del juego educativo",
+        (content_x, content_y + 22),
+        font_size=12,
+        color=COLOR_CHARCOAL,
+    )
+    total_text = f"Registros totales: {len(games)}"
+    draw_text(
+        surface,
+        total_text,
+        (content_x + content_w - 140, content_y + 5),
+        font_size=12,
+        color=COLOR_CHARCOAL,
+    )
+
+    columns = [
+        ("FECHA", 65),
+        ("CODIGO LOG", 60),
+        ("JUGADOR", 125),
+        ("ESTADO", 50),
+        ("BASE N", 50),
+        ("TEMA ODS SORTEADO", 125),
+        ("SORTEOS REALIZADOS", 75),
+        ("CARTON GANADOR", 85),
+        ("PUNTAJE", 49),
+    ]
+
+    col_x = [content_x]
+    for _, width in columns[:-1]:
+        col_x.append(col_x[-1] + width)
+
+    table_y = content_y + 55
+    row_height = 26
+    header_height = 26
+
+    # Header background
+    header_rect = pygame.Rect(content_x, table_y, content_w, header_height)
+    pygame.draw.rect(surface, COLOR_PINE, header_rect)
+    for idx, (label, width) in enumerate(columns):
+        x = col_x[idx] + 4
+        draw_text(
+            surface,
+            label,
+            (x, table_y + header_height // 2),
+            font_size=11,
+            color=COLOR_WHITE,
+        )
+    table_y += header_height
+
+    if not games:
+        draw_text(
+            surface,
+            "No hay partidas registradas.",
+            (content_x, table_y + 8),
+            font_size=18,
+        )
+        return
+
+    for index, game in enumerate(games, start=1):
+        row_rect = pygame.Rect(content_x, table_y, content_w, row_height)
+        pygame.draw.rect(surface, COLOR_WHITE, row_rect)
+        pygame.draw.rect(surface, COLOR_CHARCOAL, row_rect, width=1)
+
+        played_at = game.get("played_at")
+        date_text = played_at.strftime("%Y-%m-%d") if played_at else "?"
+        log_code = f"g-{index:03d}"
+        pid = game.get("player_id", "?")
+        player = player_map.get(pid, {})
+        player_name = player.get("full_name", pid)
+        state_code = player.get("state_code", "?")
+        dimension = game.get("dimension", 5)
+        base = f"{dimension}x{dimension}"
+        sdg_name = get_sdg_name(game.get("sdg_id", 1))
+        drawn_count = len(game.get("drawn_numbers", []))
+        sorteos_text = f"{drawn_count} bolos"
+        summary = calculate_game_summary(game)
+        winner = summary["winning_card"]
+        if winner == "main":
+            carton = "Tablero 1"
+            winning_card = game.get("main_card", [])
+        elif winner == "complement":
+            carton = "Tablero 2"
+            winning_card = game.get("complement_card", [])
+        else:
+            carton = "Ninguno"
+            winning_card = []
+        winning_sum = card_sum(winning_card)
+        carton_text = f"{carton} ({winning_sum})"
+        puntaje = f"+{summary['total_points']}"
+
+        row_values = [
+            date_text,
+            log_code,
+            player_name,
+            state_code,
+            base,
+            sdg_name,
+            sorteos_text,
+            carton_text,
+            puntaje,
+        ]
+
+        for idx, (value, width) in enumerate(zip(row_values, [c[1] for c in columns])):
+            x = col_x[idx] + 4
+            text_y = table_y + row_height // 2
+            for line in wrap_text(value, width - 8, font_size=11):
+                draw_text(
+                    surface,
+                    line,
+                    (x, text_y),
+                    font_size=11,
+                    color=COLOR_CHARCOAL,
+                )
+                break
+
+        table_y += row_height
+
+
+def _draw_report_content(
+    surface: pygame.Surface,
+    section: str,
+    players,
+    games,
+    content_x: int,
+    content_y: int,
+    content_w: int,
+) -> None:
+    """Draw the content area for the selected report section."""
+    if section == "players":
+        _draw_players_report(surface, players, games, content_x, content_y, content_w)
+    elif section == "top":
+        _draw_top_report(surface, players, games, content_x, content_y, content_w)
+    elif section == "frequency":
+        _draw_frequency_report(surface, games, content_x, content_y, content_w)
+    elif section == "history":
+        _draw_history_report(surface, players, games, content_x, content_y, content_w)
+    else:
+        _draw_players_report(surface, players, games, content_x, content_y, content_w)
 
 
 def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
@@ -344,111 +953,36 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         focused=focused == "clear",
     )
 
+    selected = state.get("selected_report", "all")
+    for section, label in _REPORT_SECTIONS:
+        _draw_section_button(
+            surface,
+            label,
+            rects[section],
+            hovered=hovered.get(section, False),
+            focused=focused == section,
+            selected=selected == section,
+        )
+
+    content_x = 280
+    content_y = 185
+    content_w = WINDOW_WIDTH - content_x - 60
+    content_h = WINDOW_HEIGHT - content_y - 100
+    content_rect = pygame.Rect(content_x, content_y, content_w, content_h)
+    pygame.draw.rect(surface, COLOR_WHITE, content_rect)
+    pygame.draw.rect(surface, COLOR_CHARCOAL, content_rect, width=1)
+
     players = state.get("players", [])
     games = state.get("filtered_games", [])
-
-    left_x = 60
-    right_x = WINDOW_WIDTH // 2 + 40
-    y_offset = 185
-
-    draw_text(
+    _draw_report_content(
         surface,
-        "Jugadores y partidas",
-        (left_x, y_offset),
-        font_size=22,
-        color=COLOR_PINE,
+        selected,
+        players,
+        games,
+        content_x + 15,
+        content_y + 15,
+        content_w - 30,
     )
-    if players:
-        for pid, name, count in _player_game_counts(players, games):
-            draw_text(
-                surface,
-                f"{pid} - {name}: {count} partidas",
-                (left_x, y_offset + 30),
-                font_size=18,
-            )
-            y_offset += 24
-    else:
-        draw_text(
-            surface,
-            "No hay jugadores registrados.",
-            (left_x, y_offset + 30),
-            font_size=18,
-        )
-        y_offset += 30
-
-    top_y = 185
-    draw_text(
-        surface, "TOP 5 jugadores", (right_x, top_y), font_size=22, color=COLOR_PINE
-    )
-    top = _top_players(games)
-    if top:
-        for rank, (pid, name, points) in enumerate(top, start=1):
-            draw_text(
-                surface,
-                f"{rank}. {name} - {points} pts",
-                (right_x, top_y + rank * 26),
-                font_size=18,
-            )
-    else:
-        draw_text(
-            surface,
-            "No hay partidas registradas.",
-            (right_x, top_y + 30),
-            font_size=18,
-        )
-
-    gantt_y = 405
-    draw_text(
-        surface,
-        "Numeros mas frecuentes",
-        (right_x, gantt_y),
-        font_size=22,
-        color=COLOR_PINE,
-    )
-    gantt = _gantt_numbers(games)
-    if gantt:
-        for rank, (number, count) in enumerate(gantt, start=1):
-            draw_text(
-                surface,
-                f"{rank}. Numero {number}: {count} veces",
-                (right_x, gantt_y + rank * 24),
-                font_size=18,
-            )
-    else:
-        draw_text(
-            surface,
-            "No hay sorteos registrados.",
-            (right_x, gantt_y + 30),
-            font_size=18,
-        )
-
-    history_y = 405
-    draw_text(
-        surface, "Ultimas partidas", (left_x, history_y), font_size=22, color=COLOR_PINE
-    )
-    recent = games[-5:][::-1]
-    if recent:
-        line_y = history_y + 30
-        for game in recent:
-            played_at = game.get("played_at")
-            date_text = played_at.strftime("%Y-%m-%d %H:%M") if played_at else "?"
-            sdg_name = get_sdg_name(game.get("sdg_id", 1))
-            summary = calculate_game_summary(game)
-            text = (
-                f"{date_text} - {game.get('player_id')} - {sdg_name} "
-                f"- ganador: {summary['winning_card']} "
-                f"- P: {summary['main_points']} C: {summary['complement_points']}"
-            )
-            for line in wrap_text(text, WINDOW_WIDTH // 2 - 80, font_size=18):
-                draw_text(surface, line, (left_x, line_y), font_size=18)
-                line_y += 22
-    else:
-        draw_text(
-            surface,
-            "No hay partidas registradas.",
-            (left_x, history_y + 30),
-            font_size=18,
-        )
 
     draw_button(
         surface,

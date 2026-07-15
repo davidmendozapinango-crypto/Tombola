@@ -69,8 +69,7 @@
 | M2 | Cerrar sesión | Clic en "Cerrar sesion". | Regresa a login. |
 | M3 | Esc en menú | Presionar `Esc`. | Cierra sesión y regresa a login. |
 | M4 | Acceso a reportes | Clic en "Reportes". | Abre pantalla de reportes. |
-| M5 | Acceso a demo calculadora | Clic en "Demo calculadora". | Abre pantalla de demostración del motor de cálculo. |
-| M6 | Salir | Clic en "Salir". | Aplicación cierra. |
+| M5 | Salir | Clic en "Salir". | Aplicación cierra. |
 
 ---
 
@@ -122,14 +121,16 @@
 
 | ID | Caso | Pasos | Resultado esperado |
 |----|------|-------|-------------------|
-| R1 | Lista de jugadores | Abrir reportes. | Muestra todos los jugadores con cantidad de partidas jugadas. |
-| R2 | Frecuencia de números | Generar reporte de frecuencia. | Muestra los 10 números más sorteados ordenados de mayor a menor. |
-| R3 | Filtro por fecha | Ingresar rango de fechas y aplicar. | Reporte solo incluye partidas dentro del rango. |
-| R4 | Fecha inválida | Ingresar texto no válido en campos de fecha. | Mensaje de error en español. |
-| R5 | Historial de partidas | Ver reporte de historial. | Muestra fecha, hora, jugador, cartones, puntos y ganador. |
-| R6 | TOP 5 ranking | Ver reporte de ranking. | Muestra los 5 jugadores con más puntos acumulados. |
-| R7 | Exportación a `.txt` | Clic en "Exportar". | Se crea archivo en `reports/` con el contenido del reporte. |
-| R8 | Esc en reportes | Presionar `Esc`. | Regresa al menú principal. |
+| R1 | Pantalla de selección de reportes | Abrir reportes. | Aparecen botones para "Jugadores y partidas", "TOP 5", "Numeros mas frecuentes" e "Historial". |
+| R2 | Reporte por defecto | Abrir reportes sin seleccionar nada. | Muestra el reporte "Jugadores y partidas" por defecto. |
+| R3 | Lista de jugadores | Clic en "Jugadores y partidas". | Muestra todos los jugadores con cantidad de partidas jugadas. |
+| R4 | TOP 5 ranking | Clic en "TOP 5 jugadores". | Muestra los 5 jugadores con más puntos acumulados. |
+| R5 | Frecuencia de números | Clic en "Numeros mas frecuentes". | Muestra los 10 números más sorteados ordenados de mayor a menor. |
+| R6 | Historial de partidas | Clic en "Historial de partidas". | Muestra fecha, hora, jugador, ODS, ganador y puntos. |
+| R7 | Filtro por fecha | Ingresar rango de fechas y aplicar. | Reporte seleccionado solo incluye partidas dentro del rango. |
+| R8 | Fecha inválida | Ingresar texto no válido en campos de fecha. | Mensaje de error en español. |
+| R9 | Exportación individual | Seleccionar una sección y clic en "Exportar .txt". | Se crea archivo en `reports/` solo con el contenido de esa sección. |
+| R10 | Esc en reportes | Presionar `Esc`. | Regresa al menú principal. |
 
 ---
 

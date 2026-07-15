@@ -23,9 +23,8 @@ def _layout() -> Dict[str, pygame.Rect]:
     return {
         "play": pygame.Rect(center_x - 140, y, 280, 45),
         "reports": pygame.Rect(center_x - 140, y + 60, 280, 45),
-        "calculator": pygame.Rect(center_x - 140, y + 120, 280, 45),
-        "logout": pygame.Rect(center_x - 140, y + 180, 280, 45),
-        "exit": pygame.Rect(center_x - 140, y + 240, 280, 45),
+        "logout": pygame.Rect(center_x - 140, y + 120, 280, 45),
+        "exit": pygame.Rect(center_x - 140, y + 180, 280, 45),
     }
 
 
@@ -40,7 +39,7 @@ def _draw_info_message(surface, message, position, font_size=20):
 def init_menu(state: Dict[str, Any]) -> None:
     """Initialize menu screen state."""
     state["inputs"] = {}
-    state["focusable"] = ["play", "reports", "calculator", "logout", "exit"]
+    state["focusable"] = ["play", "reports", "logout", "exit"]
     state["focus_index"] = 0
     state["rects"] = _layout()
 
@@ -76,8 +75,7 @@ def _activate(state: Dict[str, Any], name: str) -> str:
         return "config"
     if name == "reports":
         return "reports"
-    if name == "calculator":
-        return "calculator"
+
     if name == "logout":
         logout(state["session"])
         return "login"
@@ -129,13 +127,6 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         rects["reports"],
         hovered=hovered["reports"],
         focused=focused == "reports",
-    )
-    draw_button(
-        surface,
-        "Demo calculadora",
-        rects["calculator"],
-        hovered=hovered["calculator"],
-        focused=focused == "calculator",
     )
     draw_button(
         surface,

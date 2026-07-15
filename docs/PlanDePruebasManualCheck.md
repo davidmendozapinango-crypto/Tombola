@@ -60,8 +60,7 @@
 - [ ] **M2** Clic en "Cerrar sesion" y verificar regreso a login.
 - [ ] **M3** Presionar `Esc` en menú y verificar cierre de sesión y regreso a login.
 - [ ] **M4** Clic en "Reportes" y verificar apertura de reportes.
-- [ ] **M5** Clic en "Demo calculadora" y verificar apertura de la demo.
-- [ ] **M6** Clic en "Salir" y verificar cierre de aplicación.
+- [ ] **M5** Clic en "Salir" y verificar cierre de aplicación.
 
 ---
 
@@ -105,14 +104,16 @@
 
 ## 7. Reportes
 
-- [ ] **R1** Abrir reportes y verificar lista de jugadores con cantidad de partidas jugadas.
-- [ ] **R2** Generar reporte de frecuencia y verificar los 10 números más sorteados ordenados de mayor a menor.
-- [ ] **R3** Ingresar rango de fechas válido y verificar filtrado correcto.
-- [ ] **R4** Ingresar fecha inválida y verificar mensaje de error en español.
-- [ ] **R5** Ver reporte de historial y verificar fecha, hora, jugador, cartones, puntos y ganador.
-- [ ] **R6** Ver reporte de ranking y verificar TOP 5 por puntos acumulados.
-- [ ] **R7** Clic en "Exportar" y verificar creación de archivo `.txt` en `reports/`.
-- [ ] **R8** Presionar `Esc` en reportes y verificar regreso al menú.
+- [ ] **R1** Abrir reportes y verificar botones: "Jugadores y partidas", "TOP 5", "Numeros mas frecuentes", "Historial".
+- [ ] **R2** Abrir reportes y verificar que el reporte por defecto es "Jugadores y partidas".
+- [ ] **R3** Clic en "Jugadores y partidas" y verificar lista con cantidad de partidas.
+- [ ] **R4** Clic en "TOP 5 jugadores" y verificar ranking por puntos acumulados.
+- [ ] **R5** Clic en "Numeros mas frecuentes" y verificar TOP 10 ordenado.
+- [ ] **R6** Clic en "Historial de partidas" y verificar fecha, hora, jugador, ODS, ganador y puntos.
+- [ ] **R7** Ingresar rango de fechas válido y verificar filtrado correcto.
+- [ ] **R8** Ingresar fecha inválida y verificar mensaje de error en español.
+- [ ] **R9** Seleccionar una sección, clic en "Exportar .txt" y verificar archivo individual en `reports/`.
+- [ ] **R10** Presionar `Esc` en reportes y verificar regreso al menú.
 
 ---
 

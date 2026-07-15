@@ -65,7 +65,6 @@ Después de iniciar sesión, el menú principal ofrece las siguientes opciones:
 
 - **Jugar:** configurar una nueva partida.
 - **Reportes:** ver estadísticas y exportar reportes.
-- **Demo calculadora:** demostración del módulo de comandos internos.
 - **Cerrar sesion:** regresar a la pantalla de inicio de sesión.
 - **Salir:** cerrar la aplicación.
 

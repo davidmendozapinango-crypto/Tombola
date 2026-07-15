@@ -11,7 +11,6 @@ import pygame  # noqa: E402
 
 from src.config import FPS, WINDOW_HEIGHT, WINDOW_WIDTH  # noqa: E402
 from src.ui.app_state import make_app_state, set_screen  # noqa: E402
-from src.ui.screens import calculation_demo_screen  # noqa: E402
 from src.ui.screens.card_display_screen import (  # noqa: E402
     draw as draw_card_display,
     handle_event as handle_card_display,
@@ -63,11 +62,6 @@ SCREEN_HANDLERS = {
     "game": (init_game, handle_game, draw_game),
     "result": (init_result, handle_result, draw_result),
     "reports": (init_reports, handle_reports, draw_reports),
-    "calculator": (
-        calculation_demo_screen.init_calculation_demo,
-        calculation_demo_screen.handle_event,
-        calculation_demo_screen.draw,
-    ),
 }
 
 
