@@ -1,0 +1,190 @@
+Figuras de los Cartones - Tombola ODS
+======================================
+
+Leyenda:
+  X = Celda que contiene un numero
+  . = Celda vacia
+
+Las figuras se definen sobre una cuadricula de referencia de 5x5.
+Para dimensiones mayores (7, 9, 11, 13, 15) las coordenadas se escalan
+proporcionalmente.
+
+
+Familia A
+---------
+Principal (main):
+X X X X X
+. X X X .
+. . X . .
+. X X X .
+X X X X X
+
+Complemento (complement):
+X . . . X
+X X . X X
+X X X X X
+X X . X X
+X . . . X
+
+
+Familia B
+---------
+Principal (main):
+X . . . X
+X X . X X
+X X X X X
+X X . X X
+X . . . X
+
+Complemento (complement):
+X X X X X
+. X X X .
+. . X . .
+. X X X .
+X X X X X
+
+
+Familia C
+---------
+Principal (main):
+. . X . .
+. X X X .
+X X X X X
+. X X X .
+. . X . .
+
+Complemento (complement):
+. . X . .
+. X X X .
+X X X X X
+. X X X .
+. . X . .
+
+
+Familia D
+---------
+Principal (main):
+X X . X X
+X . . . X
+. . . . .
+X . . . X
+X X . X X
+
+Complemento (complement):
+X X . X X
+X . . . X
+. . . . .
+X . . . X
+X X . X X
+
+
+Familia E
+---------
+Principal (main):
+X . X . X
+. X . X .
+X . X . X
+. X . X .
+X . X . X
+
+Complemento (complement):
+X . X . X
+. X . X .
+X . X . X
+. X . X .
+X . X . X
+
+
+Familia F
+---------
+Principal (main):
+X . X . X
+. X . X .
+X . X . X
+. X . X .
+X . X . X
+
+Complemento (complement):
+X . X . X
+. X . X .
+X . X . X
+. X . X .
+X . X . X
+
+Familia G
+---------
+Principal (main):
+X X X X X
+. . . X .
+. . X . .
+. X . . .
+X X X X X
+
+Complemento (complement):
+X . . . X
+X . . X X
+X . X . X
+X X . . X
+X . . . X
+
+
+Familia H
+---------
+Principal (main):
+X . . . X
+. X . X .
+. . . . .
+. X . X .
+X . . . X
+
+Complemento (complement):
+X . . . X
+. X . X .
+. . . . .
+. X . X .
+X . . . X
+
+Familia I
+---------
+Principal (main):
+X . . . X
+X . . . X
+X . . . X
+X . . . X
+X X X X X
+
+Complemento (complement):
+X X X X X
+X . . . X
+X . . . X
+X . . . X
+X . . . X
+
+Familia J
+---------
+Principal (main):
+X X X X X
+X . . . .
+X . . . .
+X . . . .
+X X X X X
+
+Complemento (complement):
+X X X X X
+. . . . X
+. . . . X
+. . . . X
+X X X X X
+
+Mapeo ODS a familia de figura
+-----------------------------
+ODS 1, 11     -> Familia A
+ODS 2, 12     -> Familia B
+ODS 3, 13     -> Familia C
+ODS 4, 14     -> Familia D
+ODS 5, 15     -> Familia E
+ODS 6, 16     -> Familia F
+ODS 7, 17     -> Familia G
+ODS 8         -> Familia H
+ODS 9         -> Familia I
+ODS 10        -> Familia J

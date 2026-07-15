@@ -13,6 +13,7 @@ from src.config import (
     WINDOW_WIDTH,
 )
 from src.core.card import make_cards
+from src.core.card_figures import get_card_type, get_figure_pattern
 from src.ods.data import get_sdg_color, get_sdg_name, list_sdg_ids
 from src.ui.app_state import cycle_focus, get_focused
 from src.ui.common import draw_button, draw_error_message, draw_text
@@ -76,7 +77,12 @@ def _start_game(state: Dict[str, Any]) -> str:
     """Generate cards and move to the card display preview screen."""
     dimension = state["inputs"]["dimension"]
     sdg_id = state["inputs"]["sdg_id"]
-    cards = make_cards(dimension)
+    card_type = get_card_type(sdg_id)
+    main_pattern = get_figure_pattern(card_type, is_main=True, dimension=dimension)
+    complement_pattern = get_figure_pattern(
+        card_type, is_main=False, dimension=dimension
+    )
+    cards = make_cards(dimension, main_pattern, complement_pattern)
     state["session"]["dimension"] = dimension
     state["session"]["sdg_id"] = sdg_id
     state["session"]["main_card"] = cards["main"]

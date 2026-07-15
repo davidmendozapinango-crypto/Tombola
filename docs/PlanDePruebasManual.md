@@ -99,8 +99,10 @@
 | J5 | Suma del cartón ganador | Al ganar, verificar resultado. | Se muestra la suma de todas las celdas del cartón ganador. |
 | J6 | Pausa / continuar | Usar botón de pausa si existe. | Sorteo se detiene y reanuda correctamente. |
 | J7 | Jugar otra ronda | Clic en "Jugar de nuevo" o similar. | Permite nueva partida sin pedir login. |
-| J8 | Esc en juego | Presionar `Esc`. | Regresa al menú principal o a resultados según corresponda. |
-| J9 | Mensajes educativos ODS | Observar durante el juego. | Aparecen mensajes/slogans ODS en pantalla. |
+| J8 | Simulación completa | Clic en "Simular completo". | El juego sortea números automáticamente hasta encontrar un ganador. |
+| J9 | Estado tras simulación | Después de "Simular completo". | Aparece "GANADOR" y el botón "Ver resultado". |
+| J10 | Esc en juego | Presionar `Esc`. | Regresa al menú principal o a resultados según corresponda. |
+| J11 | Mensajes educativos ODS | Observar durante el juego. | Aparecen mensajes/slogans ODS en pantalla. |
 
 ---
 

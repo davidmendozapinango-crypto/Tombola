@@ -2,7 +2,7 @@
 
 from typing import Any, Callable, Dict, List, Optional
 
-from src.core.card import card_points, is_fully_marked
+from src.core.card import card_points
 from src.core.game import check_winner, game_summary
 from src.core.path_rules import make_registry, make_rule, register_rule
 from src.ods.data import get_sdg_name, get_sdg_slogan

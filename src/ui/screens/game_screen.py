@@ -1,6 +1,6 @@
 """Tombola gameplay screen (non-OOP)."""
 
-from typing import Any, Dict
+from typing import Any, Dict, List, Set
 
 import pygame
 
@@ -25,9 +25,21 @@ def _layout() -> Dict[str, pygame.Rect]:
     """Return the UI rectangles for the game screen."""
     return {
         "draw": pygame.Rect(WINDOW_WIDTH // 2 - 100, 120, 200, 45),
+        "simulate": pygame.Rect(WINDOW_WIDTH // 2 - 100, 175, 200, 45),
         "result": pygame.Rect(WINDOW_WIDTH // 2 - 100, 120, 200, 45),
         "menu": pygame.Rect(WINDOW_WIDTH // 2 - 100, 680, 200, 45),
     }
+
+
+def _card_numbers(*cards: Any) -> Set[int]:
+    """Return the union of all numbered cells across the given cards."""
+    numbers: Set[int] = set()
+    for card in cards:
+        for row in card:
+            for value in row:
+                if value is not None:
+                    numbers.add(value)
+    return numbers
 
 
 def init_game(state: Dict[str, Any]) -> None:
@@ -35,9 +47,15 @@ def init_game(state: Dict[str, Any]) -> None:
     session = state["session"]
     dimension = session.get("dimension", 5)
     if not session.get("number_pool"):
-        session["number_pool"] = make_number_pool(dimension)
+        main_card = session.get("main_card")
+        complement_card = session.get("complement_card")
+        if main_card is not None and complement_card is not None:
+            numbers = _card_numbers(main_card, complement_card)
+            session["number_pool"] = make_number_pool(dimension, numbers)
+        else:
+            session["number_pool"] = make_number_pool(dimension)
     state["inputs"] = {}
-    state["focusable"] = ["draw", "menu"]
+    state["focusable"] = ["draw", "simulate", "menu"]
     state["focus_index"] = 0
     state["rects"] = _layout()
     state["games"] = load_games()
@@ -68,6 +86,10 @@ def _draw_card(
                 cell_size,
                 cell_size,
             )
+            if value is None:
+                pygame.draw.rect(surface, COLOR_WHITE, rect)
+                pygame.draw.rect(surface, COLOR_CHARCOAL, rect, width=1)
+                continue
             is_marked = value in marked
             fill_color = sdg_color if is_marked else COLOR_WHITE
             pygame.draw.rect(surface, fill_color, rect)
@@ -111,6 +133,16 @@ def _draw_number(state: Dict[str, Any]) -> str:
         _save_game(state)
         state["focusable"] = ["result", "menu"]
         state["focus_index"] = 0
+    return state["current_screen"]
+
+
+def _simulate_game(state: Dict[str, Any]) -> str:
+    """Run the full tombola draw simulation until a winner is found."""
+    max_draws = len(state["session"].get("number_pool", []))
+    for _ in range(max_draws):
+        if state["session"].get("game_over"):
+            break
+        _draw_number(state)
     return state["current_screen"]
 
 
@@ -161,6 +193,8 @@ def _activate(state: Dict[str, Any], name: str) -> str:
     session = state["session"]
     if name == "draw" and not session.get("game_over"):
         return _draw_number(state)
+    if name == "simulate" and not session.get("game_over"):
+        return _simulate_game(state)
     if name == "result" and session.get("game_over"):
         return "result"
     if name == "menu":
@@ -251,6 +285,13 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
             rects["draw"],
             hovered=hovered["draw"],
             focused=focused == "draw",
+        )
+        draw_button(
+            surface,
+            "Simular completo",
+            rects["simulate"],
+            hovered=hovered["simulate"],
+            focused=focused == "simulate",
         )
 
     draw_text(

@@ -9,7 +9,7 @@ are applied as-is to any dimension >= 5; cells outside the reference grid do
 not belong to the figure.
 """
 
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any, Container, Dict, List, Optional, Sequence, Set, Tuple
 
 _FIGURES: Dict[str, Dict[str, Set[Tuple[int, int]]]] = {
     "A": {
@@ -35,17 +35,44 @@ _FIGURES: Dict[str, Dict[str, Set[Tuple[int, int]]]] = {
         "complement": {
             (0, 0),
             (0, 4),
+            (1, 0),
             (1, 1),
             (1, 3),
+            (1, 4),
+            (2, 0),
+            (2, 1),
             (2, 2),
+            (2, 3),
+            (2, 4),
+            (3, 0),
             (3, 1),
             (3, 3),
+            (3, 4),
             (4, 0),
             (4, 4),
         },
     },
     "B": {
         "main": {
+            (0, 0),
+            (0, 4),
+            (1, 0),
+            (1, 1),
+            (1, 3),
+            (1, 4),
+            (2, 0),
+            (2, 1),
+            (2, 2),
+            (2, 3),
+            (2, 4),
+            (3, 0),
+            (3, 1),
+            (3, 3),
+            (3, 4),
+            (4, 0),
+            (4, 4),
+        },
+        "complement": {
             (0, 0),
             (0, 1),
             (0, 2),
@@ -54,9 +81,6 @@ _FIGURES: Dict[str, Dict[str, Set[Tuple[int, int]]]] = {
             (1, 1),
             (1, 2),
             (1, 3),
-            (2, 2),
-        },
-        "complement": {
             (2, 2),
             (3, 1),
             (3, 2),
@@ -69,8 +93,36 @@ _FIGURES: Dict[str, Dict[str, Set[Tuple[int, int]]]] = {
         },
     },
     "C": {
-        "main": {(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)},
-        "complement": {(0, 4), (1, 3), (2, 2), (3, 1), (4, 0)},
+        "main": {
+            (0, 2),
+            (1, 1),
+            (1, 2),
+            (1, 3),
+            (2, 0),
+            (2, 1),
+            (2, 2),
+            (2, 3),
+            (2, 4),
+            (3, 1),
+            (3, 2),
+            (3, 3),
+            (4, 2),
+        },
+        "complement": {
+            (0, 2),
+            (1, 1),
+            (1, 2),
+            (1, 3),
+            (2, 0),
+            (2, 1),
+            (2, 2),
+            (2, 3),
+            (2, 4),
+            (3, 1),
+            (3, 2),
+            (3, 3),
+            (4, 2),
+        },
     },
     "D": {
         "main": {
@@ -88,53 +140,12 @@ _FIGURES: Dict[str, Dict[str, Set[Tuple[int, int]]]] = {
             (4, 4),
         },
         "complement": {
-            (0, 2),
-            (1, 1),
-            (1, 3),
-            (2, 0),
-            (2, 4),
-            (3, 1),
-            (3, 3),
-            (4, 2),
-        },
-    },
-    "E": {
-        "main": {
-            (0, 0),
-            (0, 1),
-            (0, 3),
-            (0, 4),
-            (1, 0),
-            (2, 0),
-            (2, 2),
-            (2, 4),
-            (3, 4),
-            (4, 0),
-            (4, 1),
-            (4, 3),
-            (4, 4),
-        },
-        "complement": {
-            (0, 2),
-            (1, 1),
-            (1, 3),
-            (2, 2),
-            (3, 1),
-            (3, 3),
-            (4, 2),
-        },
-    },
-    "F": {
-        "main": {
             (0, 0),
             (0, 1),
             (0, 3),
             (0, 4),
             (1, 0),
             (1, 4),
-            (2, 0),
-            (2, 2),
-            (2, 4),
             (3, 0),
             (3, 4),
             (4, 0),
@@ -142,25 +153,128 @@ _FIGURES: Dict[str, Dict[str, Set[Tuple[int, int]]]] = {
             (4, 3),
             (4, 4),
         },
+    },
+    "E": {
+        "main": {
+            (0, 0),
+            (0, 2),
+            (0, 4),
+            (1, 1),
+            (1, 3),
+            (2, 0),
+            (2, 2),
+            (2, 4),
+            (3, 1),
+            (3, 3),
+            (4, 0),
+            (4, 2),
+            (4, 4),
+        },
         "complement": {
             (0, 0),
-            (0, 1),
             (0, 2),
-            (0, 3),
             (0, 4),
-            (1, 0),
+            (1, 1),
+            (1, 3),
             (2, 0),
-            (3, 0),
+            (2, 2),
+            (2, 4),
+            (3, 1),
+            (3, 3),
             (4, 0),
-            (4, 1),
             (4, 2),
-            (4, 3),
+            (4, 4),
+        },
+    },
+    "F": {
+        "main": {
+            (0, 0),
+            (0, 2),
+            (0, 4),
+            (1, 1),
+            (1, 3),
+            (2, 0),
+            (2, 2),
+            (2, 4),
+            (3, 1),
+            (3, 3),
+            (4, 0),
+            (4, 2),
+            (4, 4),
+        },
+        "complement": {
+            (0, 0),
+            (0, 2),
+            (0, 4),
+            (1, 1),
+            (1, 3),
+            (2, 0),
+            (2, 2),
+            (2, 4),
+            (3, 1),
+            (3, 3),
+            (4, 0),
+            (4, 2),
             (4, 4),
         },
     },
     "G": {
         "main": {
             (0, 0),
+            (0, 1),
+            (0, 2),
+            (0, 3),
+            (0, 4),
+            (1, 3),
+            (2, 2),
+            (3, 1),
+            (4, 0),
+            (4, 1),
+            (4, 2),
+            (4, 3),
+            (4, 4),
+        },
+        "complement": {
+            (0, 0),
+            (0, 4),
+            (1, 0),
+            (1, 3),
+            (1, 4),
+            (2, 0),
+            (2, 2),
+            (2, 4),
+            (3, 0),
+            (3, 1),
+            (3, 4),
+            (4, 0),
+            (4, 4),
+        },
+    },
+    "H": {
+        "main": {
+            (0, 0),
+            (0, 4),
+            (1, 1),
+            (1, 3),
+            (3, 1),
+            (3, 3),
+            (4, 0),
+            (4, 4),
+        },
+        "complement": {
+            (0, 0),
+            (0, 4),
+            (1, 1),
+            (1, 3),
+            (3, 1),
+            (3, 3),
+            (4, 0),
+            (4, 4),
+        },
+    },
+    "I": {
+        "main": {
+            (0, 0),
             (0, 4),
             (1, 0),
             (1, 4),
@@ -180,13 +294,17 @@ _FIGURES: Dict[str, Dict[str, Set[Tuple[int, int]]]] = {
             (0, 2),
             (0, 3),
             (0, 4),
+            (1, 0),
             (1, 4),
+            (2, 0),
             (2, 4),
+            (3, 0),
             (3, 4),
+            (4, 0),
             (4, 4),
         },
     },
-    "H": {
+    "J": {
         "main": {
             (0, 0),
             (0, 1),
@@ -204,9 +322,13 @@ _FIGURES: Dict[str, Dict[str, Set[Tuple[int, int]]]] = {
         },
         "complement": {
             (0, 0),
-            (1, 0),
-            (2, 0),
-            (3, 0),
+            (0, 1),
+            (0, 2),
+            (0, 3),
+            (0, 4),
+            (1, 4),
+            (2, 4),
+            (3, 4),
             (4, 0),
             (4, 1),
             (4, 2),
@@ -226,15 +348,15 @@ SDG_TO_CARD_TYPE = {
     6: "F",
     7: "G",
     8: "H",
-    9: "A",
-    10: "B",
-    11: "C",
-    12: "D",
-    13: "E",
-    14: "F",
-    15: "G",
-    16: "H",
-    17: "A",
+    9: "I",
+    10: "J",
+    11: "A",
+    12: "B",
+    13: "C",
+    14: "D",
+    15: "E",
+    16: "F",
+    17: "G",
 }
 
 
@@ -268,25 +390,30 @@ def get_figure_pattern(
 
 
 def is_figure_complete(
-    card: List[List[int]], marked: Set[int], pattern: Set[Tuple[int, int]]
+    card: Sequence[Sequence[Optional[int]]],
+    marked: Container[int],
+    pattern: Set[Tuple[int, int]],
 ) -> bool:
     """Return True when every positional cell of the figure is marked."""
     for row, col in pattern:
         if row >= len(card) or col >= len(card[row]):
             continue
-        if card[row][col] not in marked:
+        value = card[row][col]
+        if value is None or value not in marked:
             return False
     return True
 
 
 def get_figure_value_positions(
-    card: List[List[int]], pattern: Set[Tuple[int, int]]
+    card: Sequence[Sequence[Optional[int]]], pattern: Set[Tuple[int, int]]
 ) -> List[int]:
     """Return the list of card values that occupy the figure cells."""
     values: List[int] = []
     for row, col in sorted(pattern):
         if row < len(card) and col < len(card[row]):
-            values.append(card[row][col])
+            value = card[row][col]
+            if value is not None:
+                values.append(value)
     return values
 
 

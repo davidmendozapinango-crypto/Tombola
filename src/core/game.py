@@ -1,15 +1,22 @@
 """Tombola gameplay helpers (non-OOP)."""
 
 import random
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Container, Dict, List, Optional, Sequence, Set
 
 from src.core.card import card_points
 from src.core.card_figures import get_figure_pattern, is_figure_complete
 
 
-def make_number_pool(dimension: int) -> List[int]:
-    """Create a shuffled pool of numbers from 1 to N*N."""
-    pool = list(range(1, dimension * dimension + 1))
+def make_number_pool(dimension: int, numbers: Optional[Set[int]] = None) -> List[int]:
+    """Create a shuffled pool of numbers.
+
+    If a set of numbers is supplied, only those values are included; otherwise
+    the full range 1..N*N is used.
+    """
+    if numbers is None:
+        pool = list(range(1, dimension * dimension + 1))
+    else:
+        pool = list(numbers)
     random.shuffle(pool)
     return pool
 
@@ -22,10 +29,10 @@ def draw_next(pool: List[int]) -> Optional[int]:
 
 
 def check_winner(
-    main_card: List[List[int]],
-    marked_main: Set[int],
-    complement_card: List[List[int]],
-    marked_complement: Set[int],
+    main_card: Sequence[Sequence[Optional[int]]],
+    marked_main: Container[int],
+    complement_card: Sequence[Sequence[Optional[int]]],
+    marked_complement: Container[int],
     card_type: str,
 ) -> Optional[str]:
     """Return 'main' or 'complement' if the SDG figure is complete."""
@@ -42,10 +49,10 @@ def check_winner(
 
 
 def game_summary(
-    main_card: List[List[int]],
-    marked_main: Set[int],
-    complement_card: List[List[int]],
-    marked_complement: Set[int],
+    main_card: Sequence[Sequence[Optional[int]]],
+    marked_main: Container[int],
+    complement_card: Sequence[Sequence[Optional[int]]],
+    marked_complement: Container[int],
     card_type: str,
 ) -> Dict[str, Any]:
     """Return a summary of current game state."""

@@ -49,7 +49,7 @@ def _draw_preview_card(
     title: str,
     sdg_color: Any,
 ) -> None:
-    """Draw a preview card showing the filling sequence and figure cells."""
+    """Draw a preview card showing the figure cells and their assigned numbers."""
     draw_text(surface, title, (top_left[0], top_left[1] - 30), font_size=20)
     sequence = 1
     for row in range(dimension):
@@ -64,16 +64,16 @@ def _draw_preview_card(
             fill_color = sdg_color if is_figure else COLOR_WHITE
             pygame.draw.rect(surface, fill_color, rect)
             pygame.draw.rect(surface, COLOR_CHARCOAL, rect, width=1)
-            text_color = COLOR_WHITE if is_figure else COLOR_CHARCOAL
-            draw_text(
-                surface,
-                str(sequence),
-                rect.center,
-                font_size=max(10, cell_size // 2),
-                color=text_color,
-                center=True,
-            )
-            sequence += 1
+            if is_figure:
+                draw_text(
+                    surface,
+                    str(sequence),
+                    rect.center,
+                    font_size=max(10, cell_size // 2),
+                    color=COLOR_WHITE,
+                    center=True,
+                )
+                sequence += 1
 
 
 def init_card_display(state: Dict[str, Any]) -> None:

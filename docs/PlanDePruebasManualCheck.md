@@ -86,8 +86,10 @@
 - [ ] **J5** Al ganar, verificar que se muestra la suma de todas las celdas del cartón ganador.
 - [ ] **J6** Usar botón de pausa si existe y verificar detención y reanudación.
 - [ ] **J7** Clic en "Jugar de nuevo" y verificar nueva partida sin pedir login.
-- [ ] **J8** Presionar `Esc` en juego y verificar regreso al menú o resultados.
-- [ ] **J9** Observar durante el juego y verificar mensajes/slogans ODS en pantalla.
+- [ ] **J8** Clic en "Simular completo" y verificar que el juego sortea hasta encontrar ganador.
+- [ ] **J9** Después de simular, verificar que aparece "GANADOR" y botón "Ver resultado".
+- [ ] **J10** Presionar `Esc` en juego y verificar regreso al menú o resultados.
+- [ ] **J11** Observar durante el juego y verificar mensajes/slogans ODS en pantalla.
 
 ---
 
