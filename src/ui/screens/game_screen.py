@@ -7,7 +7,9 @@ import pygame
 from src.config import (
     COLOR_CHARCOAL,
     COLOR_MINT,
+    COLOR_MOSS,
     COLOR_PINE,
+    COLOR_SAGE_LIGHT,
     COLOR_WHITE,
     WINDOW_HEIGHT,
     WINDOW_WIDTH,
@@ -15,10 +17,16 @@ from src.config import (
 from src.core.card import card_points, card_sum, mark_number
 from src.core.card_figures import get_card_type
 from src.core.game import check_winner, draw_next, make_number_pool
-from src.ods.data import get_sdg_color, get_sdg_name, get_sdg_slogan
+from src.ods.data import get_sdg_color, get_sdg_messages, get_sdg_name
 from src.persistence.games import add_game, load_games, make_game_record
 from src.ui.app_state import cycle_focus, get_focused
-from src.ui.common import draw_button, draw_error_message, draw_text
+from src.ui.common import (
+    draw_button,
+    draw_error_message,
+    draw_message_panel,
+    draw_text,
+    get_font,
+)
 
 
 def _layout() -> Dict[str, pygame.Rect]:
@@ -27,7 +35,8 @@ def _layout() -> Dict[str, pygame.Rect]:
         "draw": pygame.Rect(WINDOW_WIDTH // 2 - 100, 120, 200, 45),
         "simulate": pygame.Rect(WINDOW_WIDTH // 2 - 100, 175, 200, 45),
         "result": pygame.Rect(WINDOW_WIDTH // 2 - 100, 120, 200, 45),
-        "menu": pygame.Rect(WINDOW_WIDTH // 2 - 100, 680, 200, 45),
+        "menu": pygame.Rect(WINDOW_WIDTH // 2 - 100, 640, 200, 45),
+        "victory": pygame.Rect(WINDOW_WIDTH // 2 - 150, 540, 300, 45),
     }
 
 
@@ -131,7 +140,7 @@ def _draw_number(state: Dict[str, Any]) -> str:
         session["winning_card"] = winner
         session["game_over"] = True
         _save_game(state)
-        state["focusable"] = ["result", "menu"]
+        state["focusable"] = ["victory", "menu"]
         state["focus_index"] = 0
     return state["current_screen"]
 
@@ -195,11 +204,209 @@ def _activate(state: Dict[str, Any], name: str) -> str:
         return _draw_number(state)
     if name == "simulate" and not session.get("game_over"):
         return _simulate_game(state)
-    if name == "result" and session.get("game_over"):
-        return "result"
+    if name in ("result", "victory") and session.get("game_over"):
+        return "menu"
     if name == "menu":
         return "menu"
     return state["current_screen"]
+
+
+def _draw_trophy_icon(surface: pygame.Surface, rect: pygame.Rect) -> None:
+    """Draw a simple trophy icon."""
+    cx, cy = rect.center
+    pygame.draw.polygon(
+        surface,
+        COLOR_PINE,
+        [
+            (cx, cy - 14),
+            (cx + 10, cy - 6),
+            (cx + 8, cy + 4),
+            (cx - 8, cy + 4),
+            (cx - 10, cy - 6),
+        ],
+    )
+    pygame.draw.rect(surface, COLOR_PINE, (cx - 3, cy + 4, 6, 8))
+    pygame.draw.rect(surface, COLOR_PINE, (cx - 6, cy + 11, 12, 3))
+
+
+def _draw_victory_modal(
+    surface: pygame.Surface,
+    state: Dict[str, Any],
+    rects: Dict[str, pygame.Rect],
+    hovered: Dict[str, bool],
+    focused: str,
+) -> None:
+    """Draw a centered modal declaring the winner."""
+    session = state["session"]
+    sdg_id = session.get("sdg_id", 1)
+    dimension = session.get("dimension", 5)
+    sdg_name = get_sdg_name(sdg_id)
+    sdg_color = get_sdg_color(sdg_id)
+    winning_card = session.get("winning_card", "main")
+
+    if winning_card == "main":
+        card = session["main_card"]
+        marked = session["marked_main"]
+        card_label = "Cartón 1"
+    else:
+        card = session["complement_card"]
+        marked = session["marked_complement"]
+        card_label = "Cartón 2"
+
+    total_sum = card_sum(card)
+    points = card_points(card, marked)
+    messages = get_sdg_messages(sdg_id)
+    sdg_message = messages[0] if messages else ""
+
+    # Modal background
+    overlay = pygame.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.SRCALPHA)
+    overlay.fill((242, 247, 244, 200))
+    surface.blit(overlay, (0, 0))
+
+    modal_w = 520
+    modal_h = 520
+    modal_rect = pygame.Rect(
+        (WINDOW_WIDTH - modal_w) // 2,
+        (WINDOW_HEIGHT - modal_h) // 2,
+        modal_w,
+        modal_h,
+    )
+    pygame.draw.rect(surface, COLOR_WHITE, modal_rect, border_radius=20)
+    pygame.draw.rect(surface, COLOR_MOSS, modal_rect, width=4, border_radius=20)
+
+    # Trophy
+    trophy_rect = pygame.Rect(modal_rect.centerx - 25, modal_rect.y + 30, 50, 50)
+    pygame.draw.circle(surface, COLOR_MINT, trophy_rect.center, 28)
+    _draw_trophy_icon(surface, trophy_rect)
+
+    # Titles
+    draw_text(
+        surface,
+        "¡RESULTADO GLOBAL DE LA PARTIDA!",
+        (modal_rect.centerx, modal_rect.y + 95),
+        font_size=13,
+        color=COLOR_PINE,
+        center=True,
+    )
+    draw_text(
+        surface,
+        "¡GANADOR!",
+        (modal_rect.centerx, modal_rect.y + 125),
+        font_size=42,
+        color=COLOR_PINE,
+        center=True,
+    )
+
+    # Description
+    italic_font = get_font(14)
+    italic_font.set_italic(True)
+    description = (
+        f"Este cartón ha cubierto todas sus celdas biológicas en base a la "
+        f"tómbola {dimension}x{dimension} del {sdg_name}."
+    )
+    desc_lines = []
+    words = description.split()
+    line = ""
+    max_width = modal_w - 80
+    for word in words:
+        test = f"{line} {word}".strip()
+        if italic_font.size(test)[0] <= max_width:
+            line = test
+        else:
+            desc_lines.append(line)
+            line = word
+    if line:
+        desc_lines.append(line)
+
+    desc_y = modal_rect.y + 170
+    for desc_line in desc_lines[:3]:
+        rendered = italic_font.render(desc_line, True, COLOR_CHARCOAL)
+        rect = rendered.get_rect(center=(modal_rect.centerx, desc_y))
+        surface.blit(rendered, rect)
+        desc_y += 20
+
+    # Stats table
+    table_y = desc_y + 20
+    table_rect = pygame.Rect(modal_rect.x + 40, table_y, modal_w - 80, 70)
+    pygame.draw.rect(surface, COLOR_MINT, table_rect, border_radius=12)
+    pygame.draw.rect(surface, COLOR_SAGE_LIGHT, table_rect, width=1, border_radius=12)
+
+    stats = [
+        ("IDENTIDAD", card_label),
+        ("SUMA DE CELDAS", str(total_sum)),
+        ("PUNTAJE ODS", f"+{points} pts"),
+    ]
+    col_width = (modal_w - 80) // 3
+    for index, (label, value) in enumerate(stats):
+        x = table_rect.x + index * col_width + col_width // 2
+        draw_text(
+            surface,
+            label,
+            (x, table_rect.y + 12),
+            font_size=10,
+            color=COLOR_CHARCOAL,
+            center=True,
+        )
+        draw_text(
+            surface,
+            value,
+            (x, table_rect.y + 36),
+            font_size=16,
+            color=COLOR_PINE,
+            center=True,
+        )
+        if index < 2:
+            pygame.draw.line(
+                surface,
+                COLOR_SAGE_LIGHT,
+                (table_rect.x + (index + 1) * col_width, table_rect.y + 10),
+                (table_rect.x + (index + 1) * col_width, table_rect.bottom - 10),
+                1,
+            )
+
+    # SDG quote
+    quote_y = table_rect.bottom + 25
+    quote_rect = pygame.Rect(modal_rect.x + 40, quote_y, modal_w - 80, 45)
+    pygame.draw.rect(surface, sdg_color, quote_rect, border_radius=12)
+    quote_font = get_font(12)
+    quote_font.set_italic(True)
+    quote_lines = []
+    words = sdg_message.split()
+    line = ""
+    for word in words:
+        test = f"{line} {word}".strip()
+        if quote_font.size(test)[0] <= modal_w - 120:
+            line = test
+        else:
+            quote_lines.append(line)
+            line = word
+    if line:
+        quote_lines.append(line)
+    quote_line_y = quote_rect.centery - ((len(quote_lines[:2]) - 1) * 14) // 2
+    for quote_line in quote_lines[:2]:
+        rendered = quote_font.render(f'"{quote_line}"', True, COLOR_WHITE)
+        rect = rendered.get_rect(center=(quote_rect.centerx, quote_line_y))
+        surface.blit(rendered, rect)
+        quote_line_y += 14
+
+    # Backup message
+    draw_text(
+        surface,
+        "Autorespaldo consolidado exitosamente en JUEGOS.bin e historial del jugador.",
+        (modal_rect.centerx, quote_rect.bottom + 25),
+        font_size=10,
+        color=COLOR_CHARCOAL,
+        center=True,
+    )
+
+    # Button
+    draw_button(
+        surface,
+        "IR A MENÚ",
+        rects["victory"],
+        hovered=hovered["victory"],
+        focused=focused == "victory",
+    )
 
 
 def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
@@ -210,7 +417,6 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
     session = state["session"]
 
     sdg_id = session.get("sdg_id", 1)
-    sdg_color = get_sdg_color(sdg_id)
     dimension = session.get("dimension", 5)
     cell_size = _cell_size(dimension)
 
@@ -220,7 +426,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         f"Partida - {sdg_name}",
         (WINDOW_WIDTH // 2, 30),
         font_size=32,
-        color=sdg_color,
+        color=COLOR_PINE,
         center=True,
     )
 
@@ -232,7 +438,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         left_card_pos,
         cell_size,
         f"Principal - {sdg_name}",
-        sdg_color,
+        COLOR_PINE,
     )
 
     right_card_pos = (WINDOW_WIDTH - 80 - dimension * cell_size, 180)
@@ -243,7 +449,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         right_card_pos,
         cell_size,
         f"Complemento - {sdg_name}",
-        sdg_color,
+        COLOR_PINE,
     )
 
     mouse_pos = pygame.mouse.get_pos()
@@ -251,21 +457,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
     focused = get_focused(state)
 
     if session.get("game_over"):
-        draw_text(
-            surface,
-            f"GANADOR: {session['winning_card'].upper()}",
-            (WINDOW_WIDTH // 2, 90),
-            font_size=28,
-            color=COLOR_PINE,
-            center=True,
-        )
-        draw_button(
-            surface,
-            "Ver resultado",
-            rects["result"],
-            hovered=hovered["result"],
-            focused=focused == "result",
-        )
+        _draw_victory_modal(surface, state, rects, hovered, focused)
     else:
         last = session["drawn_numbers"][-1] if session["drawn_numbers"] else None
         last_text = (
@@ -303,16 +495,6 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         center=True,
     )
 
-    slogan = get_sdg_slogan(sdg_id)
-    draw_text(
-        surface,
-        slogan,
-        (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 40),
-        font_size=18,
-        color=COLOR_PINE,
-        center=True,
-    )
-
     draw_button(
         surface,
         "Menu",
@@ -325,6 +507,8 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         draw_error_message(
             surface,
             state["error_message"],
-            (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 120),
+            (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 100),
             font_size=20,
         )
+
+    draw_message_panel(surface, state, sdg_id=sdg_id)

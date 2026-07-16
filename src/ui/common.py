@@ -12,12 +12,28 @@ from src.config import (
     COLOR_RED_ALERT,
     COLOR_SAGE_LIGHT,
     COLOR_WHITE,
+    WINDOW_HEIGHT,
+    WINDOW_WIDTH,
 )
+from src.ods.data import get_sdg_color, get_sdg_messages, get_sdg_name, list_sdg_ids
 
 
-def get_font(size: int) -> pygame.font.Font:
+def get_font(size: int, bold: bool = False) -> pygame.font.Font:
     """Return a Pygame font for the given size."""
-    return pygame.font.SysFont("Arial", size)
+    font = pygame.font.SysFont("Arial", size)
+    if bold:
+        font.set_bold(True)
+    return font
+
+
+def _blend_color(
+    color_a: Tuple[int, int, int], color_b: Tuple[int, int, int], ratio: float
+) -> Tuple[int, int, int]:
+    """Blend two RGB colors by ratio (0.0 = color_a, 1.0 = color_b)."""
+    r = int(color_a[0] + (color_b[0] - color_a[0]) * ratio)
+    g = int(color_a[1] + (color_b[1] - color_a[1]) * ratio)
+    b = int(color_a[2] + (color_b[2] - color_a[2]) * ratio)
+    return (r, g, b)
 
 
 def draw_text(
@@ -156,3 +172,86 @@ def wrap_text(text: str, max_width: int, font_size: int = 20) -> List[str]:
     if current_line:
         lines.append(current_line)
     return lines
+
+
+def draw_message_panel(
+    surface: pygame.Surface,
+    state: Dict[str, Any],
+    sdg_id: Optional[int] = None,
+    panel_height: int = 55,
+) -> None:
+    """Draw a bottom panel with a rotating SDG allusive message.
+
+    If sdg_id is not provided, the panel uses a random ODS stored in the
+    session. Once the session has an active SDG (e.g. after game configuration),
+    callers should pass it so the messages refer to the selected ODS.
+    """
+    import random
+
+    panel_rect = pygame.Rect(
+        0, WINDOW_HEIGHT - panel_height, WINDOW_WIDTH, panel_height
+    )
+
+    session = state.get("session", {})
+    if sdg_id is None:
+        sdg_id = session.get("bottom_sdg_id")
+        if sdg_id is None:
+            sdg_id = random.choice(list_sdg_ids())
+            session["bottom_sdg_id"] = sdg_id
+
+    sdg_color = get_sdg_color(sdg_id)
+    soft_bg = _blend_color(COLOR_WHITE, sdg_color, 0.12)
+
+    # Background
+    pygame.draw.rect(surface, soft_bg, panel_rect)
+
+    messages = get_sdg_messages(sdg_id)
+    if not messages:
+        return
+
+    # Cycle message every 5 seconds.
+    message_index = (pygame.time.get_ticks() // 5000) % len(messages)
+    message = messages[message_index]
+    sdg_name = get_sdg_name(sdg_id)
+
+    # ODS number badge
+    badge_radius = 16
+    badge_center = (panel_rect.x + 35, panel_rect.centery)
+    pygame.draw.circle(surface, sdg_color, badge_center, badge_radius)
+    pygame.draw.circle(surface, COLOR_WHITE, badge_center, badge_radius, width=2)
+    draw_text(
+        surface,
+        str(sdg_id),
+        badge_center,
+        font_size=15,
+        color=COLOR_WHITE,
+        center=True,
+    )
+
+    # Title
+    title_x = badge_center[0] + badge_radius + 12
+    title_y = panel_rect.y + 8
+    draw_text(
+        surface,
+        f"ODS {sdg_id}: {sdg_name}",
+        (title_x, title_y),
+        font_size=12,
+        color=sdg_color,
+        center=False,
+    )
+
+    # Decorative quote mark
+    quote_font = get_font(22, bold=True)
+    quote_surface = quote_font.render(
+        '"', True, _blend_color(sdg_color, COLOR_WHITE, 0.6)
+    )
+    surface.blit(quote_surface, (title_x + 360, title_y - 6))
+
+    # Message body
+    max_width = WINDOW_WIDTH - title_x - 90
+    message_font = get_font(14, bold=True)
+    lines = wrap_text(message, max_width, font_size=14)
+    line_height = 18
+    for index, line in enumerate(lines[:2]):
+        rendered = message_font.render(line, True, COLOR_CHARCOAL)
+        surface.blit(rendered, (title_x, title_y + 18 + index * line_height))

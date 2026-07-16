@@ -56,23 +56,22 @@
 
 ## 3. Menú principal
 
-- [ ] **M1** Navegar con `Tab` y presionar `Enter` sobre "Jugar", verificar apertura de configuración.
-- [ ] **M2** Clic en "Cerrar sesion" y verificar regreso a login.
-- [ ] **M3** Presionar `Esc` en menú y verificar cierre de sesión y regreso a login.
-- [ ] **M4** Clic en "Reportes" y verificar apertura de reportes.
-- [ ] **M5** Clic en "Salir" y verificar cierre de aplicación.
+- [ ] **M1** Abrir menú y verificar panel derecho con dimension, ODS y vista previa.
+- [ ] **M2** Usar flechas de dimension y verificar cambio entre 5, 7, 9, 11, 13 y 15.
+- [ ] **M3** Usar flechas de ODS y verificar cambio de nombre, color y vista previa.
+- [ ] **M4** Clic en "Iniciar Partida de Tombola" con configuracion valida y verificar pantalla de juego.
+- [ ] **M5** Clic en "Iniciar Partida de Tombola" sin configuracion y verificar mensaje de error.
+- [ ] **M6** Clic en "Cerrar sesion" y verificar regreso a login.
+- [ ] **M7** Presionar `Esc` en menú y verificar cierre de sesión y regreso a login.
+- [ ] **M8** Clic en "Reportes" y verificar apertura de reportes.
+- [ ] **M9** Clic en "Salir" y verificar cierre de aplicación.
 
 ---
 
 ## 4. Configuración de cartón
 
-- [ ] **C1** Elegir dimensiones 5, 7, 9, 11, 13 y 15, verificar vista previa correcta en cada una.
-- [ ] **C2** Intentar elegir dimensión par y verificar que no se permite o muestra error.
-- [ ] **C3** Intentar dimensiones 3 o 17 y verificar que no se permite o muestra error.
-- [ ] **C4** Elegir diferentes ODS y verificar nombre, color, slogan e imagen correspondiente.
-- [ ] **C5** Clic en "Continuar" tras configurar y verificar pantalla `card_display` con figura resaltada.
-- [ ] **C6** Verificar que las figuras principal y complemento muestran patrones distintos.
-- [ ] **C7** Presionar `Esc` en configuración y verificar regreso al menú.
+- [ ] **C1** Cambiar dimension u ODS en el panel derecho y verificar vista previa actualizada.
+- [ ] **C2** Verificar que las figuras principal y complemento muestran patrones distintos en la vista previa.
 
 ---
 
@@ -155,6 +154,19 @@
 - [ ] **X3** Sortear pocos números y salir, verificar que no se declara ganador pero se guarda la partida.
 - [ ] **X4** Borrar `JUEGOS.bin` y abrir reportes, verificar mensaje de datos vacíos.
 - [ ] **X5** Registrar jugador y ver reportes, verificar contador de partidas igual a 0.
+
+---
+
+## 12. Panel de mensajes ODS
+
+- [ ] **PM1** Abrir login y verificar panel inferior con mensaje ODS visible.
+- [ ] **PM2** Ir a registro y verificar mensaje ODS en panel inferior.
+- [ ] **PM3** Iniciar sesión y verificar que el panel muestra mensaje del ODS seleccionado.
+- [ ] **PM4** Iniciar partida y verificar mensajes del ODS activo sin solapamiento.
+- [ ] **PM5** Completar partida y verificar panel en pantalla de resultados.
+- [ ] **PM6** Abrir reportes y verificar panel inferior sin tapar botones.
+- [ ] **PM7** Observar panel ~15 segundos y verificar cambio de mensaje cada 5 segundos.
+- [ ] **PM8** Revisar todas las pantallas y verificar que nada queda detrás del panel.
 
 ---
 

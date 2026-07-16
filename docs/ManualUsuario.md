@@ -61,21 +61,24 @@ Seleccione **Registrar** para guardar el jugador. Seleccione **Volver** para reg
 
 ### 4.3 Menú Principal
 
-Después de iniciar sesión, el menú principal ofrece las siguientes opciones:
+Después de iniciar sesión, el menú principal muestra una cuadrícula de tarjetas con las opciones del sistema:
 
-- **Jugar:** configurar una nueva partida.
-- **Reportes:** ver estadísticas y exportar reportes.
-- **Cerrar sesion:** regresar a la pantalla de inicio de sesión.
-- **Salir:** cerrar la aplicación.
+- **Iniciar Partida de Tombola:** configurar y comenzar una nueva partida.
+- **Estadisticas e Historicos:** ver estadísticas, ranking y exportar reportes.
+- **Cerrar Sesion Activa:** regresar a la pantalla de inicio de sesión.
+- **Salir del Sistema:** cerrar la aplicacion.
 
-### 4.4 Configuración de Cartones
+Cada tarjeta muestra un icono, un titulo y una breve descripcion. Seleccione una tarjeta con el mouse o navegue con `Tab` y `Enter`.
 
-- Use las flechas `<` y `>` para seleccionar la **dimensión** del cartón (5, 7, 9, 11, 13 o 15).
-- Use las flechas `<` y `>` para seleccionar el **tema ODS**.
-- Seleccione **Continuar** para generar los cartones principal y complemento.
-- Seleccione **Volver** para regresar al menú principal.
+A la derecha del menu se encuentra el panel **Configuracion Activa de la Tombola ODS**, donde puede:
 
-### 4.5 Pantalla de Juego
+- Seleccionar la **dimension** del carton (5, 7, 9, 11, 13 o 15) con las flechas `<` y `>`.
+- Seleccionar el **tema ODS** con las flechas `<` y `>`.
+- Ver la **vista previa** de los cartones principal y complemento.
+
+Seleccione **Iniciar Partida de Tombola** para comenzar el juego. La aplicacion verifica que la dimension y el ODS esten configurados antes de iniciar.
+
+### 4.4 Pantalla de Juego
 
 - Se muestran dos cartones: **Carton principal** (izquierda) y **Carton complemento** (derecha).
 - Seleccione **Sacar numero** para sortear el siguiente número.

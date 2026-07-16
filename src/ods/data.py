@@ -3,7 +3,7 @@
 import random
 from typing import List, Tuple
 
-from src.config import COLOR_SDG, SDG_NAMES, SDG_SLOGANS
+from src.config import COLOR_SDG, SDG_MESSAGES, SDG_NAMES, SDG_SLOGANS
 
 
 def list_sdg_ids() -> List[int]:
@@ -29,3 +29,14 @@ def get_sdg_slogan(sdg_id: int) -> str:
 def random_slogan(sdg_id: int) -> str:
     """Return the slogan for the selected SDG."""
     return get_sdg_slogan(sdg_id)
+
+
+def get_sdg_message(sdg_id: int) -> str:
+    """Return a random allusive message for an SDG."""
+    messages = SDG_MESSAGES.get(sdg_id, [""])
+    return random.choice(messages)
+
+
+def get_sdg_messages(sdg_id: int) -> list[str]:
+    """Return all allusive messages for an SDG."""
+    return SDG_MESSAGES.get(sdg_id, [""])

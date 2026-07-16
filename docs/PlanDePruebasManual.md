@@ -65,11 +65,15 @@
 
 | ID | Caso | Pasos | Resultado esperado |
 |----|------|-------|-------------------|
-| M1 | Navegación por teclado | `Tab` y `Enter` sobre "Jugar". | Abre pantalla de configuración. |
-| M2 | Cerrar sesión | Clic en "Cerrar sesion". | Regresa a login. |
-| M3 | Esc en menú | Presionar `Esc`. | Cierra sesión y regresa a login. |
-| M4 | Acceso a reportes | Clic en "Reportes". | Abre pantalla de reportes. |
-| M5 | Salir | Clic en "Salir". | Aplicación cierra. |
+| M1 | Panel de configuración | Abrir menú principal. | Aparece panel derecho con dimension, ODS y vista previa. |
+| M2 | Selección de dimensión | Usar flechas `<` y `>` de dimension. | Cambia entre 5, 7, 9, 11, 13 y 15; vista previa se actualiza. |
+| M3 | Selección de ODS | Usar flechas `<` y `>` de ODS. | Cambia el ODS; nombre, color y vista previa se actualizan. |
+| M4 | Iniciar partida validada | Clic en "Iniciar Partida de Tombola" con configuracion valida. | Abre pantalla de juego. |
+| M5 | Validación de configuración | Clic en "Iniciar Partida de Tombola" sin dimension u ODS configurados. | Muestra mensaje de error. |
+| M6 | Cerrar sesión | Clic en "Cerrar sesion". | Regresa a login. |
+| M7 | Esc en menú | Presionar `Esc`. | Cierra sesión y regresa a login. |
+| M8 | Acceso a reportes | Clic en "Reportes". | Abre pantalla de reportes. |
+| M9 | Salir | Clic en "Salir". | Aplicación cierra. |
 
 ---
 
@@ -77,13 +81,8 @@
 
 | ID | Caso | Pasos | Resultado esperado |
 |----|------|-------|-------------------|
-| C1 | Selección de dimensión | Elegir dimensiones 5, 7, 9, 11, 13 y 15. | Cada vez se muestra vista previa correcta. |
-| C2 | Dimensión par rechazada | Intentar elegir dimensión par. | No se permite o se muestra mensaje de error. |
-| C3 | Dimensión fuera de rango | Intentar 3 o 17. | No se permite o se muestra mensaje de error. |
-| C4 | Selección de ODS | Elegir diferentes ODS. | Se muestra nombre, color, slogan e imagen correspondiente. |
-| C5 | Vista previa del cartón | Clic en "Continuar" tras configurar. | Aparece pantalla `card_display` con secuencia de llenado y figura resaltada. |
-| C6 | Figura principal vs complemento | Verificar que main y complement muestran patrones distintos. | Patrones distinguibles entre sí. |
-| C7 | Esc en configuración | Presionar `Esc`. | Regresa al menú principal. |
+| C1 | Vista previa en menú | Cambiar dimension u ODS en el panel derecho. | Se actualiza la vista previa de principal y complemento. |
+| C2 | Figura principal vs complemento | Verificar vista previa en menú. | Patrones distinguibles entre principal y complemento. |
 
 ---
 
@@ -180,6 +179,21 @@
 | X3 | Partida sin ganador | Sortear pocos números y salir. | No se declara ganador; partida se guarda igual. |
 | X4 | Reporte sin datos | Borrar `JUEGOS.bin` y abrir reportes. | Pantalla muestra mensaje indicando que no hay datos. |
 | X5 | Jugador sin partidas | Registrar jugador y ver reportes. | Contador de partidas = 0. |
+
+---
+
+## 12. Panel de mensajes ODS
+
+| ID | Caso | Pasos | Resultado esperado |
+|----|------|-------|-------------------|
+| PM1 | Visibilidad en login | Abrir la aplicación. | Panel inferior blanco con mensaje ODS visible, sin tapar botones. |
+| PM2 | Visibilidad en registro | Ir a "Registrarse". | Panel inferior muestra mensaje ODS distinto o rotado. |
+| PM3 | Visibilidad en menú | Iniciar sesión. | Panel inferior muestra mensaje del ODS seleccionado en el panel derecho. |
+| PM4 | Visibilidad en juego | Iniciar partida. | Panel inferior muestra mensajes del ODS activo; no se superpone con botones ni cartones. |
+| PM5 | Visibilidad en resultados | Completar una partida. | Panel inferior muestra mensaje del ODS de la partida ganada. |
+| PM6 | Visibilidad en reportes | Abrir reportes. | Panel inferior muestra mensaje ODS sin tapar botones de exportar/volver. |
+| PM7 | Rotación de mensajes | Observar el panel durante ~15 segundos. | El mensaje cambia cada 5 segundos, ciclando entre los 3 mensajes del ODS. |
+| PM8 | Sin solapamiento | Revisar todas las pantallas. | Ningún botón, mensaje de error o contenido queda detrás del panel de 55 px. |
 
 ---
 

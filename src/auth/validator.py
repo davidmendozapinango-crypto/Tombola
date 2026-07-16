@@ -52,7 +52,7 @@ def check_password_criteria(key: str) -> Dict[str, bool]:
         "has_lowercase": _has_type(key, 0, _is_lowercase),
         "has_digit": _has_type(key, 0, _is_digit),
         "has_special": _has_type(key, 0, _is_special),
-        "no_long_run": len(key) == 0 or _no_long_run(key, 1, key[0], 1),
+        "no_long_run": len(key) > 0 and _no_long_run(key, 1, key[0], 1),
     }
 
 

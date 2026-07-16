@@ -85,6 +85,95 @@ SDG_SLOGANS = {
     17: "Fortalecer los medios de implementacion y revitalizar la Alianza Mundial.",
 }
 
+# Three allusive/educational messages per SDG.
+SDG_MESSAGES = {
+    1: [
+        "Erradicar la pobreza extrema es un acto de justicia y potencial humano.",
+        "Nadie debe quedarse atras: la dignidad comienza con las necesidades basicas cubiertas.",
+        "Invertir en personas vulnerables genera comunidades mas fuertes.",
+    ],
+    2: [
+        "Garantizar alimentos nutritivos y agricultura sostenible es cuidar la vida.",
+        "El hambre cero es posible cuando reducimos el desperdicio de alimentos.",
+        "Una alimentacion saludable impulsa el desarrollo de ninos y adultos.",
+    ],
+    3: [
+        "Una vida sana promueve el progreso sostenible en todas las edades.",
+        "La salud mental y fisica son pilares del bienestar colectivo.",
+        "Vacunas, agua limpia y educacion sanitaria salvan millones de vidas.",
+    ],
+    4: [
+        "La educacion equitativa y de calidad es la semilla del futuro.",
+        "Aprender a aprender nos prepara para resolver los desafios del manana.",
+        "Cada nino con acceso a la escuela es una oportunidad de transformacion.",
+    ],
+    5: [
+        "La igualdad de genero es el motor indispensable para un mundo libre.",
+        "Cuando las mujeres prosperan, las sociedades enteras avanzan.",
+        "Eliminar la discriminacion nos acerca a comunidades mas justas.",
+    ],
+    6: [
+        "El agua potable segura y saneada es un derecho humano fundamental.",
+        "Cuidar el agua es preservar la vida en todos los ecosistemas.",
+        "La gestion sostenible del agua evita enfermedades y conflictos.",
+    ],
+    7: [
+        "La energia asequible y limpia impulsa el desarrollo sin dañar el planeta.",
+        "Las renovables son la llave para un futuro con aire mas puro.",
+        "Acceso universal a la energia reduce la brecha social y economica.",
+    ],
+    8: [
+        "El trabajo decente y el crecimiento economico sostenido reducen la desigualdad.",
+        "Las oportunidades dignas construyen sociedades mas resilientes.",
+        "Innovacion y empleo formal son bases para el progreso compartido.",
+    ],
+    9: [
+        "Infraestructuras resilientes e innovacion conectan comunidades y generan progreso.",
+        "La tecnologia al servicio de todos acelera el desarrollo sostenible.",
+        "Industria responsable crece sin dejar de cuidar el medio ambiente.",
+    ],
+    10: [
+        "Reducir las desigualdades fortalece la cohesion social y economica.",
+        "La equidad empieza con oportunidades justas para todos y todas.",
+        "Erradicar la discriminacion nos hace mas humanos y mas prosperos.",
+    ],
+    11: [
+        "Ciudades inclusivas, seguras y sostenibles mejoran la calidad de vida.",
+        "El transporte publico eficiente reduce la contaminacion urbana.",
+        "Espacios verdes en la ciudad benefician la salud de sus habitantes.",
+    ],
+    12: [
+        "Producir y consumir de forma sostenible alarga la vida del planeta.",
+        "Reducir, reutilizar y reciclar son actos de responsabilidad global.",
+        "Cada compra consciente impulsa una economia mas verde.",
+    ],
+    13: [
+        "Combatir el cambio climatico es proteger nuestra unica casa.",
+        "Pequeñas acciones diarias suman para reducir la huella de carbono.",
+        "La educacion climatica empodera a las nuevas generaciones.",
+    ],
+    14: [
+        "Conservar los oceanos garantiza la vida marina y la seguridad alimentaria.",
+        "Menos plastico en el mar es mas vida bajo el agua.",
+        "La pesca sostenible protege los ecosistemas costeros.",
+    ],
+    15: [
+        "Proteger los ecosistemas terrestres es defender la biodiversidad.",
+        "Restaurar suelos, sembrar arboles y apagar el fuego salva nuestra fauna.",
+        "Cada especie preservada enriquece el equilibrio natural.",
+    ],
+    16: [
+        "Sociedades pacificas e inclusivas construyen instituciones solidas.",
+        "La justicia y el acceso a la ley son derechos de todas las personas.",
+        "La paz comienza con el respeto mutuo y el dialogo.",
+    ],
+    17: [
+        "Las alianzas globales aceleran los objetivos de desarrollo sostenible.",
+        "Cooperar entre paises, empresas y ciudadanos multiplica el impacto.",
+        "La solidaridad internacional es clave para no dejar a nadie atras.",
+    ],
+}
+
 STATE_CODES = {
     "AMA": "Amazonas",
     "ANA": "Anzoategui",

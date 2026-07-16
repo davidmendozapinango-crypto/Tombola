@@ -11,16 +11,6 @@ import pygame  # noqa: E402
 
 from src.config import FPS, WINDOW_HEIGHT, WINDOW_WIDTH  # noqa: E402
 from src.ui.app_state import make_app_state, set_screen  # noqa: E402
-from src.ui.screens.card_display_screen import (  # noqa: E402
-    draw as draw_card_display,
-    handle_event as handle_card_display,
-    init_card_display,
-)
-from src.ui.screens.config_screen import (  # noqa: E402
-    draw as draw_config,
-    handle_event as handle_config,
-    init_config,
-)
 from src.ui.screens.game_screen import (  # noqa: E402
     draw as draw_game,
     handle_event as handle_game,
@@ -57,8 +47,6 @@ SCREEN_HANDLERS = {
     "login": (init_login, handle_login, draw_login),
     "register": (init_register, handle_register, draw_register),
     "menu": (init_menu, handle_menu, draw_menu),
-    "config": (init_config, handle_config, draw_config),
-    "card_display": (init_card_display, handle_card_display, draw_card_display),
     "game": (init_game, handle_game, draw_game),
     "result": (init_result, handle_result, draw_result),
     "reports": (init_reports, handle_reports, draw_reports),

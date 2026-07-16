@@ -10,7 +10,9 @@ import pygame
 from src.config import (
     COLOR_CHARCOAL,
     COLOR_MINT,
+    COLOR_MOSS,
     COLOR_PINE,
+    COLOR_SAGE_LIGHT,
     COLOR_WHITE,
     WINDOW_HEIGHT,
     WINDOW_WIDTH,
@@ -24,6 +26,7 @@ from src.ui.common import (
     draw_button,
     draw_error_message,
     draw_input,
+    draw_message_panel,
     draw_text,
     wrap_text,
 )
@@ -57,8 +60,10 @@ def _layout() -> Dict[str, pygame.Rect]:
         "top": pygame.Rect(60, 225, 190, 35),
         "frequency": pygame.Rect(60, 265, 190, 35),
         "history": pygame.Rect(60, 305, 190, 35),
-        "export": pygame.Rect(center_x - 160, WINDOW_HEIGHT - 80, 150, 45),
-        "back": pygame.Rect(center_x + 10, WINDOW_HEIGHT - 80, 150, 45),
+        "back": pygame.Rect(WINDOW_WIDTH - 60 - 150, WINDOW_HEIGHT - 105, 150, 35),
+        "export": pygame.Rect(
+            WINDOW_WIDTH - 60 - 150 - 155, WINDOW_HEIGHT - 105, 150, 35
+        ),
     }
 
 
@@ -568,9 +573,9 @@ def _draw_top_report(surface, players, games, content_x, content_y, content_w):
         return
 
     rank_colors = {
-        1: (255, 215, 0),  # gold
-        2: (192, 192, 192),  # silver
-        3: (205, 127, 50),  # bronze
+        1: COLOR_PINE,
+        2: COLOR_MOSS,
+        3: COLOR_SAGE_LIGHT,
     }
     card_height = 54
     card_gap = 10
@@ -581,7 +586,7 @@ def _draw_top_report(surface, players, games, content_x, content_y, content_w):
         pygame.draw.rect(surface, COLOR_CHARCOAL, card_rect, width=1)
 
         # Rank circle
-        circle_color = rank_colors.get(rank, (220, 220, 220))
+        circle_color = rank_colors.get(rank, COLOR_SAGE_LIGHT)
         circle_center = (content_x + 26, y + card_height // 2)
         pygame.draw.circle(surface, circle_color, circle_center, 16)
         draw_text(
@@ -666,7 +671,7 @@ def _draw_frequency_report(surface, games, content_x, content_y, content_w):
     bar_x = content_x + number_offset + number_box_size + 12
     bar_max_width = content_w - (bar_x - content_x) - 100
     bar_height = 18
-    track_color = (220, 220, 220)
+    track_color = COLOR_SAGE_LIGHT
 
     for rank, (number, count) in enumerate(gantt, start=1):
         # Rank label
@@ -967,7 +972,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
     content_x = 280
     content_y = 185
     content_w = WINDOW_WIDTH - content_x - 60
-    content_h = WINDOW_HEIGHT - content_y - 100
+    content_h = WINDOW_HEIGHT - content_y - 120
     content_rect = pygame.Rect(content_x, content_y, content_w, content_h)
     pygame.draw.rect(surface, COLOR_WHITE, content_rect)
     pygame.draw.rect(surface, COLOR_CHARCOAL, content_rect, width=1)
@@ -1004,7 +1009,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         draw_text(
             surface,
             f"Exportado: {Path(export_path).name}",
-            (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 130),
+            (WINDOW_WIDTH // 2, 600),
             font_size=16,
             color=COLOR_PINE,
             center=True,
@@ -1014,6 +1019,9 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         draw_error_message(
             surface,
             state["error_message"],
-            (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 160),
+            (WINDOW_WIDTH // 2, 625),
             font_size=20,
         )
+
+    sdg_id = state.get("session", {}).get("sdg_id", 1)
+    draw_message_panel(surface, state, sdg_id=sdg_id)

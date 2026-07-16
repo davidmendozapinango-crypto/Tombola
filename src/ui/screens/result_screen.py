@@ -14,7 +14,7 @@ from src.config import (
 from src.core.card import card_sum
 from src.ods.data import get_sdg_color, get_sdg_name
 from src.ui.app_state import cycle_focus, get_focused
-from src.ui.common import draw_button, draw_text
+from src.ui.common import draw_button, draw_message_panel, draw_text
 
 
 def _layout() -> Dict[str, pygame.Rect]:
@@ -149,3 +149,6 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         hovered=hovered["menu"],
         focused=focused == "menu",
     )
+
+    sdg_id = session.get("sdg_id", 1)
+    draw_message_panel(surface, state, sdg_id=sdg_id)

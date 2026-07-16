@@ -15,7 +15,7 @@ from src.config import (
     WINDOW_WIDTH,
 )
 from src.core.card_figures import get_card_type, get_figure_pattern
-from src.ods.data import get_sdg_color, get_sdg_name
+from src.ods.data import get_sdg_name
 from src.ui.app_state import cycle_focus, get_focused
 from src.ui.common import draw_button, draw_text
 
@@ -61,7 +61,7 @@ def _draw_preview_card(
                 cell_size,
             )
             is_figure = (row, col) in pattern
-            fill_color = sdg_color if is_figure else COLOR_WHITE
+            fill_color = COLOR_PINE if is_figure else COLOR_WHITE
             pygame.draw.rect(surface, fill_color, rect)
             pygame.draw.rect(surface, COLOR_CHARCOAL, rect, width=1)
             if is_figure:
@@ -123,7 +123,6 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
 
     sdg_id = session.get("sdg_id", 1)
     sdg_name = get_sdg_name(sdg_id)
-    sdg_color = get_sdg_color(sdg_id)
     dimension = session.get("dimension", 5)
     card_type = get_card_type(sdg_id)
 
@@ -132,7 +131,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         f"Vista previa - {sdg_name}",
         (WINDOW_WIDTH // 2, 40),
         font_size=36,
-        color=sdg_color,
+        color=COLOR_PINE,
         center=True,
     )
     draw_text(
@@ -157,7 +156,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         (80, 140),
         cell_size,
         "Principal (figura a completar)",
-        sdg_color,
+        COLOR_PINE,
     )
     _draw_preview_card(
         surface,
@@ -166,7 +165,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         (WINDOW_WIDTH - 80 - dimension * cell_size, 140),
         cell_size,
         "Complemento (figura a completar)",
-        sdg_color,
+        COLOR_PINE,
     )
 
     image_y = 420

@@ -82,6 +82,7 @@
 - [x] SDG images integrated where available
 - [x] SDG slogans displayed on relevant screens
 - [x] Educational SDG messages appear during gameplay
+- [x] Rotating SDG educational message panel shown on every screen
 - [x] Visual design promotes the Sustainable Development Goals
 
 ## Frontend / Pygame UI
