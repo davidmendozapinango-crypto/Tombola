@@ -2,8 +2,8 @@
 
 **Asignatura:** Algoritmos y Programación  
 **Proyecto:** Tombola con temática de Objetivos de Desarrollo Sostenible (ODS)  
-**Fecha de entrega:** [COMPLETAR]  
-**Equipo:** [COMPLETAR]
+**Fecha de entrega:** 20/07/2026
+**Equipo:** David Mendoza, Albert Gonzales, Cameron Montoya, Natalia Azocar.
 
 ---
 
