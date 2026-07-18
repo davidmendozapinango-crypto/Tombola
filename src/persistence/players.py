@@ -1,4 +1,9 @@
-"""Player persistence helpers (non-OOP) using binary append-safe records."""
+"""Ayudantes para persistencia de jugadores (I/O binario con append seguro).
+
+Este módulo permite leer/escribir registros de player serializados con
+`pickle`. Incluye utilidades para crear jugadores por defecto y mantener
+compatibilidad con almacenamiento secuencial en disco.
+"""
 
 import pickle
 from datetime import datetime
@@ -7,7 +12,10 @@ from src.config import PLAYERS_FILE
 
 
 def _default_players() -> List[Dict[str, Any]]:
-    """Return a default player list so the app is usable immediately."""
+    """
+    Devuelve una lista de jugadores por defecto para facilitar la experiencia
+    al arrancar la aplicación por primera vez.
+    """
     return [
         {
             "player_id": "12345678",
@@ -22,20 +30,21 @@ def _default_players() -> List[Dict[str, Any]]:
 
 
 def _append_player_record(file_path: str, player: Dict[str, Any]) -> None:
-    """Append a single player record to the binary file without overwriting."""
+    """Añade un registro de jugador al fichero binario sin sobrescribir."""
     with open(file_path, "ab") as file:
         pickle.dump(player, file)
 
 
 def load_players(file_path: str = str(PLAYERS_FILE)) -> List[Dict[str, Any]]:
-    """Load all player records from the binary file using sequential reads."""
+    """
+    Carga todos los registros de jugadores desde el fichero binario.
+
+    Si el fichero no existe o está corrupto, la función devuelve una lista
+    vacía para mantener tolerancia a fallos.
+    """
     players: List[Dict[str, Any]] = []
     try:
         with open(file_path, "rb") as file:
-            # Read sequential pickled records until EOF. The original code
-            # used `while True` and `break` on EOFError. To avoid `break` we
-            # use a local `eof` flag that is set when EOFError is raised and
-            # controls loop termination.
             eof = False
             while not eof:
                 try:
@@ -51,14 +60,14 @@ def load_players(file_path: str = str(PLAYERS_FILE)) -> List[Dict[str, Any]]:
 
 
 def save_player(file_path: str, player: Dict[str, Any]) -> None:
-    """Persist a single player record using append-safe binary I/O."""
+    """Persiste un jugador usando I/O binario en modo append."""
     _append_player_record(file_path, player)
 
 
 def save_players(
     players: List[Dict[str, Any]], file_path: str = str(PLAYERS_FILE)
 ) -> None:
-    """Persist the player list to the binary file (legacy bulk overwrite)."""
+    """Sobrescribe el fichero guardando la lista completa de jugadores."""
     with open(file_path, "wb") as file:
         for player in players:
             pickle.dump(player, file)
@@ -67,7 +76,7 @@ def save_players(
 def find_player(
     players: List[Dict[str, Any]], player_id: str
 ) -> Optional[Dict[str, Any]]:
-    """Find a player by ID."""
+    """Busca un jugador por `player_id` y lo devuelve si existe."""
     normalized_id = player_id.strip()
     for player in players:
         if player.get("player_id", "").strip() == normalized_id:
@@ -76,7 +85,7 @@ def find_player(
 
 
 def player_exists(players: List[Dict[str, Any]], player_id: str) -> bool:
-    """Return True if a player with the given ID exists."""
+    """Devuelve `True` si existe un jugador con el identificador dado."""
     return find_player(players, player_id) is not None
 
 
@@ -85,14 +94,14 @@ def add_player(
     player: Dict[str, Any],
     file_path: str = str(PLAYERS_FILE),
 ) -> List[Dict[str, Any]]:
-    """Append a new player record and return the updated in-memory list."""
+    """Añade un nuevo jugador a la lista en memoria y lo persiste en disco."""
     players.append(player)
     save_player(file_path, player)
     return players
 
 
 def ensure_default_players(file_path: str = str(PLAYERS_FILE)) -> List[Dict[str, Any]]:
-    """Create default players if the file is missing or empty."""
+    """Garantiza que existan jugadores por defecto si el fichero está vacío."""
     players = load_players(file_path)
     if not players:
         players = _default_players()
