@@ -2,6 +2,7 @@
 from datetime import datetime
 from typing import Any, Callable, Dict, List
 
+
 def make_dependency_checker() -> Dict[str, Any]:
     """Create an empty dependency checker."""
     return {'checks': {}}

@@ -1,8 +1,14 @@
 """Shared Pygame UI rendering helpers (non-OOP)."""
 from typing import Any, Dict, List, Optional, Tuple
+
 import pygame
-from src.config import COLOR_CHARCOAL, COLOR_MINT, COLOR_MOSS, COLOR_PINE, COLOR_RED_ALERT, COLOR_SAGE_LIGHT, COLOR_WHITE, WINDOW_HEIGHT, WINDOW_WIDTH
-from src.ods.data import get_sdg_color, get_sdg_messages, get_sdg_name, list_sdg_ids
+
+from src.config import (COLOR_CHARCOAL, COLOR_MINT, COLOR_MOSS, COLOR_PINE,
+                        COLOR_RED_ALERT, COLOR_SAGE_LIGHT, COLOR_WHITE,
+                        WINDOW_HEIGHT, WINDOW_WIDTH)
+from src.ods.data import (get_sdg_color, get_sdg_messages, get_sdg_name,
+                          list_sdg_ids)
+
 
 def get_font(size: int, bold: bool=False) -> pygame.font.Font:
     """Return a Pygame font for the given size."""

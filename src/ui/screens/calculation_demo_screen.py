@@ -1,7 +1,10 @@
 """Calculation demo screen wrapper (non-OOP)."""
 from typing import Any, Dict
+
 import pygame
-from src.config import COLOR_CHARCOAL, COLOR_MINT, COLOR_PINE, WINDOW_HEIGHT, WINDOW_WIDTH
+
+from src.config import (COLOR_CHARCOAL, COLOR_MINT, COLOR_PINE, WINDOW_HEIGHT,
+                        WINDOW_WIDTH)
 from src.core.calculation_engine import make_engine_context
 from src.core.calculation_rules import build_default_registry
 from src.core.card import generate_card
@@ -9,6 +12,7 @@ from src.core.dependencies import make_dependency_checker, register_dependency
 from src.persistence.impact_records import make_impact_persistence
 from src.ui.common import draw_button, draw_error_message, draw_text
 from src.ui.screens import calculation_screen
+
 
 def _layout() -> Dict[str, pygame.Rect]:
     """Return the UI rectangles for the calculation demo screen."""

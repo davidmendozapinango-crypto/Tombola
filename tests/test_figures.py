@@ -1,7 +1,10 @@
 import unittest
+
 import numpy as np
+
 from src.core.figures import fill_from_mask
 from src.core.figures.families import familia_a, familia_b
+
 
 class TestFigures(unittest.TestCase):
 

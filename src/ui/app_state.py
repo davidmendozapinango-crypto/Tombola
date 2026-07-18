@@ -1,6 +1,8 @@
 """Global application state helpers (non-OOP)."""
 from typing import Any, Dict
+
 from src.auth.session import make_session
+
 
 def make_app_state() -> Dict[str, Any]:
     """Create the global application state dictionary."""

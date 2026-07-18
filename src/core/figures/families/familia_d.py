@@ -5,8 +5,11 @@ inner 1-layer hollowed out (for n=5 it matches the provided pattern).
 Both mask and numbered generators are provided.
 """
 from __future__ import annotations
+
 import random
+
 import numpy as np
+
 
 def _validate_n(n: int) -> None:
     if not isinstance(n, int):

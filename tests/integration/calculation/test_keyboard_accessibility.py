@@ -1,10 +1,13 @@
 import pytest
+
 from src.core.calculation_engine import make_engine_context
 from src.core.calculation_rules import build_default_registry
 from src.core.dependencies import make_dependency_checker
 from src.ui.screens import calculation_demo_screen
-from src.ui.screens.calculation_screen import focus_next, focus_previous, make_screen
+from src.ui.screens.calculation_screen import (focus_next, focus_previous,
+                                               make_screen)
 from src.ui.state.calculation_state import make_state
+
 
 @pytest.fixture
 def screen():

@@ -6,7 +6,9 @@ use row-major numbering with filled cells numbered consecutively and
 empty cells set to 0.
 """
 from __future__ import annotations
+
 import numpy as np
+
 
 def _validate_n(n: int) -> None:
     if not isinstance(n, int):

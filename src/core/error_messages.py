@@ -1,5 +1,6 @@
 """Localized business error catalog helpers (non-OOP)."""
 from typing import Any, Dict, Optional
+
 DEFAULT_LOCALE = 'es-VE'
 MESSAGES: Dict[str, Dict[str, str]] = {'missing_actor_id': {'es-VE': 'El identificador del jugador es obligatorio. Inicie sesión nuevamente.'}, 'missing_operation_key': {'es-VE': 'Debe seleccionar una operación de cálculo válida.'}, 'missing_path_context': {'es-VE': 'El contexto operativo está incompleto. Verifique los datos ingresados.'}, 'missing_input_payload': {'es-VE': 'Faltan datos necesarios para ejecutar el cálculo.'}, 'missing_ui_origin': {'es-VE': 'No se pudo determinar la pantalla que inició la acción.'}, 'invalid_path_state': {'es-VE': 'El estado actual no permite ejecutar esta operación.'}, 'dependency_unavailable': {'es-VE': 'Un recurso requerido no está disponible en este momento. Intente más tarde.'}}
 

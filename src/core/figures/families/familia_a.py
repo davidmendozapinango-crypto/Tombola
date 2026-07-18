@@ -11,8 +11,11 @@ Both kinds of functions validate that n is an odd positive integer and
 work for scalable sizes such as 5,7,9,11.
 """
 from __future__ import annotations
+
 import random
+
 import numpy as np
+
 
 def _validate_n(n: int) -> None:
     """Validate that n is a positive odd integer."""

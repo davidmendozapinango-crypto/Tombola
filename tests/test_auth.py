@@ -1,6 +1,9 @@
 """Tests for authentication and registration validation."""
 import pytest
-from src.auth.validator import check_password_criteria, validate_password, validate_registration_data
+
+from src.auth.validator import (check_password_criteria, validate_password,
+                                validate_registration_data)
+
 
 def test_valid_password_passes():
     (valid, errors) = validate_password('Hola1=')

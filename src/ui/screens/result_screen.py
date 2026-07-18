@@ -1,11 +1,15 @@
 """Game result screen (non-OOP)."""
 from typing import Any, Dict
+
 import pygame
-from src.config import COLOR_CHARCOAL, COLOR_MINT, COLOR_PINE, WINDOW_HEIGHT, WINDOW_WIDTH
+
+from src.config import (COLOR_CHARCOAL, COLOR_MINT, COLOR_PINE, WINDOW_HEIGHT,
+                        WINDOW_WIDTH)
 from src.core.card import card_sum
 from src.ods.data import get_sdg_color, get_sdg_name
 from src.ui.app_state import cycle_focus, get_focused
 from src.ui.common import draw_button, draw_message_panel, draw_text
+
 
 def _layout() -> Dict[str, pygame.Rect]:
     """Return the UI rectangles for the result screen."""

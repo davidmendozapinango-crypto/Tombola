@@ -5,8 +5,11 @@ roles. It offers both binary mask functions and numbered generators
 that assign a random permutation 1..k to filled positions.
 """
 from __future__ import annotations
+
 import random
+
 import numpy as np
+
 
 def _validate_n(n: int) -> None:
     if not isinstance(n, int):

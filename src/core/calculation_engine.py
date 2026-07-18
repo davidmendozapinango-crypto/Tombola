@@ -7,11 +7,9 @@ auditoría.
 """
 
 from typing import Any, Dict, List, Optional
-from src.core.application_impact import (
-    add_impact_record,
-    make_impact_record,
-    make_impact_store,
-)
+
+from src.core.application_impact import (add_impact_record, make_impact_record,
+                                         make_impact_store)
 from src.core.calculation_rules import compute_result
 from src.core.command_contract import validate_required_fields
 from src.core.dependencies import check_dependency

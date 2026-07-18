@@ -1,4 +1,6 @@
-from src.core.dependencies import check_dependency, make_dependency_checker, register_dependency
+from src.core.dependencies import (check_dependency, make_dependency_checker,
+                                   register_dependency)
+
 
 def test_dependency_available():
     checker = make_dependency_checker()

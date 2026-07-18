@@ -1,9 +1,11 @@
 import pytest
+
 from src.core.calculation_engine import execute_command, make_engine_context
 from src.core.calculation_rules import build_default_registry
 from src.core.command_contract import make_command
 from src.core.dependencies import make_dependency_checker
 from src.core.preconditions import make_precondition
+
 
 def _always(ctx, payload):
     return True

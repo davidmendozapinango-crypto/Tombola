@@ -1,10 +1,12 @@
 import pytest
+
 from src.core.calculation_engine import execute_command, make_engine_context
 from src.core.calculation_rules import build_default_registry
 from src.core.command_contract import make_command, validate_required_fields
 from src.core.command_normalizer import normalize_command_payload
 from src.core.dependencies import make_dependency_checker, register_dependency
 from src.core.preconditions import make_precondition
+
 
 def _sum_entry(ctx, payload):
     return ctx.get('mode') == 'single' and 'a' in payload and ('b' in payload)

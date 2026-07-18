@@ -1,5 +1,8 @@
 import pytest
-from src.core.path_rules import make_registry, make_rule, register_rule, select_rule
+
+from src.core.path_rules import (make_registry, make_rule, register_rule,
+                                 select_rule)
+
 
 def _mode_single(ctx, payload):
     return ctx.get('mode') == 'single'

@@ -7,7 +7,9 @@ por registro) usando operaciones de escritura seguras.
 import json
 from pathlib import Path
 from typing import Any, Dict, List
-from src.persistence.io_safety import append_bytes, make_safe_writer, read_bytes
+
+from src.persistence.io_safety import (append_bytes, make_safe_writer,
+                                       read_bytes)
 
 
 def make_impact_persistence(

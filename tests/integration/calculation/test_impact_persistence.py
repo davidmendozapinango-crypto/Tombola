@@ -1,10 +1,13 @@
 from pathlib import Path
+
 from src.core.application_impact import list_impact_records
 from src.core.calculation_engine import execute_command, make_engine_context
 from src.core.calculation_rules import build_default_registry
 from src.core.command_contract import make_command
 from src.core.dependencies import make_dependency_checker, register_dependency
-from src.persistence.impact_records import load_impact_records, make_impact_persistence
+from src.persistence.impact_records import (load_impact_records,
+                                            make_impact_persistence)
+
 
 def _make_engine(tmp_path: Path, with_persistence: bool=True):
     registry = build_default_registry(dependencies=['player_session'])

@@ -1,8 +1,10 @@
 """GUI trigger adapter for calculation commands (non-OOP)."""
 from typing import Any, Dict
+
 from src.core.calculation_engine import execute_command
 from src.core.command_normalizer import normalize_command_payload
 from src.ui.state.calculation_state import state_set_error, state_set_success
+
 
 def make_flow(engine_context: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
     """Create a calculation flow dictionary."""

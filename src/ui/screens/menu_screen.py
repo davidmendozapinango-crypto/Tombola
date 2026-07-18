@@ -1,14 +1,20 @@
 """Main menu screen (non-OOP) with card-style grid and active game config."""
 from typing import Any, Callable, Dict, Set, Tuple
+
 import pygame
+
 from src.auth.session import get_player, logout
-from src.config import COLOR_CHARCOAL, COLOR_MINT, COLOR_MOSS, COLOR_PINE, COLOR_SAGE_LIGHT, COLOR_WHITE, STATE_CODES, WINDOW_HEIGHT, WINDOW_WIDTH
+from src.config import (COLOR_CHARCOAL, COLOR_MINT, COLOR_MOSS, COLOR_PINE,
+                        COLOR_SAGE_LIGHT, COLOR_WHITE, STATE_CODES,
+                        WINDOW_HEIGHT, WINDOW_WIDTH)
 from src.core.card import make_cards
 from src.core.card_figures import get_card_type, get_figure_pattern
 from src.ods.data import get_sdg_color, get_sdg_name, list_sdg_ids
 from src.persistence.games import calculate_game_summary, load_games
 from src.ui.app_state import cycle_focus, get_focused, set_error
-from src.ui.common import draw_button, draw_error_message, draw_message_panel, draw_text
+from src.ui.common import (draw_button, draw_error_message, draw_message_panel,
+                           draw_text)
+
 _MENU_CARDS: Dict[str, Tuple[str, str, Callable[[pygame.Surface, pygame.Rect], None]]] = {'play': ('Iniciar Partida de Tombola', 'Sortea los numeros del carton NxN alineado al ODS con el llenado seleccionado.', lambda surface, rect: _draw_play_icon(surface, rect)), 'reports': ('Estadisticas e Historicos', 'Analiza el grafico de barras horizontales, revisa el ranking general y el registro binario guardado de partidas.', lambda surface, rect: _draw_chart_icon(surface, rect)), 'logout': ('Cerrar Sesion Activa', 'Cierra tu sesion del bioma de simulacion de forma segura y vuelve a la pantalla de ingreso.', lambda surface, rect: _draw_logout_icon(surface, rect)), 'exit': ('Salir del Sistema', 'Finaliza la aplicacion y regresa al escritorio.', lambda surface, rect: _draw_exit_icon(surface, rect))}
 
 def _draw_play_icon(surface: pygame.Surface, rect: pygame.Rect) -> None:
@@ -344,6 +350,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
     sdg_id = state.get('menu_config', {}).get('sdg_id', 1)
     draw_message_panel(surface, state, sdg_id=sdg_id)
 from src.ui.common import draw_text as _draw_text
+
 
 def _draw_info_message(surface, message, position, font_size=20):
     _draw_text(surface, message, position, font_size=font_size, color=COLOR_PINE)

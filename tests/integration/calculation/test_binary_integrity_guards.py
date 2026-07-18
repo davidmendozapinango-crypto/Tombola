@@ -1,5 +1,8 @@
 from pathlib import Path
-from src.persistence.io_safety import append_bytes, make_safe_writer, read_bytes
+
+from src.persistence.io_safety import (append_bytes, make_safe_writer,
+                                       read_bytes)
+
 
 def test_safe_writer_prevents_overwrite(tmp_path):
     writer = make_safe_writer(data_dir=str(tmp_path))

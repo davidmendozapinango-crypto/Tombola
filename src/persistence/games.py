@@ -8,9 +8,11 @@ proporcionan ejemplos de uso cuando procede.
 import pickle
 from datetime import datetime
 from typing import Any, Dict, List, Set
+
 from src.config import GAMES_FILE
 from src.core.card import card_points
-from src.core.card_figures import get_card_type, get_figure_pattern, is_figure_complete
+from src.core.card_figures import (get_card_type, get_figure_pattern,
+                                   is_figure_complete)
 
 
 def _append_game_record(file_path: str, game: Dict[str, Any]) -> None:

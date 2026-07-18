@@ -1,5 +1,7 @@
 """Tests for card generation and marking helpers."""
-from src.core.card import card_points, card_sum, generate_card, is_fully_marked, make_cards, mark_number
+from src.core.card import (card_points, card_sum, generate_card,
+                           is_fully_marked, make_cards, mark_number)
+
 
 def test_generate_card_has_correct_dimension():
     dimension = 7

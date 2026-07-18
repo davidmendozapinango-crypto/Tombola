@@ -1,5 +1,7 @@
 import numpy as np
+
 import src.core.figures.families as families
+
 
 def as_arr(list_of_lists):
     return np.array(list_of_lists, dtype=int)

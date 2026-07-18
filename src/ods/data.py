@@ -1,7 +1,9 @@
 """SDG (ODS) data helpers (non-OOP)."""
 import random
 from typing import List, Tuple
+
 from src.config import COLOR_SDG, SDG_MESSAGES, SDG_NAMES, SDG_SLOGANS
+
 
 def list_sdg_ids() -> List[int]:
     """Return the list of available SDG identifiers."""

@@ -1,7 +1,10 @@
 """Family C: diamond (Manhattan distance)"""
 from __future__ import annotations
+
 import random
+
 import numpy as np
+
 
 def _validate_n(n: int) -> None:
     if not isinstance(n, int):

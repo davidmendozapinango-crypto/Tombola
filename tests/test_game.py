@@ -1,7 +1,10 @@
 """Tests for game logic and SDG figure winner detection."""
 from typing import Set
+
 from src.core.card import generate_card
-from src.core.game import check_winner, draw_next, game_summary, make_number_pool
+from src.core.game import (check_winner, draw_next, game_summary,
+                           make_number_pool)
+
 
 def test_make_number_pool_has_all_numbers():
     dimension = 5

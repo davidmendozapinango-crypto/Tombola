@@ -6,6 +6,7 @@ y verificar el ganador basándose en las figuras definidas.
 
 import random
 from typing import Any, Container, Dict, List, Optional, Sequence, Set
+
 from src.core.card import card_points
 from src.core.card_figures import get_figure_pattern, is_figure_complete
 

@@ -1,12 +1,16 @@
 """Card display screen: shows SDG figure preview before playing (non-OOP)."""
 from pathlib import Path
 from typing import Any, Dict, Optional
+
 import pygame
-from src.config import ASSETS_DIR, COLOR_CHARCOAL, COLOR_MINT, COLOR_PINE, COLOR_WHITE, WINDOW_HEIGHT, WINDOW_WIDTH
+
+from src.config import (ASSETS_DIR, COLOR_CHARCOAL, COLOR_MINT, COLOR_PINE,
+                        COLOR_WHITE, WINDOW_HEIGHT, WINDOW_WIDTH)
 from src.core.card_figures import get_card_type, get_figure_pattern
 from src.ods.data import get_sdg_name
 from src.ui.app_state import cycle_focus, get_focused
 from src.ui.common import draw_button, draw_text
+
 
 def _layout() -> Dict[str, pygame.Rect]:
     """Return the UI rectangles for the card display screen."""

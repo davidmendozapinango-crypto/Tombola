@@ -13,7 +13,9 @@ figure from Family A). Both are implemented independently and follow
 the same validation and row-major traversal rules.
 """
 from __future__ import annotations
+
 import numpy as np
+
 
 def _validate_n(n: int) -> None:
     if not isinstance(n, int):

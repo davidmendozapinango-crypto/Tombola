@@ -1,7 +1,10 @@
 """Tests for binary persistence append behavior and calculated fields."""
 from datetime import datetime
-from src.persistence.games import add_game, calculate_game_summary, load_games, make_game_record, save_game
+
+from src.persistence.games import (add_game, calculate_game_summary,
+                                   load_games, make_game_record, save_game)
 from src.persistence.players import add_player, load_players, save_player
+
 
 def test_player_append_does_not_overwrite_existing(tmp_path):
     file_path = str(tmp_path / 'JUGADORES.bin')

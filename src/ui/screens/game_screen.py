@@ -1,30 +1,20 @@
 """Tombola gameplay screen (non-OOP)."""
 
 from typing import Any, Dict, List, Set
+
 import pygame
-from src.config import (
-    COLOR_CHARCOAL,
-    COLOR_MINT,
-    COLOR_MOSS,
-    COLOR_PINE,
-    COLOR_SAGE_LIGHT,
-    COLOR_WHITE,
-    WINDOW_HEIGHT,
-    WINDOW_WIDTH,
-)
+
+from src.config import (COLOR_CHARCOAL, COLOR_MINT, COLOR_MOSS, COLOR_PINE,
+                        COLOR_SAGE_LIGHT, COLOR_WHITE, WINDOW_HEIGHT,
+                        WINDOW_WIDTH)
 from src.core.card import card_points, card_sum, mark_number
 from src.core.card_figures import get_card_type
 from src.core.game import check_winner, draw_next, make_number_pool
 from src.ods.data import get_sdg_color, get_sdg_messages, get_sdg_name
 from src.persistence.games import add_game, load_games, make_game_record
 from src.ui.app_state import cycle_focus, get_focused
-from src.ui.common import (
-    draw_button,
-    draw_error_message,
-    draw_message_panel,
-    draw_text,
-    get_font,
-)
+from src.ui.common import (draw_button, draw_error_message, draw_message_panel,
+                           draw_text, get_font)
 
 
 def _layout() -> Dict[str, pygame.Rect]:

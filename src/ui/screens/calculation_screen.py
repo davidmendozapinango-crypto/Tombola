@@ -1,6 +1,8 @@
 """Screen controller for GUI calculation actions with keyboard accessibility (non-OOP)."""
 from typing import Any, Dict
+
 from src.ui.flows.calculation_flow import make_flow, trigger
+
 CONTROLS = ['calculate_button', 'cancel_button']
 
 def make_screen(engine_context: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:

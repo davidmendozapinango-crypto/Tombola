@@ -1,43 +1,32 @@
 """Tombola GUI entry point with full application flow (non-OOP)."""
 
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import Any, Dict
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import pygame
+
 from src.config import FPS, WINDOW_HEIGHT, WINDOW_WIDTH
 from src.ui.app_state import make_app_state, set_screen
-from src.ui.screens.game_screen import (
-    draw as draw_game,
-    handle_event as handle_game,
-    init_game,
-)
-from src.ui.screens.login_screen import (
-    draw as draw_login,
-    handle_event as handle_login,
-    init_login,
-)
-from src.ui.screens.menu_screen import (
-    draw as draw_menu,
-    handle_event as handle_menu,
-    init_menu,
-)
-from src.ui.screens.register_screen import (
-    draw as draw_register,
-    handle_event as handle_register,
-    init_register,
-)
-from src.ui.screens.reports_screen import (
-    draw as draw_reports,
-    handle_event as handle_reports,
-    init_reports,
-)
-from src.ui.screens.result_screen import (
-    draw as draw_result,
-    handle_event as handle_result,
-    init_result,
-)
+from src.ui.screens.game_screen import draw as draw_game
+from src.ui.screens.game_screen import handle_event as handle_game
+from src.ui.screens.game_screen import init_game
+from src.ui.screens.login_screen import draw as draw_login
+from src.ui.screens.login_screen import handle_event as handle_login
+from src.ui.screens.login_screen import init_login
+from src.ui.screens.menu_screen import draw as draw_menu
+from src.ui.screens.menu_screen import handle_event as handle_menu
+from src.ui.screens.menu_screen import init_menu
+from src.ui.screens.register_screen import draw as draw_register
+from src.ui.screens.register_screen import handle_event as handle_register
+from src.ui.screens.register_screen import init_register
+from src.ui.screens.reports_screen import draw as draw_reports
+from src.ui.screens.reports_screen import handle_event as handle_reports
+from src.ui.screens.reports_screen import init_reports
+from src.ui.screens.result_screen import draw as draw_result
+from src.ui.screens.result_screen import handle_event as handle_result
+from src.ui.screens.result_screen import init_result
 
 SCREEN_HANDLERS = {
     "login": (init_login, handle_login, draw_login),

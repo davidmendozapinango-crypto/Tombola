@@ -13,7 +13,9 @@ Traversal is row-major; numbered cells increase in visit order starting
 at 1. Empty cells are 0.
 """
 from __future__ import annotations
+
 import numpy as np
+
 
 def _validate_n(n: int) -> None:
     if not isinstance(n, int):

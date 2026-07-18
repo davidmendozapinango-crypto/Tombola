@@ -1,10 +1,12 @@
 import pytest
+
 from src.core.calculation_engine import execute_command, make_engine_context
 from src.core.calculation_rules import build_default_registry
 from src.core.dependencies import make_dependency_checker, register_dependency
 from src.core.preconditions import make_precondition
 from src.ui.screens.calculation_screen import make_screen, on_calculate_action
 from src.ui.state.calculation_state import make_state
+
 
 def _make_screen():
     registry = build_default_registry(dependencies=['player_session'])

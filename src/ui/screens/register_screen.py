@@ -1,12 +1,21 @@
 """Registration screen (non-OOP) with data and password validator panels."""
 from datetime import datetime
 from typing import Any, Dict
+
 import pygame
-from src.auth.validator import check_password_criteria, validate_registration_data
-from src.config import COLOR_CHARCOAL, COLOR_MINT, COLOR_MOSS, COLOR_PINE, COLOR_SAGE_LIGHT, COLOR_WHITE, STATE_CODES, WINDOW_HEIGHT, WINDOW_WIDTH
-from src.persistence.players import add_player, load_players, player_exists, save_players
-from src.ui.app_state import cycle_focus, get_focused, is_focused, set_error, set_info
-from src.ui.common import draw_button, draw_error_message, draw_input, draw_message_panel, draw_text, get_font, wrap_text
+
+from src.auth.validator import (check_password_criteria,
+                                validate_registration_data)
+from src.config import (COLOR_CHARCOAL, COLOR_MINT, COLOR_MOSS, COLOR_PINE,
+                        COLOR_SAGE_LIGHT, COLOR_WHITE, STATE_CODES,
+                        WINDOW_HEIGHT, WINDOW_WIDTH)
+from src.persistence.players import (add_player, load_players, player_exists,
+                                     save_players)
+from src.ui.app_state import (cycle_focus, get_focused, is_focused, set_error,
+                              set_info)
+from src.ui.common import (draw_button, draw_error_message, draw_input,
+                           draw_message_panel, draw_text, get_font, wrap_text)
+
 
 def _layout() -> Dict[str, pygame.Rect]:
     """Return the UI rectangles for the redesigned registration screen."""

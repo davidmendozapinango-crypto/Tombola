@@ -1,7 +1,9 @@
 """Normalize GUI payload into an internal command dictionary (non-OOP)."""
 from datetime import datetime
 from typing import Any, Dict
+
 from src.core.command_contract import make_command
+
 
 def normalize_command_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     """Convert a raw GUI payload into a command dictionary."""

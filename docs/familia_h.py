@@ -6,7 +6,9 @@ cell is left empty). Traversal is row-by-row (row-major) and filled
 cells receive consecutive integers starting at 1; empty cells are 0.
 """
 from __future__ import annotations
+
 import numpy as np
+
 
 def _validate_n(n: int) -> None:
     if not isinstance(n, int):

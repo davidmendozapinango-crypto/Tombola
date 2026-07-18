@@ -4,6 +4,7 @@ comenzando en 1, y haciendo el recorrido mostrado en la siguiente figura:
 """
 import numpy as np
 
+
 def main():
     n = int(input('Introduzca tamaño de la matriz: '))
     while n % 2 == 0:

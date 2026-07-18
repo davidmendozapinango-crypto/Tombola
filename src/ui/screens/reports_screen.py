@@ -4,30 +4,19 @@ from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
 import pygame
-from src.config import (
-    COLOR_CHARCOAL,
-    COLOR_MINT,
-    COLOR_MOSS,
-    COLOR_PINE,
-    COLOR_SAGE_LIGHT,
-    COLOR_WHITE,
-    WINDOW_HEIGHT,
-    WINDOW_WIDTH,
-)
+
+from src.config import (COLOR_CHARCOAL, COLOR_MINT, COLOR_MOSS, COLOR_PINE,
+                        COLOR_SAGE_LIGHT, COLOR_WHITE, WINDOW_HEIGHT,
+                        WINDOW_WIDTH)
 from src.core.card import card_sum
 from src.ods.data import get_sdg_name
 from src.persistence.games import calculate_game_summary, load_games
 from src.persistence.players import load_players
 from src.ui.app_state import cycle_focus, get_focused, is_focused
-from src.ui.common import (
-    draw_button,
-    draw_error_message,
-    draw_input,
-    draw_message_panel,
-    draw_text,
-    wrap_text,
-)
+from src.ui.common import (draw_button, draw_error_message, draw_input,
+                           draw_message_panel, draw_text, wrap_text)
 
 _REPORT_SECTIONS = [
     ("players", "Jugadores y partidas"),

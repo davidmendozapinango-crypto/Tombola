@@ -14,7 +14,9 @@ Functions
 Both functions require odd n >= 1 and return a NumPy int array.
 """
 from __future__ import annotations
+
 import numpy as np
+
 
 def _validate_n(n: int) -> None:
     if not isinstance(n, int):

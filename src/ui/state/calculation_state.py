@@ -1,6 +1,7 @@
 """GUI state helpers for calculation flows (non-OOP)."""
 from typing import Any, Dict, Optional
 
+
 def make_state() -> Dict[str, Any]:
     """Create a calculation state dictionary."""
     return {'result': None, 'error_message': '', 'is_loading': False, 'impact_validated': False}

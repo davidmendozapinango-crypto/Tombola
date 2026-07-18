@@ -1,11 +1,19 @@
 """Login screen (non-OOP) with educational header and account panel."""
 from typing import Any, Dict
+
 import pygame
+
 from src.auth.session import login
-from src.config import COLOR_CHARCOAL, COLOR_MINT, COLOR_MOSS, COLOR_PINE, COLOR_SAGE_LIGHT, COLOR_WHITE, WINDOW_HEIGHT, WINDOW_WIDTH
-from src.persistence.players import ensure_default_players, find_player, load_players
-from src.ui.app_state import cycle_focus, get_focused, is_focused, set_error, set_info
-from src.ui.common import draw_button, draw_error_message, draw_input, draw_message_panel, draw_text, get_font
+from src.config import (COLOR_CHARCOAL, COLOR_MINT, COLOR_MOSS, COLOR_PINE,
+                        COLOR_SAGE_LIGHT, COLOR_WHITE, WINDOW_HEIGHT,
+                        WINDOW_WIDTH)
+from src.persistence.players import (ensure_default_players, find_player,
+                                     load_players)
+from src.ui.app_state import (cycle_focus, get_focused, is_focused, set_error,
+                              set_info)
+from src.ui.common import (draw_button, draw_error_message, draw_input,
+                           draw_message_panel, draw_text, get_font)
+
 
 def _layout() -> Dict[str, pygame.Rect]:
     """Return the UI rectangles for the redesigned login screen."""

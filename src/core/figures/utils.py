@@ -1,5 +1,7 @@
-import numpy as np
 from typing import Tuple
+
+import numpy as np
+
 
 def fill_from_mask(mask: np.ndarray, order: str='row', start: int=1) -> Tuple[np.ndarray, int]:
     """Rellena con numeros una matriz a partir de una máscara booleana.

@@ -1,5 +1,6 @@
 from .utils import fill_from_mask
 
+
 def generate_family_matrix(family_masks_module, n: int, which: str='main', order='row', start=1):
     """Genera la matriz numerada para una familia.
 

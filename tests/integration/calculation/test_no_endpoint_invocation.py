@@ -1,8 +1,10 @@
 import pytest
+
 from src.core.calculation_engine import execute_command, make_engine_context
 from src.core.command_contract import make_command
 from src.core.dependencies import make_dependency_checker
 from src.core.path_rules import make_registry, make_rule, register_rule
+
 
 def _always(ctx, payload):
     return True

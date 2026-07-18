@@ -10,7 +10,9 @@ Figure rule (diamond): let mid = n//2. A cell (i, j) belongs to the
 figure when abs(i - mid) + abs(j - mid) <= mid.
 """
 from __future__ import annotations
+
 import numpy as np
+
 
 def _validate_n(n: int) -> None:
     if not isinstance(n, int):

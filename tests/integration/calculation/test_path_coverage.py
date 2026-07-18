@@ -1,10 +1,12 @@
 import pytest
+
 from src.core.calculation_engine import execute_command, make_engine_context
 from src.core.calculation_rules import build_default_registry
 from src.core.card import generate_card
 from src.core.command_contract import make_command
 from src.core.dependencies import make_dependency_checker, register_dependency
 from src.core.preconditions import make_precondition
+
 
 def _make_engine():
     registry = build_default_registry(dependencies=['player_session'])

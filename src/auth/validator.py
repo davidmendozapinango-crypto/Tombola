@@ -1,6 +1,8 @@
 """Authentication and validation helpers (non-OOP)."""
 from typing import Any, Dict, List, Tuple
+
 from src.config import STATE_CODES
+
 
 def _is_uppercase(char: str) -> bool:
     return 'A' <= char <= 'Z'

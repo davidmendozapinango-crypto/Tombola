@@ -1,6 +1,7 @@
 """Session state helpers (non-OOP)."""
 from typing import Any, Dict, Optional
 
+
 def make_session() -> Dict[str, Any]:
     """Create an empty session dictionary."""
     return {'player': None, 'main_card': None, 'complement_card': None, 'dimension': None, 'sdg_id': None, 'drawn_numbers': [], 'marked_main': set(), 'marked_complement': set(), 'winning_card': None, 'game_over': False}

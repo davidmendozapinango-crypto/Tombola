@@ -2,6 +2,7 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+
 def make_command(actor_id: str, operation_key: str, path_context: Dict[str, Any], input_payload: Dict[str, Any], ui_origin: str, command_id: Optional[str]=None, trace_label: Optional[str]=None, requested_at: Optional[datetime]=None) -> Dict[str, Any]:
     """Create an internal command dictionary from GUI interaction."""
     return {'actor_id': actor_id, 'operation_key': operation_key, 'path_context': path_context, 'input_payload': input_payload, 'ui_origin': ui_origin, 'command_id': command_id or f"cmd-{datetime.now().strftime('%Y%m%d%H%M%S%f')}", 'trace_label': trace_label, 'requested_at': requested_at or datetime.now()}

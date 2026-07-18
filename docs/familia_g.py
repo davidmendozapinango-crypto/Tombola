@@ -10,7 +10,9 @@ Both functions traverse row-by-row (row-major) and assign increasing
 integers starting at 1 to filled cells; empty cells are 0.
 """
 from __future__ import annotations
+
 import numpy as np
+
 
 def _validate_n(n: int) -> None:
     if not isinstance(n, int):
