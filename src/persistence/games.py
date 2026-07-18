@@ -180,9 +180,13 @@ def calculate_game_summary(game: Dict[str, Any]) -> Dict[str, Any]:
     marked_complement = _marks_from_drawn(complement_card, drawn_numbers)
     main_points = card_points(main_card, marked_main)
     complement_points = card_points(complement_card, marked_complement)
-    main_pattern = get_figure_pattern(card_type, is_main=True, dimension=dimension)
-    complement_pattern = get_figure_pattern(
-        card_type, is_main=False, dimension=dimension
+    # `get_figure_pattern` devuelve un frozenset (inmueble); convertimos a set
+    # para cumplir con las anotaciones de tipo de `is_figure_complete`.
+    # Convertimos los patrones cacheados (frozenset) a set mutable para que
+    # la función `is_figure_complete` reciba el tipo esperado.
+    main_pattern = set(get_figure_pattern(card_type, is_main=True, dimension=dimension))
+    complement_pattern = set(
+        get_figure_pattern(card_type, is_main=False, dimension=dimension)
     )
     if is_figure_complete(main_card, marked_main, main_pattern):
         winning_card = "main"

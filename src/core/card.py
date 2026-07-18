@@ -52,12 +52,14 @@ def generate_card(
     Tiempo: O(N^2)
     Espacio: O(N^2)
     """
+    # Creamos una cuadrícula NxN inicializada con None
     grid: List[List[Optional[int]]] = [
         [None for _ in range(dimension)] for _ in range(dimension)
     ]
     numbers = list(range(1, dimension * dimension + 1))
     random.shuffle(numbers)
     if pattern is None:
+        # Si no hay patrón, rellenamos todas las celdas con los números barajados
         index = 0
         for row in range(dimension):
             for col in range(dimension):
@@ -66,6 +68,8 @@ def generate_card(
         return grid
     pattern_cells = list(pattern)
     for index, (row, col) in enumerate(pattern_cells):
+        # Asignamos números solo a las celdas definidas en el patrón y dentro
+        # de los límites de la tarjeta.
         if 0 <= row < dimension and 0 <= col < dimension:
             grid[row][col] = numbers[index]
     return grid
@@ -91,6 +95,7 @@ def make_cards(
         Diccionario con claves "main" y "complement" apuntando a las matrices
         correspondientes.
     """
+    # Devuelve un par de tarjetas: principal y complementaria
     return {
         "main": generate_card(dimension, main_pattern),
         "complement": generate_card(dimension, complement_pattern),
@@ -111,6 +116,7 @@ def card_sum(card: Sequence[Sequence[Optional[int]]]) -> int:
     Tiempo: O(N^2)
     Espacio: O(1)
     """
+    # Sumamos únicamente las celdas que contienen números (ignoramos None)
     total = 0
     for row in card:
         for value in row:
@@ -149,6 +155,9 @@ def mark_number(
     - `marked` se modifica in-place.
     - La búsqueda evita operaciones innecesarias tras encontrar el número.
     """
+    # Buscamos si el número existe en alguna fila; si lo encontramos, lo
+    # añadimos al conjunto `marked`. Usamos una bandera local para evitar
+    # trabajo adicional después de encontrarlo.
     found = False
     for row in card:
         if found:
@@ -170,6 +179,7 @@ def is_fully_marked(card: Sequence[Sequence[Optional[int]]], marked: Set[int]) -
     >>> is_fully_marked([[1, None], [2, 3]], {1,2,3})
     True
     """
+    # Verificamos que no haya ninguna celda numerada que no esté marcada
     for row in card:
         for value in row:
             if value is not None and value not in marked:
@@ -185,6 +195,7 @@ def card_points(card: Sequence[Sequence[Optional[int]]], marked: Container[int])
     ----------
     Tiempo: O(N^2)
     """
+    # Sumamos los valores de las celdas que estén marcadas
     total = 0
     for row in card:
         for value in row:

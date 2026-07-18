@@ -40,8 +40,7 @@ def make_number_pool(dimension: int, numbers: Optional[Set[int]] = None) -> List
 
 
 def draw_next(pool: List[int]) -> Optional[int]:
-    """
-    Extrae y devuelve el siguiente número de la pila, o `None` si está vacía.
+    """Extrae y devuelve el siguiente número de la pila, o `None` si está vacía.
 
     Ejemplo
     -------
