@@ -1,2 +1,9 @@
-pygame>=2.6.0
-pytest>=8.0.0
+pygame
+sphinx
+sphinx-rtd-theme
+black
+isort
+flake8
+pydocstyle
+pytest
+pytest-cov
