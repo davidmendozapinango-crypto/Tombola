@@ -12,11 +12,8 @@ from src.core.card_figures import get_figure_pattern, is_figure_complete
 
 
 def make_number_pool(dimension: int, numbers: Optional[Set[int]] = None) -> List[int]:
-    """
-    Crea y devuelve una lista barajada de números válida para el juego.
+    """Crea y devuelve una lista barajada de números válida para el juego.
 
-    Descripción
-    ----------
     Si se proporciona `numbers`, la pila se crea a partir de ese conjunto; de
     lo contrario se generan los números del 1 al N*N (donde N es `dimension`).
     La lista resultante está mezclada aleatoriamente para simular el bombo.

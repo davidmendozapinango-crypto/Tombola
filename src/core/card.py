@@ -14,11 +14,8 @@ from typing import Any, Container, Dict, List, Optional, Sequence, Set, Tuple
 def generate_card(
     dimension: int, pattern: Optional[Set[Tuple[int, int]]] = None
 ) -> List[List[Optional[int]]]:
-    """
-    Genera una tarjeta de tamaño NxN.
+    """Genera una tarjeta de tamaño NxN.
 
-    Descripción
-    ----------
     Si se proporciona `pattern` (conjunto de coordenadas (fila, columna)), sólo
     las celdas indicadas por el patrón recibirán números en el rango 1..N*N; las
     demás quedarán como `None`. Si `pattern` es `None` se rellena toda la

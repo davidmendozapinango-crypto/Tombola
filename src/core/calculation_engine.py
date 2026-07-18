@@ -8,8 +8,11 @@ auditoría.
 
 from typing import Any, Dict, List, Optional
 
-from src.core.application_impact import (add_impact_record, make_impact_record,
-                                         make_impact_store)
+from src.core.application_impact import (
+    add_impact_record,
+    make_impact_record,
+    make_impact_store,
+)
 from src.core.calculation_rules import compute_result
 from src.core.command_contract import validate_required_fields
 from src.core.dependencies import check_dependency
@@ -27,8 +30,7 @@ def make_engine_context(
     impact_store: Optional[List[Dict[str, Any]]] = None,
     impact_persistence: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    """
-    Construye el contexto del motor con sus colaboradores.
+    """Construye el contexto del motor con sus colaboradores.
 
     El contexto devuelto agrupa la configuración necesaria para ejecutar
     `execute_command`, incluyendo registro de reglas (`registry`), lista de
@@ -48,8 +50,7 @@ def make_engine_context(
 
 
 def execute_command(command: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Ejecuta un comando interno disparado desde la GUI.
+    """Ejecuta un comando interno disparado desde la GUI.
 
     Flujo general
     ------------
@@ -125,8 +126,7 @@ def _record_impact(
     context: Dict[str, Any],
     failure: Optional[Dict[str, Any]] = None,
 ) -> None:
-    """
-    Registra el impacto observable de la interacción para auditoría.
+    """Registra el impacto observable de la interacción para auditoría.
 
     Crea un `impact_record` resumido y lo añade al `impact_store`. Si el
     contexto incluye un `impact_persistence`, también intenta persistirlo.

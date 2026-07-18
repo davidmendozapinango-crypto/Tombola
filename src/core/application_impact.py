@@ -15,8 +15,7 @@ def make_impact_record(
     after_behavior: str,
     validation_reference: str,
 ) -> Dict[str, Any]:
-    """
-    Construye un registro de impacto con campos estándar.
+    """Construye un registro de impacto con campos estándar.
 
     Parámetros
     ----------

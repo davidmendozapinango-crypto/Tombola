@@ -15,8 +15,7 @@ def make_precondition(
     check: Callable[[Dict[str, Any]], bool],
     failure_message_id: str,
 ) -> Dict[str, Any]:
-    """
-    Crea un diccionario que representa una precondición de negocio.
+    """Crea un diccionario que representa una precondición de negocio.
 
     Parámetros
     ----------

@@ -68,9 +68,7 @@ def _game_score_entry(ctx: Dict[str, Any], payload: Dict[str, Any]) -> bool:
 
 
 def _game_score_compute(payload: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Calcula la puntuación del juego a partir de las tarjetas y los números
-    extraídos.
+    """Calcula la puntuación del juego a partir de las tarjetas y los números extraídos.
 
     Utiliza `game_summary` para obtener el ganador y los puntos; devuelve un
     diccionario con resumen y puntos totales.
@@ -107,8 +105,7 @@ def _sdg_context_compute(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def build_default_registry(dependencies: Optional[List[str]] = None) -> Dict[str, Any]:
-    """
-    Construye un `registry` con reglas de cálculo concretas ya registradas.
+    """Construye un `registry` con reglas de cálculo concretas ya registradas.
 
     Parámetros
     ----------
@@ -188,8 +185,7 @@ def build_default_registry(dependencies: Optional[List[str]] = None) -> Dict[str
 def compute_result(
     rule: Dict[str, Any], input_payload: Dict[str, Any]
 ) -> Dict[str, Any]:
-    """
-    Ejecuta la función `compute` definida en la regla de ruta.
+    """Ejecuta la función `compute` definida en la regla de ruta.
 
     Si la regla no define una función `compute`, se devuelve el payload de
     entrada como fallback.
