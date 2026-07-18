@@ -1,12 +1,12 @@
-"""SDG card figure definitions and winner detection helpers (non-OOP).
+"""Definiciones de figuras de tarjetas SDG y ayudantes de detección de ganadores (no OOP).
 
-The project provides 8 card figure families (A-H). Each family has a main
-figure (type 1) and a complement figure (type 2). The shapes below were
-interpreted from the provided PNG assets in assets/images/ods/.
+El proyecto proporciona 8 familias de figuras de cartas (AH). Cada familia tiene una familia principal
+figura (tipo 1) y figura complementaria (tipo 2). Las formas a continuación fueron
+interpretado a partir de los activos PNG proporcionados en assets/images/ods/.
 
-Coordinates are zero-indexed (row, col) for a 5x5 reference grid. The figures
-are applied as-is to any dimension >= 5; cells outside the reference grid do
-not belong to the figure.
+Las coordenadas tienen índice cero (fila, columna) para una cuadrícula de referencia de 5x5. Las cifras
+se aplican tal cual a cualquier dimensión >= 5; las celdas fuera de la cuadrícula de referencia lo hacen
+no pertenecen a la figura.
 """
 
 from typing import Any, Container, Dict, List, Optional, Sequence, Set, Tuple
