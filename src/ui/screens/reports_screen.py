@@ -758,26 +758,29 @@ def _draw_history_report(surface, players, games, content_x, content_y, content_
     Cada fila representa una partida con fecha, jugador, tema ODS y puntaje.
     """
     player_map = _player_lookup(players)
+    title_x = content_x + content_w // 2
     draw_text(
         surface,
         "HISTORIAL HISTORICO DE PARTIDAS (JUEGOS.BIN)",
-        (content_x, content_y),
-        font_size=18,
+        (title_x, content_y),
+        font_size=20,
         color=COLOR_PINE,
+        center=True,
     )
     draw_text(
         surface,
         "Bitacora de auditoria Federal del juego educativo",
-        (content_x, content_y + 22),
-        font_size=12,
+        (title_x, content_y + 24),
+        font_size=13,
         color=COLOR_CHARCOAL,
+        center=True,
     )
     total_text = f"Registros totales: {len(games)}"
     draw_text(
         surface,
         total_text,
-        (content_x + content_w - 140, content_y + 5),
-        font_size=12,
+        (content_x + content_w - 150, content_y + 8),
+        font_size=13,
         color=COLOR_CHARCOAL,
     )
     columns = [
@@ -805,7 +808,7 @@ def _draw_history_report(surface, players, games, content_x, content_y, content_
             surface,
             label,
             (x, table_y + header_height // 2),
-            font_size=11,
+            font_size=12,
             color=COLOR_WHITE,
         )
     table_y += header_height
@@ -865,7 +868,7 @@ def _draw_history_report(surface, players, games, content_x, content_y, content_
             # helper `_draw_first_wrapped_line` which uses a local boolean
             # flag to avoid `break` while preserving the original behavior.
             _draw_first_wrapped_line(
-                surface, value, x, text_y, width - 8, font_size=11, color=COLOR_CHARCOAL
+                surface, value, x, text_y, width - 8, font_size=12, color=COLOR_CHARCOAL
             )
         table_y += row_height
 
