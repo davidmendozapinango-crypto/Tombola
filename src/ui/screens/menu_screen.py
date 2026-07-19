@@ -85,7 +85,7 @@ def _activate(state: Dict[str, Any], name: str) -> str:
     if name == "register":
         return "register"
     if name == "play":
-        state["pending_screen_after_login"] = "game"
+        state["pending_screen_after_login"] = "config"
         return "login"
     if name == "reports":
         return "reports"
