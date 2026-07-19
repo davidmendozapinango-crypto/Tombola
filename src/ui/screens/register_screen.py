@@ -43,7 +43,7 @@ def _layout() -> Dict[str, pygame.Rect]:
     right_x = 550
     right_y = 115
     right_w = 400
-    panel_h = 515
+    panel_h = 590
     return {
         # Left data panel
         "player_id": pygame.Rect(left_x + 20, left_y + 95, left_w - 40, 34),
@@ -58,7 +58,8 @@ def _layout() -> Dict[str, pygame.Rect]:
         "access_key": pygame.Rect(left_x + 20, left_y + 355, left_w - 40, 34),
         "confirm_key": pygame.Rect(left_x + 20, left_y + 420, left_w - 40, 34),
         "login_link": pygame.Rect(left_x + 20, left_y + 545, 180, 28),
-        "register": pygame.Rect(left_x + 210, left_y + 540, left_w - 230, 40),
+        "menu": pygame.Rect(left_x + 210, left_y + 500, left_w - 230, 40),
+        "register": pygame.Rect(left_x + 210, left_y + 545, left_w - 230, 40),
     }
 
 
@@ -136,6 +137,7 @@ def init_register(state: Dict[str, Any]) -> None:
         "access_key",
         "confirm_key",
         "login_link",
+        "menu",
         "register",
     ]
     state["focus_index"] = 0
@@ -191,6 +193,8 @@ def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
                     state["focus_index"] = state["focusable"].index(name)
                 if name == "register":
                     return _try_register(state)
+                if name == "menu":
+                    return "menu"
                 if name == "login_link":
                     return "login"
                 if name in ("gender_m", "gender_f", "gender_o"):
@@ -213,6 +217,8 @@ def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
         if event.key in (pygame.K_RETURN, pygame.K_SPACE):
             if focused == "register":
                 return _try_register(state)
+            if focused == "menu":
+                return "menu"
             if focused == "login_link":
                 return "login"
             if focused in ("gender_m", "gender_f", "gender_o"):
@@ -263,7 +269,7 @@ def _draw_data_panel(
     left_x = 70
     left_y = 115
     left_w = 460
-    panel_rect = pygame.Rect(left_x, left_y, left_w, 515)
+    panel_rect = pygame.Rect(left_x, left_y, left_w, 590)
     shadow_rect = panel_rect.copy()
     shadow_rect.x += 4
     shadow_rect.y += 4
@@ -455,6 +461,13 @@ def _draw_bottom_actions(
     )
     draw_button(
         surface,
+        "Volver al Menú",
+        rects["menu"],
+        hovered=hovered["menu"],
+        focused=focused == "menu",
+    )
+    draw_button(
+        surface,
         "Generar Ciudadanía  →",
         rects["register"],
         hovered=hovered["register"],
@@ -467,7 +480,7 @@ def _draw_validator_panel(surface: pygame.Surface, state: Dict[str, Any]) -> Non
     right_x = 550
     right_y = 115
     right_w = 400
-    panel_rect = pygame.Rect(right_x, right_y, right_w, 515)
+    panel_rect = pygame.Rect(right_x, right_y, right_w, 565)
     pygame.draw.rect(surface, COLOR_PINE, panel_rect, border_radius=16)
 
     # Title

@@ -30,9 +30,9 @@ from src.ui.common import (
 def _layout() -> Dict[str, pygame.Rect]:
     """Return the UI rectangles for the redesigned login screen."""
     panel_w = 430
-    panel_h = 420
+    panel_h = 470
     left_x = (WINDOW_WIDTH - panel_w) // 2
-    left_y = (WINDOW_HEIGHT - 70 - panel_h) // 2
+    left_y = (WINDOW_HEIGHT - 70 - panel_h) // 2 + 40
     return {
         # Tabs
         "tab_login": pygame.Rect(WINDOW_WIDTH // 2 - 220, 95, 220, 40),
@@ -45,6 +45,7 @@ def _layout() -> Dict[str, pygame.Rect]:
         "key": pygame.Rect(left_x + 20, left_y + 225, 390, 38),
         "register_link": pygame.Rect(left_x + 20, left_y + 285, 390, 28),
         "login": pygame.Rect(left_x + 20, left_y + 335, 390, 45),
+        "menu": pygame.Rect(left_x + 20, left_y + 390, 390, 45),
     }
 
 
@@ -272,6 +273,14 @@ def _draw_left_panel(
     )
     _draw_shield_icon(surface, shield_rect)
 
+    draw_button(
+        surface,
+        "Volver al Menú",
+        rects["menu"],
+        hovered=hovered["menu"],
+        focused=focused == "menu",
+    )
+
 
 def init_login(state: Dict[str, Any]) -> None:
     """Initialize login screen state."""
@@ -284,6 +293,7 @@ def init_login(state: Dict[str, Any]) -> None:
         "key",
         "register_link",
         "login",
+        "menu",
         "tab_register",
     ]
     state["focus_index"] = 0
@@ -356,6 +366,8 @@ def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
                     state["focus_index"] = state["focusable"].index(name)
                 if name == "login":
                     return _try_login(state)
+                if name == "menu":
+                    return "menu"
                 if name in ("register_link", "tab_register"):
                     return "register"
                 if name == "selector_left":
@@ -375,6 +387,8 @@ def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
         if event.key in (pygame.K_RETURN, pygame.K_SPACE):
             if focused == "login":
                 return _try_login(state)
+            if focused == "menu":
+                return "menu"
             if focused in ("register_link", "tab_register"):
                 return "register"
             if focused == "selector_left":

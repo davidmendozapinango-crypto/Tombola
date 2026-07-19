@@ -21,39 +21,62 @@ def _is_special(char: str) -> bool:
     return char in "*=%_"
 
 
-def _has_type(key: str, index: int, predicate) -> bool:
-    """Recursively check if key contains at least one char satisfying predicate."""
+def _verify_password_recursive(
+    key: str,
+    index: int = 0,
+    has_upper: bool = False,
+    has_lower: bool = False,
+    has_digit: bool = False,
+    has_special: bool = False,
+    consec: int = 1,
+    error_consec: bool = False,
+    previous: str | None = None,
+) -> Dict[str, bool]:
+    """Recursively evaluate password characters and detect rule violations."""
     if index >= len(key):
-        return False
-    if predicate(key[index]):
-        return True
-    return _has_type(key, index + 1, predicate)
+        return {
+            "has_uppercase": has_upper,
+            "has_lowercase": has_lower,
+            "has_digit": has_digit,
+            "has_special": has_special,
+            "no_long_run": len(key) > 0 and not error_consec,
+        }
 
+    current = key[index]
+    if _is_uppercase(current):
+        has_upper = True
+    elif _is_lowercase(current):
+        has_lower = True
+    elif _is_digit(current):
+        has_digit = True
+    elif _is_special(current):
+        has_special = True
 
-def _no_long_run(key: str, index: int, current_char: str, count: int) -> bool:
-    """Recursively ensure no more than 3 consecutive identical characters."""
-    if index >= len(key):
-        return True
-    if key[index] == current_char:
-        new_count = count + 1
-        if new_count > 3:
-            return False
+    if previous is not None and current == previous:
+        consec += 1
+        if consec > 3:
+            error_consec = True
     else:
-        new_count = 1
-        current_char = key[index]
-    return _no_long_run(key, index + 1, current_char, new_count)
+        consec = 1
+
+    return _verify_password_recursive(
+        key,
+        index + 1,
+        has_upper,
+        has_lower,
+        has_digit,
+        has_special,
+        consec,
+        error_consec,
+        current,
+    )
 
 
 def check_password_criteria(key: str) -> Dict[str, bool]:
     """Return a dictionary with the status of each password rule."""
-    return {
-        "length_ok": 6 <= len(key) <= 10,
-        "has_uppercase": _has_type(key, 0, _is_uppercase),
-        "has_lowercase": _has_type(key, 0, _is_lowercase),
-        "has_digit": _has_type(key, 0, _is_digit),
-        "has_special": _has_type(key, 0, _is_special),
-        "no_long_run": len(key) > 0 and _no_long_run(key, 1, key[0], 1),
-    }
+    criteria = _verify_password_recursive(key)
+    criteria["length_ok"] = 6 <= len(key) <= 10
+    return criteria
 
 
 def validate_password(key: str) -> Tuple[bool, List[str]]:
