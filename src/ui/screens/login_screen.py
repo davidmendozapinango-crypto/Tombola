@@ -399,7 +399,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         draw_error_message(
             surface,
             state["error_message"],
-            (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 70),
+            (WINDOW_WIDTH // 2, WINDOW_HEIGHT - 100),
             font_size=18,
         )
     draw_message_panel(surface, state)
