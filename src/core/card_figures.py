@@ -1,4 +1,4 @@
-from typing import Any, Container, Dict, List, Optional, Sequence, Set, Tuple
+from typing import AbstractSet, Any, Container, Dict, List, Optional, Sequence, Set, Tuple
 from src.core.R2_galeria_matrices import (
     diags_sin_centro,
     diagonales_espaciadas,
