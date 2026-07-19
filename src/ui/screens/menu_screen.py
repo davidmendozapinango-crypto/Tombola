@@ -508,6 +508,7 @@ def _draw_preview_card(
     top_left: Tuple[int, int],
     cell_size: int,
     label: str,
+    family_pattern=None,
 ) -> None:
     """
     Dibuja una previsualizacion reducida de un cartón (matriz) en el panel de
@@ -521,11 +522,18 @@ def _draw_preview_card(
         label: Texto de etiqueta sobre la previsualizacion.
     """
     dimension = len(card)
-    pattern: Set[Tuple[int, int]] = set()
-    for row_index, row in enumerate(card):
-        for col_index, value in enumerate(row):
-            if value is not None:
-                pattern.add((row_index, col_index))
+    # Si se proporciona `family_pattern`, usarlo directamente para colorear
+    # la vista previa (evita depender de la numeración del cartón que puede
+    # dar una apariencia diferente). Si no, inferir del `card` como antes.
+    pattern: Set[Tuple[int, int]]
+    if family_pattern is not None:
+        pattern = set(family_pattern)
+    else:
+        pattern = set()
+        for row_index, row in enumerate(card):
+            for col_index, value in enumerate(row):
+                if value is not None:
+                    pattern.add((row_index, col_index))
     label_rect = draw_text(
         surface,
         label,
@@ -555,6 +563,23 @@ def _draw_preview_card(
                     color=COLOR_WHITE,
                     center=True,
                 )
+    # Debug overlay: si se suministra `family_pattern`, dibujar un borde
+    # rojo en las celdas que pertenecen al patrón de la familia para ayudar
+    # a visualizar discrepancias entre patrón esperado y lo renderizado.
+    if family_pattern is not None:
+        try:
+            for r, c in family_pattern:
+                if 0 <= r < dimension and 0 <= c < dimension:
+                    rect = pygame.Rect(
+                        top_left[0] + c * cell_size,
+                        top_left[1] + r * cell_size,
+                        cell_size,
+                        cell_size,
+                    )
+                    pygame.draw.rect(surface, (200, 30, 30), rect, width=2)
+        except Exception:
+            # No bloquear el renderizado si la depuración falla
+            pass
 
 
 def _draw_config_panel(
@@ -660,8 +685,60 @@ def _draw_config_panel(
     complement_card = state["session"].get("complement_card")
     if main_card and complement_card:
         cell_size = max(12, min(18, 140 // dimension))
+        # Diagnóstico en tiempo de ejecución: comparar patrón esperado vs patrón
+        # que realmente se renderiza en la UI. Se imprime solo cuando cambia la
+        # combinación (dimension, sdg_id) para evitar spam en consola.
+        prev_key = state.get("_last_preview_key")
+        key = (dimension, sdg_id)
+        if prev_key != key:
+            try:
+                ui_pattern = {
+                    (r, c)
+                    for r, row in enumerate(main_card)
+                    for c, val in enumerate(row)
+                    if val is not None
+                }
+                family_pattern = set(
+                    get_figure_pattern(
+                        get_card_type(sdg_id), is_main=True, dimension=dimension
+                    )
+                )
+                only_in_family = sorted(family_pattern - ui_pattern)
+                only_in_ui = sorted(ui_pattern - family_pattern)
+                print(
+                    "[MENU PREVIEW DIAG] dimension=%s sdg_id=%s card_type=%s"
+                    % (dimension, sdg_id, get_card_type(sdg_id))
+                )
+                print(
+                    "  family_pattern size=%d, ui_pattern size=%d"
+                    % (len(family_pattern), len(ui_pattern))
+                )
+                if only_in_family or only_in_ui:
+                    if only_in_family:
+                        print(
+                            "  positions in family_pattern but not in UI:",
+                            only_in_family,
+                        )
+                    if only_in_ui:
+                        print(
+                            "  positions in UI but not in family_pattern:", only_in_ui
+                        )
+                else:
+                    print("  patterns match exactly")
+            except Exception as e:
+                print("[MENU PREVIEW DIAG] failed to compute patterns:", e)
+            state["_last_preview_key"] = key
+        # obtener patrón familiar para la superposición de depuración
+        family_pattern = get_figure_pattern(
+            get_card_type(sdg_id), is_main=True, dimension=dimension
+        )
         _draw_preview_card(
-            surface, main_card, (panel.x + 30, panel.y + 280), cell_size, "Principal"
+            surface,
+            main_card,
+            (panel.x + 30, panel.y + 280),
+            cell_size,
+            "Principal",
+            family_pattern=family_pattern,
         )
         _draw_preview_card(
             surface,
@@ -669,6 +746,9 @@ def _draw_config_panel(
             (panel.x + 230, panel.y + 280),
             cell_size,
             "Complemento",
+            family_pattern=get_figure_pattern(
+                get_card_type(sdg_id), is_main=False, dimension=dimension
+            ),
         )
 
 

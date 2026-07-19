@@ -43,28 +43,60 @@ def _mask_main(n: int) -> "np.ndarray":
     Esta función es privada; los consumidores deben preferir
     `generate_principal` que devuelve la matriz numerada.
     """
+    # Generar la máscara escalando exactamente la figura base 5x5 definida
+    # en el diccionario central de patrones. Usamos la misma regla de
+    # mapeo proporcional que `card_figures._scale_pattern` para asegurar
+    # coincidencia con `get_figure_pattern`.
     _validate_n(n)
+    # Definimos la figura base 5x5 (coincide con _FIGURES['A']['main'] en card_figures)
+    base_pattern = {
+        (0, 0),
+        (0, 1),
+        (0, 2),
+        (0, 3),
+        (0, 4),
+        (1, 1),
+        (1, 2),
+        (1, 3),
+        (2, 2),
+        (3, 1),
+        (3, 2),
+        (3, 3),
+        (4, 0),
+        (4, 1),
+        (4, 2),
+        (4, 3),
+        (4, 4),
+    }
     mat = np.zeros((n, n), dtype=int)
-    for i in range(n):
-        left = min(i, n - 1 - i)
-        right = n - 1 - left
-        for j in range(n):
-            if left <= j <= right:
-                mat[i, j] = 1
+    if n <= 5:
+        # direct mapping for small sizes: center the base into n if needed
+        # but for n==5 this simply copies base. For n<5 (not expected) we
+        # fallback to proportional mapping too.
+        for r, c in base_pattern:
+            if r < n and c < n:
+                mat[r, c] = 1
+        if n == 5:
+            return mat
+    max_index = n - 1
+    for t_row in range(n):
+        src_row = round(t_row * 4 / max_index)
+        for t_col in range(n):
+            src_col = round(t_col * 4 / max_index)
+            if (src_row, src_col) in base_pattern:
+                mat[t_row, t_col] = 1
     return mat
 
 
 def _mask_complement(n: int) -> "np.ndarray":
-    """Calcular la máscara binaria complementaria (banda por columnas)."""
+    """Calcular la máscara binaria complementaria (banda por columnas).
+
+    Para garantizar que la familia A se escala exactamente desde la base de
+    5x5, la máscara complementaria se deriva como la traspuesta de la
+    máscara principal escalada. Esto preserva la simetría esperada.
+    """
     _validate_n(n)
-    mat = np.zeros((n, n), dtype=int)
-    for j in range(n):
-        left_col = min(j, n - 1 - j)
-        right_col = n - 1 - left_col
-        for i in range(n):
-            if left_col <= i <= right_col:
-                mat[i, j] = 1
-    return mat
+    return _mask_main(n).T
 
 
 def mask_main(n: int) -> "np.ndarray":
