@@ -61,18 +61,16 @@ def _layout() -> Dict[str, pygame.Rect]:
     """
     center_x = WINDOW_WIDTH // 2
     return {
-        "date_start": pygame.Rect(center_x - 220, 90, 200, 32),
-        "date_end": pygame.Rect(center_x + 20, 90, 200, 32),
-        "apply": pygame.Rect(center_x - 100, 130, 90, 32),
-        "clear": pygame.Rect(center_x + 10, 130, 90, 32),
-        "players": pygame.Rect(60, 185, 190, 35),
-        "top": pygame.Rect(60, 225, 190, 35),
-        "frequency": pygame.Rect(60, 265, 190, 35),
-        "history": pygame.Rect(60, 305, 190, 35),
-        "back": pygame.Rect(WINDOW_WIDTH - 60 - 150, WINDOW_HEIGHT - 105, 150, 35),
-        "export": pygame.Rect(
-            WINDOW_WIDTH - 60 - 150 - 155, WINDOW_HEIGHT - 105, 150, 35
-        ),
+        "date_start": pygame.Rect(center_x - 220, 90, 200, 35), # Mayor grosor
+        "date_end": pygame.Rect(center_x + 20, 90, 200, 35),
+        "apply": pygame.Rect(center_x - 100, 140, 90, 35),
+        "clear": pygame.Rect(center_x + 10, 140, 90, 35),
+        "players": pygame.Rect(60, 200, 190, 40),     # Más altos e interpolados
+        "top": pygame.Rect(60, 250, 190, 40),
+        "frequency": pygame.Rect(60, 300, 190, 40),
+        "history": pygame.Rect(60, 350, 190, 40),
+        "back": pygame.Rect(WINDOW_WIDTH - 60 - 150, WINDOW_HEIGHT - 80, 150, 38),
+        "export": pygame.Rect(WINDOW_WIDTH - 60 - 150 - 155, WINDOW_HEIGHT - 80, 150, 38),
     }
 
 
@@ -506,19 +504,20 @@ def _draw_section_button(
     focused: bool,
     selected: bool,
 ) -> None:
-    """Dibujar un botón para seleccionar la sección del informe.
-
-    El estilo cambia según si está seleccionado, enfocado o si el ratón lo
-    pasa por encima.
-    """
+    # Colores Canva
     bg_color = COLOR_PINE if selected else COLOR_WHITE
     text_color = COLOR_WHITE if selected else COLOR_CHARCOAL
-    border_color = COLOR_PINE if focused or selected else COLOR_CHARCOAL
-    pygame.draw.rect(surface, bg_color, rect)
-    pygame.draw.rect(surface, border_color, rect, width=2)
-    draw_text(surface, label, rect.center, font_size=16, color=text_color, center=True)
+    border_color = COLOR_PINE if focused or selected else COLOR_SAGE_LIGHT
+    
+    # Dibujar rectángulos con esquinas redondeadas (border_radius=8)
+    pygame.draw.rect(surface, bg_color, rect, border_radius=8)
+    pygame.draw.rect(surface, border_color, rect, width=2, border_radius=8)
+    
+    # Texto un poco más grande
+    draw_text(surface, label, rect.center, font_size=14, color=text_color, center=True)
+    
     if hovered and (not selected):
-        pygame.draw.rect(surface, COLOR_PINE, rect, width=2)
+        pygame.draw.rect(surface, COLOR_CHARCOAL, rect, width=2, border_radius=8)
 
 
 def _draw_first_wrapped_line(
@@ -546,74 +545,54 @@ def _draw_first_wrapped_line(
 
 
 def _draw_players_report(surface, players, games, content_x, content_y, content_w):
-    """Dibujar el informe de jugadores y partidas como una tabla.
-
-    Presenta columnas con cédula, nombre, estado y cantidad de partidas.
-    """
+    # Título más grande y centrado en su espacio asignado
     draw_text(
         surface,
-        "JUGADORES Y PARTIDAS REGISTRADOS",
-        (content_x, content_y),
-        font_size=18,
+        "JUGADORES REGISTRADOS",
+        (content_x + content_w // 2, content_y),
+        font_size=22, # Antes 18
         color=COLOR_PINE,
+        center=True # Centrado mejor
     )
-    draw_text(
-        surface,
-        f"Registros totales: {len(players)}",
-        (content_x + content_w - 140, content_y + 5),
-        font_size=12,
-        color=COLOR_CHARCOAL,
-    )
+    
+    # Reducimos las columnas de 4 a 3 quitando redundancias (ej. Estado) para limpiar espacio
     columns = [
-        ("CEDULA", 140),
-        ("JUGADOR", 250),
-        ("ESTADO", 100),
-        ("PARTIDAS JUGADAS", 140),
+        ("CÉDULA", 160),
+        ("NOMBRE JUGADOR", 280),
+        ("PARTIDAS", 160),
     ]
-    col_x = [content_x]
+    col_x = [content_x + 20]
     for _, width in columns[:-1]:
         col_x.append(col_x[-1] + width)
-    table_y = content_y + 35
-    row_height = 26
-    header_height = 26
-    header_rect = pygame.Rect(content_x, table_y, content_w, header_height)
-    pygame.draw.rect(surface, COLOR_PINE, header_rect)
+        
+    table_y = content_y + 45
+    row_height = 35 # Antes 26 (Más espacio para respirar)
+    
+    # Dibujar cabecera con bordes redondeados estilo Canva
+    header_rect = pygame.Rect(content_x + 10, table_y, content_w - 20, row_height)
+    pygame.draw.rect(surface, COLOR_PINE, header_rect, border_radius=8)
+    
     for idx, (label, width) in enumerate(columns):
         x = col_x[idx] + 4
-        draw_text(
-            surface,
-            label,
-            (x, table_y + header_height // 2),
-            font_size=11,
-            color=COLOR_WHITE,
-        )
-    table_y += header_height
-    if not players:
-        draw_text(
-            surface,
-            "No hay jugadores registrados.",
-            (content_x, table_y + 8),
-            font_size=18,
-        )
-        return
-    for pid, name, count in _player_game_counts(players, games):
-        row_rect = pygame.Rect(content_x, table_y, content_w, row_height)
-        pygame.draw.rect(surface, COLOR_WHITE, row_rect)
-        pygame.draw.rect(surface, COLOR_CHARCOAL, row_rect, width=1)
-        player = _player_lookup(players).get(pid, {})
-        state_code = player.get("state_code", "?")
-        partidas = "partida" if count == 1 else "partidas"
-        partidas_text = f"{count} {partidas}"
-        row_values = [pid, name, state_code, partidas_text]
-        for idx, (value, width) in enumerate(zip(row_values, [c[1] for c in columns])):
+        draw_text(surface, label, (x, table_y + 8), font_size=13, color=COLOR_WHITE)
+        
+    table_y += row_height + 10
+    
+    # Limitamos la información: Mostrar solo los primeros 7 registros para no saturar la pantalla
+    for pid, name, count in _player_game_counts(players, games)[:7]:
+        row_rect = pygame.Rect(content_x + 10, table_y, content_w - 20, row_height)
+        # Fondo blanco con bordes redondeados sutiles
+        pygame.draw.rect(surface, COLOR_WHITE, row_rect, border_radius=6)
+        pygame.draw.rect(surface, COLOR_SAGE_LIGHT, row_rect, width=1, border_radius=6)
+        
+        partidas_text = f"{count} partida" if count == 1 else f"{count} partidas"
+        row_values = [pid, name, partidas_text]
+        
+        for idx, value in enumerate(row_values):
             x = col_x[idx] + 4
-            text_y = table_y + row_height // 2
-            # Draw only the first wrapped line for this cell. Use the
-            # helper to replace the previous `break` pattern.
-            _draw_first_wrapped_line(
-                surface, value, x, text_y, width - 8, font_size=11, color=COLOR_CHARCOAL
-            )
-        table_y += row_height
+            text_y = table_y + 8
+            draw_text(surface, value, (x, text_y), font_size=13, color=COLOR_CHARCOAL)
+        table_y += row_height + 5
 
 
 def _draw_top_report(surface, players, games, content_x, content_y, content_w):

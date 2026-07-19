@@ -27,14 +27,15 @@ from src.config import (
 from src.ods.data import get_sdg_color, get_sdg_messages, get_sdg_name, list_sdg_ids
 
 
-def get_font(size: int, bold: bool = False) -> pygame.font.Font:
-    """Obtener una fuente Pygame para el tamaño solicitado.
-
-    Args:
-        size: Tamaño de la fuente en puntos.
-        bold: Indica si la fuente será en negrita.
-    """
-    font = pygame.font.SysFont("Arial", size)
+def get_font(size: int, bold: bool = False, font_name: str = "assets/fonts/ChildosArabic.ttf") -> pygame.font.Font:
+    """Obtener una fuente Pygame consistente con el diseño de Canva."""
+    try:
+        # Intenta cargar la tipografía personalizada de Canva
+        font = pygame.font.Font(font_name, size)
+    except IOError:
+        # Fuente del sistema redondeada y amigables como alternativa
+        font = pygame.font.SysFont("ubuntu", size)
+        
     if bold:
         font.set_bold(True)
     return font
@@ -53,36 +54,27 @@ def _blend_color(
     return (r, g, b)
 
 
-def draw_text(
-    surface: pygame.Surface,
-    text: str,
-    position: Tuple[int, int],
-    font_size: int = 24,
-    color: Tuple[int, int, int] = COLOR_CHARCOAL,
-    center: bool = False,
-) -> pygame.Rect:
-    """Dibujar texto en una superficie y devolver su rectángulo de límite.
-
-    Args:
-        surface: Superficie Pygame donde dibujar.
-        text: Texto a renderizar.
-        position: Coordenada (x, y) usada como topleft o centro según `center`.
-        font_size: Tamaño de la fuente.
-        color: Color RGB del texto.
-        center: Si True, `position` es el centro del rectángulo; si False es topleft.
-
-    Devuelve:
-        pygame.Rect: Rectángulo límite del texto renderizado.
-    """
-    font = get_font(font_size)
-    rendered = font.render(str(text), True, color)
-    rect = rendered.get_rect()
+def draw_text(surface, 
+              text, 
+              position, 
+              font_size=16, 
+              color=(0,0,0), 
+              center=False, 
+              font_name="assets/fonts/ChildosArabic.ttf"):
+    try:
+        # Intenta cargar la fuente de Canva instalada localmente
+        font = pygame.font.Font(font_name, font_size)
+    except IOError:
+        # En caso de error, usa una del sistema amigable/redondeada similar al estilo Canva
+        font = pygame.font.SysFont("ubuntu", font_size, bold=True)
+    
+    text_surface = font.render(text, True, color)
+    rect = text_surface.get_rect()
     if center:
         rect.center = position
     else:
         rect.topleft = position
-    surface.blit(rendered, rect)
-    return rect
+    surface.blit(text_surface, rect)
 
 
 def draw_button(
@@ -204,14 +196,8 @@ def draw_error_message(
 
 
 def wrap_text(text: str, max_width: int, font_size: int = 20) -> List[str]:
-    """Ajustar texto en varias líneas para que quepa en `max_width` píxeles.
-
-    Usa la medida de la fuente para cortar en palabras y construir líneas.
-
-    Devuelve:
-        List[str]: Lista de líneas ajustadas.
-    """
-    font = get_font(font_size)
+    """Ajustar texto en varias líneas usando la fuente correcta de Canva."""
+    font = get_font(font_size) 
     words = str(text).split()
     lines = []
     current_line = ""
