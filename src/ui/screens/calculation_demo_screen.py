@@ -169,7 +169,7 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
             color = COLOR_PINE
         else:
             text = f"Error: {result.get('error_message', 'Desconocido')}"
-            color = (220, 80, 80)
+            color = COLOR_RED_ALERT
         draw_text(
             surface,
             text,

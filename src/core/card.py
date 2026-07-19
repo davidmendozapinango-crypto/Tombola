@@ -8,9 +8,20 @@ Descripción:
 import random
 from typing import Any, Container, Dict, List, Optional, Sequence, Set, Tuple
 
+from src.core.R2_galeria_matrices import (
+    diags_sin_centro,
+    diagonales_espaciadas,
+    esquinas,
+    relojes_arena_A,
+    relojes_arena_B,
+    rombos,
+    tornados,
+    zeta_ene,
+)
 
+#funcion adaptada
 def generate_card(
-    dimension: int, pattern: Optional[Set[Tuple[int, int]]] = None
+    dimension: int, pattern: Optional[Set[Tuple[int, int]]] = None, card_type: str = "A", is_main: bool = True
 ) -> List[List[Optional[int]]]:
     """Generar una tarjeta NxN con o sin patrón.
 
@@ -43,6 +54,7 @@ def generate_card(
     Complejidad:
         O(N) en tiempo y O(N) en espacio, con N = dimension**2.
     """
+    """Genera una tarjeta NxN colocando los números aleatorios en el orden exacto de la secuencia."""
     grid: List[List[Optional[int]]] = [
         [None for _ in range(dimension)] for _ in range(dimension)
     ]
@@ -50,12 +62,22 @@ def generate_card(
     random.shuffle(numbers)
     if pattern is None:
         index = 0
-        for row in range(dimension):
-            for col in range(dimension):
-                grid[row][col] = numbers[index]
+        for r in range(dimension):
+            for c in range(dimension):
+                grid[r][c] = numbers[index]
                 index += 1
         return grid
+
+    dicc_funciones = {"A": relojes_arena_A, "B": relojes_arena_B, "C": rombos, "D": esquinas, "E": tornados, "F": diagonales_espaciadas, "G": zeta_ene, "H": diags_sin_centro}
+    
+    funcion_matriz = dicc_funciones.get(card_type, relojes_arena_A)
+    p, c = funcion_matriz(dimension)
+    matriz_secuencia = p if is_main else c
+
+    #Creacion una lista de celdas y las se ordena según el número de secuencia programado
     pattern_cells = list(pattern)
+    pattern_cells.sort(key=lambda celda: matriz_secuencia[celda[0]][celda[1]])
+    #Se colocan los números aleatorios respetando el orden de la secuencia
     for index, (row, col) in enumerate(pattern_cells):
         if 0 <= row < dimension and 0 <= col < dimension:
             grid[row][col] = numbers[index]

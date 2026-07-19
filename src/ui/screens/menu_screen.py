@@ -12,10 +12,17 @@ from typing import Any, Callable, Dict, Set, Tuple
 import pygame
 from src.auth.session import get_player, logout
 from src.config import (
+    COLOR_BLANCO_PURO,
+    COLOR_BORDE_CONTENEDOR,
+    COLOR_BTN_AZUL_CLARO,
+    COLOR_BTN_NARANJA,
+    COLOR_BTN_ORO,
     COLOR_CHARCOAL,
+    COLOR_FONDO_GENERAL,
     COLOR_MINT,
     COLOR_MOSS,
     COLOR_PINE,
+    COLOR_SDG_BG,
     COLOR_SAGE_LIGHT,
     COLOR_WHITE,
     STATE_CODES,
@@ -358,6 +365,8 @@ def _draw_badge(
 def _draw_header(surface: pygame.Surface, state: Dict[str, Any]) -> None:
     """Dibuja el encabezado principal con informacion del jugador y puntaje."""
     header_rect = pygame.Rect(40, 20, WINDOW_WIDTH - 80, 160)
+    pygame.draw.rect(surface, COLOR_BORDE_CONTENEDOR, header_rect, border_radius=16)
+
     pygame.draw.rect(surface, COLOR_PINE, header_rect, border_radius=16)
     player = get_player(state["session"])
     full_name = player["full_name"] if player else "Jugador"
@@ -409,9 +418,9 @@ def _draw_header(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         center=False,
     )
     score_rect = pygame.Rect(header_rect.right - 175, header_rect.y + 25, 150, 110)
-    pygame.draw.rect(surface, (76, 122, 79), score_rect, border_radius=12)
+    pygame.draw.rect(surface, COLOR_BTN_NARANJA, score_rect, border_radius=12)
     icon_box = pygame.Rect(score_rect.x + 10, score_rect.centery - 20, 40, 40)
-    pygame.draw.rect(surface, (107, 156, 95), icon_box, border_radius=10)
+    pygame.draw.rect(surface, COLOR_BTN_ORO, icon_box, border_radius=10)
     _draw_medal_icon(surface, icon_box)
     text_x = icon_box.right + 10
     draw_text(
@@ -449,6 +458,9 @@ def _draw_card(
     hovered: bool,
     focused: bool,
 ) -> None:
+    """Draw a single menu card."""
+    bg_color = COLOR_BLANCO_PURO
+    border_color = COLOR_BORDE_CONTENEDOR if (hovered or focused) else COLOR_SAGE_LIGHT
     """Dibuja una tarjeta del menu con icono, titulo y descripcion.
 
     La descripcion se ajusta a maximo 3 lineas usando un wrap simple.
@@ -459,14 +471,26 @@ def _draw_card(
     shadow_rect = rect.copy()
     shadow_rect.x += shadow_offset
     shadow_rect.y += shadow_offset
+    pygame.draw.rect(surface, COLOR_SAGE_LIGHT, shadow_rect, border_radius=16)
+
+    # Card background
+    pygame.draw.rect(surface, bg_color, rect, border_radius=16)
+    pygame.draw.rect(surface, border_color, rect, width=3, border_radius=16)
+
+    # Icon circle
     pygame.draw.rect(surface, COLOR_SAGE_LIGHT, shadow_rect, border_radius=12)
     pygame.draw.rect(surface, bg_color, rect, border_radius=12)
     pygame.draw.rect(surface, border_color, rect, width=2, border_radius=12)
     icon_rect = pygame.Rect(rect.x + 20, rect.y + 28, 48, 48)
-    pygame.draw.circle(surface, COLOR_MINT, icon_rect.center, 24)
+    pygame.draw.circle(surface, COLOR_FONDO_GENERAL, icon_rect.center, 24)
+    pygame.draw.circle(surface, COLOR_BORDE_CONTENEDOR, icon_rect.center, 24, width=2)
     icon_drawer(surface, icon_rect)
     draw_text(
-        surface, title, (rect.x + 82, rect.y + 32), font_size=18, color=COLOR_PINE
+        surface,
+        title,
+        (rect.x + 82, rect.y + 30),
+        font_size=18,
+        color=COLOR_BORDE_CONTENEDOR,
     )
     max_width = rect.width - 100
     y_offset = 58
@@ -478,7 +502,7 @@ def _draw_card(
             font_size=12,
             color=COLOR_CHARCOAL,
         )
-        y_offset += 16
+        y_offset += 18
 
 
 def _wrap_description(text: str, max_width: int) -> list[str]:
@@ -551,7 +575,7 @@ def _draw_preview_card(
                     surface,
                     str(value),
                     rect.center,
-                    font_size=max(8, cell_size // 2),
+                    font_size=max(10, min(cell_size - 2, 16)),
                     color=COLOR_WHITE,
                     center=True,
                 )
@@ -566,14 +590,16 @@ def _draw_config_panel(
 ) -> None:
     """Dibuja el panel derecho con la configuracion activa y la vista previa."""
     panel = rects["panel"]
-    pygame.draw.rect(surface, COLOR_WHITE, panel, border_radius=12)
-    pygame.draw.rect(surface, COLOR_SAGE_LIGHT, panel, width=2, border_radius=12)
+    pygame.draw.rect(surface, COLOR_BTN_AZUL_CLARO, panel, border_radius=18)
+    pygame.draw.rect(surface, COLOR_BORDE_CONTENEDOR, panel, width=3, border_radius=18)
+
+    # Title
     draw_text(
         surface,
         "Configuracion Activa de la Tombola ODS",
         (panel.x + 20, panel.y + 20),
         font_size=20,
-        color=COLOR_PINE,
+        color=COLOR_BORDE_CONTENEDOR,
     )
     draw_text(
         surface,
@@ -673,6 +699,8 @@ def _draw_config_panel(
 
 
 def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
+    """Render the main menu screen with card-style grid and config panel."""
+    surface.fill(COLOR_FONDO_GENERAL)
     """
     Renderiza la pantalla principal con las tarjetas del menu y el panel de
     configuracion.

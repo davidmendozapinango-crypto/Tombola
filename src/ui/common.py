@@ -1,19 +1,11 @@
-"""Ayudantes compartidos de renderizado UI con Pygame (no OOP).
+"""Shared Pygame UI rendering helpers (non-OOP)."""
 
-Descripción:
-    Contiene funciones utilitarias para dibujar texto, botones, inputs y
-    paneles. También provee pequeñas utilidades visuales (mezcla de colores,
-    ajuste de texto) usadas por las pantallas de la UI.
-
-Notas:
-    - Estas funciones asumen que Pygame ya fue inicializado por el caller.
-    - Se documentan en español para facilitar la comprensión a usuarios
-      principiantes.
-"""
-
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 import pygame
 from src.config import (
+    COLOR_BORDE_CONTENEDOR,
+    COLOR_BTN_VERDE_CLARO,
     COLOR_CHARCOAL,
     COLOR_MINT,
     COLOR_MOSS,
@@ -26,16 +18,70 @@ from src.config import (
 )
 from src.ods.data import get_sdg_color, get_sdg_messages, get_sdg_name, list_sdg_ids
 
+FONT_SIZE_SCALE = 1.2
+FONT_DIR = Path(__file__).resolve().parents[2] / "assets" / "images" / "font"
+FONT_CANDIDATES = (
+    "PatrickHand-Regular.ttf",
+    "ChildosFREEPERSONALUSE-Regular.otf",
+    "ChildosFREEPERSONALUSE-Medium.otf",
+    "ChildosFREEPERSONALUSE-SemiBold.otf",
+    "ChildosFREEPERSONALUSE-Light.otf",
+    "ChildosFREEPERSONALUSE-Bold.otf",
+    "Childo.otf",
+    "ChildosDEMO-Regular.otf",
+)
+FONT_PATH = None
+for candidate in FONT_CANDIDATES:
+    candidate_path = FONT_DIR / candidate
+    if candidate_path.exists():
+        FONT_PATH = candidate_path
+        break
+if FONT_PATH is None:
+    FONT_PATH = FONT_DIR / FONT_CANDIDATES[0]
 
-def get_font(size: int, bold: bool = False, font_name: str = "assets/fonts/ChildosArabic.ttf") -> pygame.font.Font:
-    """Obtener una fuente Pygame consistente con el diseño de Canva."""
+
+def _font_renders_sample(font: pygame.font.Font, sample: str) -> bool:
+    """Return True when the font can render a representative sample without collapsing."""
     try:
-        # Intenta cargar la tipografía personalizada de Canva
-        font = pygame.font.Font(font_name, size)
-    except IOError:
-        # Fuente del sistema redondeada y amigables como alternativa
-        font = pygame.font.SysFont("ubuntu", size)
-        
+        rendered = font.render(sample, True, (255, 255, 255))
+        rect = rendered.get_rect()
+        return rect.width > 0 and rect.height > 0
+    except Exception:
+        return False
+
+
+def _font_has_lowercase_and_digits(font: pygame.font.Font) -> bool:
+    """Return True when the font can render lowercase letters and digits."""
+    sample = "0123456789abcdefghijklmnopqrstuvwxyz"
+    return _font_renders_sample(font, sample)
+
+
+def get_font(size: int, bold: bool = False) -> pygame.font.Font:
+    """Return a Pygame font for the given size, preferring the bundled font when it renders digits properly."""
+    if not pygame.font.get_init():
+        pygame.font.init()
+
+    scaled_size = max(1, int(size * FONT_SIZE_SCALE))
+    try:
+        font = pygame.font.Font(str(FONT_PATH), scaled_size)
+        if font is not None and _font_has_lowercase_and_digits(font):
+            if bold:
+                font.set_bold(True)
+            return font
+    except Exception:
+        pass
+
+    for family in ("Arial", "Segoe UI", "Liberation Sans", "DejaVu Sans"):
+        try:
+            font = pygame.font.SysFont(family, scaled_size)
+            if _font_has_lowercase_and_digits(font):
+                if bold:
+                    font.set_bold(True)
+                return font
+        except Exception:
+            continue
+
+    font = pygame.font.SysFont("Arial", scaled_size)
     if bold:
         font.set_bold(True)
     return font
@@ -85,6 +131,8 @@ def draw_button(
     hovered: bool = False,
     active: bool = True,
     focused: bool = False,
+    bg_color: Optional[Tuple[int, int, int]] = None,
+    text_color: Optional[Tuple[int, int, int]] = None,
 ) -> pygame.Rect:
     """Dibujar un botón con feedback visual (hover, focus y pressed).
 
@@ -100,17 +148,20 @@ def draw_button(
         pygame.Rect: El rectángulo del botón (idéntico al pasado como `rect`).
     """
     pressed = hovered and pygame.mouse.get_pressed()[0] and active
-    bg_color = COLOR_MOSS if active else COLOR_SAGE_LIGHT
+    if bg_color is None:
+        bg_color = COLOR_BTN_VERDE_CLARO if active else COLOR_SAGE_LIGHT
     if (hovered or focused) and active:
-        bg_color = COLOR_PINE
+        bg_color = COLOR_BORDE_CONTENEDOR
     if pressed:
-        bg_color = (46, 82, 45)
-    pygame.draw.rect(surface, bg_color, rect, border_radius=6)
+        bg_color = COLOR_BORDE_CONTENEDOR
+    pygame.draw.rect(surface, bg_color, rect, border_radius=8)
     border_width = 4 if focused else 2
-    pygame.draw.rect(surface, COLOR_CHARCOAL, rect, width=border_width, border_radius=6)
-    text_color = (
-        COLOR_WHITE if (hovered or focused or pressed) and active else COLOR_CHARCOAL
-    )
+    pygame.draw.rect(surface, COLOR_BORDE_CONTENEDOR, rect, width=border_width, border_radius=8)
+    if text_color is None:
+        if bg_color == COLOR_BORDE_CONTENEDOR:
+            text_color = COLOR_WHITE
+        else:
+            text_color = COLOR_CHARCOAL
     offset = 2 if pressed else 0
     draw_text(
         surface,

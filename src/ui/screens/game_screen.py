@@ -145,7 +145,7 @@ def _draw_card(
                 surface,
                 str(value),
                 rect.center,
-                font_size=max(12, cell_size // 2),
+                font_size=max(12, min(cell_size - 4, 24)),
                 color=text_color,
                 center=True,
             )

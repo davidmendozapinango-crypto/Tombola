@@ -11,6 +11,7 @@ from typing import Any, Dict
 import pygame
 from src.auth.validator import check_password_criteria, validate_registration_data
 from src.config import (
+    COLOR_BORDE_CONTENEDOR,
     COLOR_CHARCOAL,
     COLOR_MINT,
     COLOR_MOSS,
@@ -480,7 +481,7 @@ def _draw_validator_panel(surface: pygame.Surface, state: Dict[str, Any]) -> Non
     )
     pygame.draw.line(
         surface,
-        (76, 122, 79),
+        COLOR_BORDE_CONTENEDOR,
         (panel_rect.x + 18, panel_rect.y + 75),
         (panel_rect.right - 18, panel_rect.y + 75),
         1,
