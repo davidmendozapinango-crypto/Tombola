@@ -1,18 +1,22 @@
-"""Card generation helpers (non-OOP)."""
-
 import random
 from typing import Any, Container, Dict, List, Optional, Sequence, Set, Tuple
 
+from src.core.R2_galeria_matrices import (
+    diags_sin_centro,
+    diagonales_espaciadas,
+    esquinas,
+    relojes_arena_A,
+    relojes_arena_B,
+    rombos,
+    tornados,
+    zeta_ene,
+)
 
+#funcion adaptada
 def generate_card(
-    dimension: int, pattern: Optional[Set[Tuple[int, int]]] = None
+    dimension: int, pattern: Optional[Set[Tuple[int, int]]] = None, card_type: str = "A", is_main: bool = True
 ) -> List[List[Optional[int]]]:
-    """Generate an NxN card.
-
-    If a figure pattern is provided, only those cells receive numbers from the
-    range 1..N*N; the rest are left as None. Without a pattern the whole grid is
-    filled, preserving backward compatibility for tests and demos.
-    """
+    """Genera una tarjeta NxN colocando los números aleatorios en el orden exacto de la secuencia."""
     grid: List[List[Optional[int]]] = [
         [None for _ in range(dimension)] for _ in range(dimension)
     ]
@@ -21,13 +25,22 @@ def generate_card(
 
     if pattern is None:
         index = 0
-        for row in range(dimension):
-            for col in range(dimension):
-                grid[row][col] = numbers[index]
+        for r in range(dimension):
+            for c in range(dimension):
+                grid[r][c] = numbers[index]
                 index += 1
         return grid
 
+    dicc_funciones = {"A": relojes_arena_A, "B": relojes_arena_B, "C": rombos, "D": esquinas, "E": tornados, "F": diagonales_espaciadas, "G": zeta_ene, "H": diags_sin_centro}
+    
+    funcion_matriz = dicc_funciones.get(card_type, relojes_arena_A)
+    p, c = funcion_matriz(dimension)
+    matriz_secuencia = p if is_main else c
+
+    #Creacion una lista de celdas y las se ordena según el número de secuencia programado
     pattern_cells = list(pattern)
+    pattern_cells.sort(key=lambda celda: matriz_secuencia[celda[0]][celda[1]])
+    #Se colocan los números aleatorios respetando el orden de la secuencia
     for index, (row, col) in enumerate(pattern_cells):
         if 0 <= row < dimension and 0 <= col < dimension:
             grid[row][col] = numbers[index]

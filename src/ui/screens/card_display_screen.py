@@ -69,7 +69,7 @@ def _draw_preview_card(
                     surface,
                     str(sequence),
                     rect.center,
-                    font_size=max(10, cell_size // 2),
+                    font_size=max(10, min(cell_size - 4, 24)),
                     color=COLOR_WHITE,
                     center=True,
                 )

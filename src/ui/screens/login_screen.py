@@ -6,6 +6,7 @@ import pygame
 
 from src.auth.session import login
 from src.config import (
+    COLOR_BTN_ORO_CLARO,
     COLOR_CHARCOAL,
     COLOR_MINT,
     COLOR_MOSS,
@@ -138,7 +139,7 @@ def _draw_tabs(
         center=True,
     )
 
-    bg = (107, 156, 95) if hovered["tab_register"] else COLOR_SAGE_LIGHT
+    bg = COLOR_BTN_ORO_CLARO if hovered["tab_register"] else COLOR_SAGE_LIGHT
     pygame.draw.rect(surface, bg, register_rect, border_radius=8)
     pygame.draw.rect(surface, COLOR_PINE, register_rect, width=2, border_radius=8)
     draw_text(

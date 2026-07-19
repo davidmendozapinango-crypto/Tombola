@@ -1,342 +1,14 @@
-"""Definiciones de figuras de tarjetas SDG y ayudantes de detección de ganadores (no OOP).
-
-El proyecto proporciona 8 familias de figuras de cartas (AH). Cada familia tiene una familia principal
-figura (tipo 1) y figura complementaria (tipo 2). Las formas a continuación fueron
-interpretado a partir de los activos PNG proporcionados en assets/images/ods/.
-
-Las coordenadas tienen índice cero (fila, columna) para una cuadrícula de referencia de 5x5. Las cifras
-se aplican tal cual a cualquier dimensión >= 5; las celdas fuera de la cuadrícula de referencia lo hacen
-no pertenecen a la figura.
-"""
-
 from typing import Any, Container, Dict, List, Optional, Sequence, Set, Tuple
-
-_FIGURES: Dict[str, Dict[str, Set[Tuple[int, int]]]] = {
-    "A": {
-        "main": {
-            (0, 0),
-            (0, 1),
-            (0, 2),
-            (0, 3),
-            (0, 4),
-            (1, 1),
-            (1, 2),
-            (1, 3),
-            (2, 2),
-            (3, 1),
-            (3, 2),
-            (3, 3),
-            (4, 0),
-            (4, 1),
-            (4, 2),
-            (4, 3),
-            (4, 4),
-        },
-        "complement": {
-            (0, 0),
-            (0, 4),
-            (1, 0),
-            (1, 1),
-            (1, 3),
-            (1, 4),
-            (2, 0),
-            (2, 1),
-            (2, 2),
-            (2, 3),
-            (2, 4),
-            (3, 0),
-            (3, 1),
-            (3, 3),
-            (3, 4),
-            (4, 0),
-            (4, 4),
-        },
-    },
-    "B": {
-        "main": {
-            (0, 0),
-            (0, 4),
-            (1, 0),
-            (1, 1),
-            (1, 3),
-            (1, 4),
-            (2, 0),
-            (2, 1),
-            (2, 2),
-            (2, 3),
-            (2, 4),
-            (3, 0),
-            (3, 1),
-            (3, 3),
-            (3, 4),
-            (4, 0),
-            (4, 4),
-        },
-        "complement": {
-            (0, 0),
-            (0, 1),
-            (0, 2),
-            (0, 3),
-            (0, 4),
-            (1, 1),
-            (1, 2),
-            (1, 3),
-            (2, 2),
-            (3, 1),
-            (3, 2),
-            (3, 3),
-            (4, 0),
-            (4, 1),
-            (4, 2),
-            (4, 3),
-            (4, 4),
-        },
-    },
-    "C": {
-        "main": {
-            (0, 2),
-            (1, 1),
-            (1, 2),
-            (1, 3),
-            (2, 0),
-            (2, 1),
-            (2, 2),
-            (2, 3),
-            (2, 4),
-            (3, 1),
-            (3, 2),
-            (3, 3),
-            (4, 2),
-        },
-        "complement": {
-            (0, 2),
-            (1, 1),
-            (1, 2),
-            (1, 3),
-            (2, 0),
-            (2, 1),
-            (2, 2),
-            (2, 3),
-            (2, 4),
-            (3, 1),
-            (3, 2),
-            (3, 3),
-            (4, 2),
-        },
-    },
-    "D": {
-        "main": {
-            (0, 0),
-            (0, 1),
-            (0, 3),
-            (0, 4),
-            (1, 0),
-            (1, 4),
-            (3, 0),
-            (3, 4),
-            (4, 0),
-            (4, 1),
-            (4, 3),
-            (4, 4),
-        },
-        "complement": {
-            (0, 0),
-            (0, 1),
-            (0, 3),
-            (0, 4),
-            (1, 0),
-            (1, 4),
-            (3, 0),
-            (3, 4),
-            (4, 0),
-            (4, 1),
-            (4, 3),
-            (4, 4),
-        },
-    },
-    "E": {
-        "main": {
-            (0, 0),
-            (0, 2),
-            (0, 4),
-            (1, 1),
-            (1, 3),
-            (2, 0),
-            (2, 2),
-            (2, 4),
-            (3, 1),
-            (3, 3),
-            (4, 0),
-            (4, 2),
-            (4, 4),
-        },
-        "complement": {
-            (0, 0),
-            (0, 2),
-            (0, 4),
-            (1, 1),
-            (1, 3),
-            (2, 0),
-            (2, 2),
-            (2, 4),
-            (3, 1),
-            (3, 3),
-            (4, 0),
-            (4, 2),
-            (4, 4),
-        },
-    },
-    "F": {
-        "main": {
-            (0, 0),
-            (0, 2),
-            (0, 4),
-            (1, 1),
-            (1, 3),
-            (2, 0),
-            (2, 2),
-            (2, 4),
-            (3, 1),
-            (3, 3),
-            (4, 0),
-            (4, 2),
-            (4, 4),
-        },
-        "complement": {
-            (0, 0),
-            (0, 2),
-            (0, 4),
-            (1, 1),
-            (1, 3),
-            (2, 0),
-            (2, 2),
-            (2, 4),
-            (3, 1),
-            (3, 3),
-            (4, 0),
-            (4, 2),
-            (4, 4),
-        },
-    },
-    "G": {
-        "main": {
-            (0, 0),
-            (0, 1),
-            (0, 2),
-            (0, 3),
-            (0, 4),
-            (1, 3),
-            (2, 2),
-            (3, 1),
-            (4, 0),
-            (4, 1),
-            (4, 2),
-            (4, 3),
-            (4, 4),
-        },
-        "complement": {
-            (0, 0),
-            (0, 4),
-            (1, 0),
-            (1, 3),
-            (1, 4),
-            (2, 0),
-            (2, 2),
-            (2, 4),
-            (3, 0),
-            (3, 1),
-            (3, 4),
-            (4, 0),
-            (4, 4),
-        },
-    },
-    "H": {
-        "main": {
-            (0, 0),
-            (0, 4),
-            (1, 1),
-            (1, 3),
-            (3, 1),
-            (3, 3),
-            (4, 0),
-            (4, 4),
-        },
-        "complement": {
-            (0, 0),
-            (0, 4),
-            (1, 1),
-            (1, 3),
-            (3, 1),
-            (3, 3),
-            (4, 0),
-            (4, 4),
-        },
-    },
-    "I": {
-        "main": {
-            (0, 0),
-            (0, 4),
-            (1, 0),
-            (1, 4),
-            (2, 0),
-            (2, 4),
-            (3, 0),
-            (3, 4),
-            (4, 0),
-            (4, 1),
-            (4, 2),
-            (4, 3),
-            (4, 4),
-        },
-        "complement": {
-            (0, 0),
-            (0, 1),
-            (0, 2),
-            (0, 3),
-            (0, 4),
-            (1, 0),
-            (1, 4),
-            (2, 0),
-            (2, 4),
-            (3, 0),
-            (3, 4),
-            (4, 0),
-            (4, 4),
-        },
-    },
-    "J": {
-        "main": {
-            (0, 0),
-            (0, 1),
-            (0, 2),
-            (0, 3),
-            (0, 4),
-            (1, 0),
-            (2, 0),
-            (3, 0),
-            (4, 0),
-            (4, 1),
-            (4, 2),
-            (4, 3),
-            (4, 4),
-        },
-        "complement": {
-            (0, 0),
-            (0, 1),
-            (0, 2),
-            (0, 3),
-            (0, 4),
-            (1, 4),
-            (2, 4),
-            (3, 4),
-            (4, 0),
-            (4, 1),
-            (4, 2),
-            (4, 3),
-            (4, 4),
-        },
-    },
-}
+from src.core.R2_galeria_matrices import (
+    diags_sin_centro,
+    diagonales_espaciadas,
+    esquinas,
+    relojes_arena_A,
+    relojes_arena_B,
+    rombos,
+    tornados,
+    zeta_ene,
+)
 
 # Map each SDG to a figure family. The mapping is cyclic across the 17 SDGs.
 SDG_TO_CARD_TYPE = {
@@ -358,35 +30,47 @@ SDG_TO_CARD_TYPE = {
     16: "F",
     17: "G",
 }
-
+#Eliminado scale_patters y variable FIGURES para reemplazar logica de generacion de matrices y patrones
 
 def get_card_type(sdg_id: int) -> str:
     """Return the figure family letter for the given SDG id."""
     return SDG_TO_CARD_TYPE.get(sdg_id, "A")
 
 
-def _scale_pattern(
-    pattern: Set[Tuple[int, int]], dimension: int
-) -> Set[Tuple[int, int]]:
-    """Scale a 5x5 reference pattern to the requested card dimension."""
-    if dimension <= 5:
-        return pattern
-    scaled: Set[Tuple[int, int]] = set()
-    max_index = dimension - 1
-    for row, col in pattern:
-        new_row = round(row * max_index / 4)
-        new_col = round(col * max_index / 4)
-        scaled.add((new_row, new_col))
-    return scaled
-
-
 def get_figure_pattern(
     card_type: str, is_main: bool, dimension: int = 5
 ) -> Set[Tuple[int, int]]:
-    """Return the set of (row, col) cells that form the figure."""
-    key = "main" if is_main else "complement"
-    base_pattern = _FIGURES.get(card_type, _FIGURES["A"])[key]
-    return _scale_pattern(base_pattern, dimension)
+    """Obtiene las coordenadas reales de la figura usando la lógica matemática de Albert."""
+    #Llamamos a la función según la letra seleccionada
+    if card_type == "A":
+        p, c = relojes_arena_A(dimension)
+    elif card_type == "B":
+        p, c = relojes_arena_B(dimension)
+    elif card_type == "C":
+        p, c = rombos(dimension)
+    elif card_type == "D":
+        p, c = esquinas(dimension)
+    elif card_type == "E":
+        p, c = tornados(dimension)
+    elif card_type == "F":
+        p, c = diagonales_espaciadas(dimension)
+    elif card_type == "G":
+        p, c = zeta_ene(dimension)
+    elif card_type == "H":
+        p, c = diags_sin_centro(dimension)
+    else:
+        p, c = relojes_arena_A(dimension)
+        
+    # Seleccionamos la matriz principal y/o complmento
+    matriz_elegida = p if is_main else c
+    
+    #Extraemos las coordenadas (fila, columna) donde el patrón no sea cero
+    pattern: Set[Tuple[int, int]] = set()
+    for r in range(dimension):
+        for col in range(dimension):
+            if matriz_elegida[r][col] != 0:
+                pattern.add((r, col))       
+    return pattern
 
 
 def is_figure_complete(
