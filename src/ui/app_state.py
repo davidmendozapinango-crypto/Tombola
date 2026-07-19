@@ -55,7 +55,10 @@ def set_info(state: Dict[str, Any], message: str) -> None:
 
 
 def cycle_focus(state: Dict[str, Any], direction: int = 1) -> None:
-    """Mover el foco de teclado en la dirección indicada (1 o -1)."""
+    """Mover el foco de teclado en la dirección indicada (1 o -1).
+
+    Si no hay controles enfocables no hace nada.
+    """
     focusable = state.get("focusable") or []
     if not focusable:
         return

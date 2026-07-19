@@ -55,7 +55,7 @@ def make_engine_context(
         impact_store: Lista para almacenar impactos en memoria; si no se provee se crea una nueva.
         impact_persistence: Mecanismo opcional para persistir impactos.
 
-    Returns:
+    Devuelve:
         Dict[str, Any]: Contexto empaquetado para pasar al motor.
     """
     return {
@@ -85,7 +85,7 @@ def execute_command(command: Dict[str, Any], context: Dict[str, Any]) -> Dict[st
         command: Diccionario con la definición del comando proveniente de la UI.
         context: Contexto creado por `make_engine_context` que contiene colaboradores.
 
-    Returns:
+    Devuelve:
         Dict[str, Any]: Resultado de la ejecución con `status` y `result_payload`,
         o una respuesta de error construida por `build_error_response`.
     """

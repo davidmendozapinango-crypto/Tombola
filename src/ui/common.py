@@ -70,6 +70,9 @@ def draw_text(
         font_size: Tamaño de la fuente.
         color: Color RGB del texto.
         center: Si True, `position` es el centro del rectángulo; si False es topleft.
+
+    Devuelve:
+        pygame.Rect: Rectángulo límite del texto renderizado.
     """
     font = get_font(font_size)
     rendered = font.render(str(text), True, color)
@@ -100,6 +103,9 @@ def draw_button(
         hovered: Indica si el mouse está sobre el botón.
         active: Si False, el botón aparece deshabilitado.
         focused: Indica foco por teclado.
+
+    Devuelve:
+        pygame.Rect: El rectángulo del botón (idéntico al pasado como `rect`).
     """
     pressed = hovered and pygame.mouse.get_pressed()[0] and active
     bg_color = COLOR_MOSS if active else COLOR_SAGE_LIGHT
@@ -136,6 +142,9 @@ def draw_input(
     """Dibujar un campo de texto simple y devolver su rectángulo.
 
     Si `focused` se muestra un cursor; si `mask` es True se enmascara el texto.
+
+    Devuelve:
+        pygame.Rect: El rectángulo donde se dibujó el campo.
     """
     bg_color = COLOR_WHITE if focused else COLOR_MINT
     pygame.draw.rect(surface, bg_color, rect)
@@ -169,7 +178,10 @@ def draw_input(
 def draw_panel(
     surface: pygame.Surface, rect: pygame.Rect, title: Optional[str] = None
 ) -> None:
-    """Dibujar un panel simple con título opcional."""
+    """Dibujar un panel simple con título opcional.
+
+    Devuelve: None (operación de dibujo sobre `surface`).
+    """
     pygame.draw.rect(surface, COLOR_WHITE, rect, border_radius=8)
     pygame.draw.rect(surface, COLOR_SAGE_LIGHT, rect, width=2, border_radius=8)
     if title:
@@ -184,7 +196,10 @@ def draw_error_message(
     position: Tuple[int, int],
     font_size: int = 20,
 ) -> None:
-    """Dibujar un mensaje de error con color de alerta."""
+    """Dibujar un mensaje de error con color de alerta.
+
+    Devuelve: None (operación de dibujo sobre `surface`).
+    """
     draw_text(surface, message, position, font_size=font_size, color=COLOR_RED_ALERT)
 
 
@@ -192,6 +207,9 @@ def wrap_text(text: str, max_width: int, font_size: int = 20) -> List[str]:
     """Ajustar texto en varias líneas para que quepa en `max_width` píxeles.
 
     Usa la medida de la fuente para cortar en palabras y construir líneas.
+
+    Devuelve:
+        List[str]: Lista de líneas ajustadas.
     """
     font = get_font(font_size)
     words = str(text).split()

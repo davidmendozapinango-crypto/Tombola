@@ -113,6 +113,14 @@ def make_game_record(
     No incluye campos derivados como puntaje o ganador; esos se calculan con
     `calculate_game_summary` cuando se necesiten.
 
+    Args:
+        player_id: Identificador del jugador (por ejemplo, cédula).
+        sdg_id: Identificador del esquema de juego (tipo de cartón).
+        dimension: Dimensión (n) de los cartones (n x n).
+        main_card: Matriz que representa el cartón principal.
+        complement_card: Matriz que representa el cartón complementario.
+        drawn_numbers: Lista de números sorteados en la partida.
+
     Returns:
         Dict[str, Any]: Registro de partida listo para persistir.
     """
@@ -153,6 +161,13 @@ def calculate_game_summary(game: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: Diccionario con keys: 'main_points', 'complement_points',
         'total_points', 'winning_card'.
+
+    Notas:
+        - Se evalúa primero el cartón principal; si completa el patrón, se
+          declara ganador. En caso contrario se evalúa el cartón complementario.
+        - La función utiliza `get_figure_pattern` para obtener el patrón
+          correspondiente al tipo de cartón y `is_figure_complete` para la
+          comprobación de completitud.
     """
     main_card = game["main_card"]
     complement_card = game["complement_card"]

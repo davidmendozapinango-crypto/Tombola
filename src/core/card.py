@@ -94,7 +94,7 @@ def card_sum(card: Sequence[Sequence[Optional[int]]]) -> int:
     Args:
         card: Matriz de la tarjeta con enteros o `None` en celdas vacías.
 
-    Returns:
+    Devuelve:
         int: Suma de los valores presentes (ignora `None`).
     """
     total = 0
@@ -148,7 +148,7 @@ def mark_number(
 def is_fully_marked(card: Sequence[Sequence[Optional[int]]], marked: Set[int]) -> bool:
     """Comprobar si todas las celdas numeradas han sido marcadas.
 
-    Returns:
+    Devuelve:
         bool: True si no hay ninguna celda numerada que no esté en `marked`.
     """
     for row in card:
@@ -165,7 +165,7 @@ def card_points(card: Sequence[Sequence[Optional[int]]], marked: Container[int])
         card: Matriz de la tarjeta.
         marked: Contenedor (por ejemplo, set) con los números marcados.
 
-    Returns:
+    Devuelve:
         int: Suma de los valores que están presentes en `marked`.
     """
     total = 0

@@ -90,5 +90,13 @@ def load_impact_records(persistence: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def impact_records_file_path(persistence: Dict[str, Any]) -> Path:
-    """Return the absolute path of the impact records file."""
+    """Devuelve la ruta absoluta del archivo de registros de impacto.
+
+    Args:
+        persistence: Estructura creada por `make_impact_persistence` que
+            contiene la clave 'file_path'.
+
+    Returns:
+        Path: Ruta absoluta al archivo JSONL de registros de impacto.
+    """
     return persistence["file_path"]

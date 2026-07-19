@@ -49,6 +49,9 @@ def _build_sample_payload() -> Dict[str, Any]:
 
     Genera una tarjeta 5x5 aleatoria y toma las primeras 7 tiradas como
     `drawn_numbers` para demostrar la funcionalidad.
+
+    Devuelve:
+        Dict[str,Any]: Payload preparado para el flujo de cálculo.
     """
     dimension = 5
     card = generate_card(dimension)

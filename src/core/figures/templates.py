@@ -56,7 +56,7 @@ TEMPLATES = {
 
 
 def scale_template(template5, n):
-    """Escala una plantilla 5x5 a tamaño n devolviendo una máscara booleana n x n.
+    """Escalar una plantilla 5x5 a tamaño `n` y devolver una máscara booleana.
 
     Args:
         template5: Lista de 5 cadenas con 'X' para ocupadas y '.' para vacías.
@@ -68,7 +68,7 @@ def scale_template(template5, n):
     Notas:
         - La escala se realiza mapeando cada coordenada n->índice 0..4 de la
           plantilla original mediante un simple floor-scaling: i5 = i*5//n.
-        - Se valida que `template5` tenga dimensiones 5x5 y que `n` sea impar
+        - Validamos que `template5` tenga dimensión 5x5 y que `n` sea impar
           para mantener simetría en las familias.
     """
     import numpy as np
