@@ -63,7 +63,7 @@ def main() -> None:
     clock = pygame.time.Clock()
 
     state = make_app_state()
-    _init_screen(state, "login")
+    _init_screen(state, "menu")
 
     while state["running"]:
         current = state["current_screen"]

@@ -8,8 +8,9 @@ from src.auth.session import make_session
 def make_app_state() -> Dict[str, Any]:
     """Create the global application state dictionary."""
     return {
-        "current_screen": "login",
+        "current_screen": "menu",
         "running": True,
+        "pending_screen_after_login": None,
         "session": make_session(),
         "players": [],
         "games": [],
@@ -46,13 +47,21 @@ def cycle_focus(state: Dict[str, Any], direction: int = 1) -> None:
     focusable = state.get("focusable") or []
     if not focusable:
         return
-    state["focus_index"] = (state["focus_index"] + direction) % len(focusable)
+
+    current_index = state.get("focus_index", 0)
+    if current_index < 0:
+        state["focus_index"] = 0 if direction > 0 else len(focusable) - 1
+        return
+
+    state["focus_index"] = (current_index + direction) % len(focusable)
 
 
 def get_focused(state: Dict[str, Any]) -> str:
     """Return the currently focused control name."""
     focusable = state.get("focusable") or []
     if not focusable:
+        return ""
+    if state.get("focus_index", 0) < 0:
         return ""
     return focusable[state["focus_index"]]
 

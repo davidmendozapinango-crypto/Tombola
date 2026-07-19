@@ -338,7 +338,9 @@ def _try_login(state: Dict[str, Any]) -> str:
 
     login(state["session"], found)
     set_info(state, f"Bienvenido, {found['full_name']}")
-    return "menu"
+    next_screen = state.get("pending_screen_after_login") or "menu"
+    state["pending_screen_after_login"] = None
+    return next_screen
 
 
 def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
