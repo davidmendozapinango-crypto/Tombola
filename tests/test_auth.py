@@ -1,6 +1,8 @@
 """Tests for authentication and registration validation."""
+import pygame
 import pytest
 from src.auth.validator import check_password_criteria, validate_password, validate_registration_data
+from src.ui.screens.register_screen import handle_event
 
 def test_valid_password_passes():
     (valid, errors) = validate_password('Hola1=')
@@ -45,3 +47,19 @@ def test_registration_missing_required_fields():
     (valid, errors) = validate_registration_data(data)
     assert not valid
     assert len(errors) >= 4
+
+
+def test_register_screen_allows_spaces_in_text_inputs():
+    state = {
+        'inputs': {'full_name': ''},
+        'focusable': ['full_name', 'register'],
+        'focus_index': 0,
+        'current_screen': 'register',
+        'rects': {},
+    }
+
+    event = pygame.event.Event(pygame.KEYDOWN, key=pygame.K_SPACE, unicode=' ')
+    result = handle_event(state, event)
+
+    assert result == 'register'
+    assert state['inputs']['full_name'] == ' '

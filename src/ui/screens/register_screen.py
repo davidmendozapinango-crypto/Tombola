@@ -225,6 +225,8 @@ def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
                 _change_state(state, -1)
             elif focused == "state_right":
                 _change_state(state, 1)
+            elif focused in state["inputs"] and event.key == pygame.K_SPACE:
+                state["inputs"][focused] += " "
             return state["current_screen"]
         if focused in state["inputs"]:
             if event.key == pygame.K_BACKSPACE:

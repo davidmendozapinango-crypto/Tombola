@@ -11,15 +11,15 @@
 - [X] Activar el entorno virtual.
 - [X] Ejecutar `python -m pytest tests/` y confirmar que todas las pruebas pasan.
 - [X] Eliminar o renombrar temporalmente `data/JUGADORES.bin` y `data/JUEGOS.bin` para probar con datos limpios.
-- [ ] Ejecutar `python src/main.py`.
+- [X] Ejecutar `python src/main.py`.
 
 ---
 
 ## 1. Entorno y arranque
 
-- [ ] **E1** Ejecutar `python src/main.py` y verificar que aparece ventana de 1024×768 con pantalla de login.
-- [ ] **E2** Jugar una ronda completa y verificar que las animaciones son fluidas.
-- [ ] **E3** Presionar `Esc` en login o hacer clic en "Salir" y verificar cierre limpio.
+- [X] **E1** Ejecutar `python src/main.py` y verificar que aparece ventana de 1024×768 con pantalla de login.
+- [X] **E2** Jugar una ronda completa y verificar que las animaciones son fluidas.
+- [X] **E3** Presionar `Esc` en login o hacer clic en "Salir" y verificar cierre limpio.
 
 ---
 
@@ -27,30 +27,30 @@
 
 ### Registro
 
-- [ ] **A1** En login, clic en "Registrarse" y verificar que aparece pantalla de registro.
-- [ ] **A2** Escribir `"abc"` en "Clave de acceso" y verificar retroalimentación de criterios en tiempo real.
-- [ ] **A3** Intentar registrar con clave `"A1="` (3 caracteres) y verificar mensaje de longitud inválida.
-- [ ] **A4** Intentar registrar con clave `"hola1="` y verificar mensaje de falta de mayúscula.
-- [ ] **A5** Intentar registrar con clave `"HOLA1="` y verificar mensaje de falta de minúscula.
-- [ ] **A6** Intentar registrar con clave `"Hola="` y verificar mensaje de falta de número.
-- [ ] **A7** Intentar registrar con clave `"Hola12"` y verificar mensaje de falta de carácter especial.
-- [ ] **A8** Intentar registrar con clave `"Hola1111="` y verificar mensaje de run mayor a 3.
-- [ ] **A9** Ingresar clave `"Hola1="` y confirmar `"Hola2="`, verificar mensaje de claves no coincidentes.
-- [ ] **A10** Registrar dos veces la misma cédula y verificar mensaje de jugador existente.
-- [ ] **A11** Ingresar estado `"XYZ"` y verificar mensaje de código de estado inválido.
-- [ ] **A12** Completar formulario válido y verificar regreso a login con mensaje de éxito.
-- [ ] **A13** Navegar con `Tab` en registro y verificar foco visible en cada campo y botón.
-- [ ] **A14** Presionar `Esc` en registro y verificar regreso a login.
+- [X] **A1** En login, clic en "Registrarse" y verificar que aparece pantalla de registro.
+- [X] **A2** Escribir `"abc"` en "Clave de acceso" y verificar retroalimentación de criterios en tiempo real.
+- [X] **A3** Intentar registrar con clave `"A1="` (3 caracteres) y verificar mensaje de longitud inválida.
+- [X] **A4** Intentar registrar con clave `"hola1="` y verificar mensaje de falta de mayúscula.
+- [X] **A5** Intentar registrar con clave `"HOLA1="` y verificar mensaje de falta de minúscula.
+- [X] **A6** Intentar registrar con clave `"Hola="` y verificar mensaje de falta de número.
+- [X] **A7** Intentar registrar con clave `"Hola12"` y verificar mensaje de falta de carácter especial.
+- [X] **A8** Intentar registrar con clave `"Hola1111="` y verificar mensaje de run mayor a 3.
+- [X] **A9** Ingresar clave `"Hola1="` y confirmar `"Hola2="`, verificar mensaje de claves no coincidentes.
+- [X] **A10** Registrar dos veces la misma cédula y verificar mensaje de jugador existente.
+- [X] **A11** Ingresar estado `"XYZ"` y verificar mensaje de código de estado inválido.
+- [X] **A12** Completar formulario válido y verificar regreso a login con mensaje de éxito.
+- [X] **A13** Navegar con `Tab` en registro y verificar foco visible en cada campo y botón.
+- [X] **A14** Presionar `Esc` en registro y verificar regreso a login.
 
 ### Login
 
-- [ ] **A15** Clic en "Ingresar" sin llenar campos y verificar mensaje de campos vacíos.
-- [ ] **A16** Ingresar cédula inexistente y verificar mensaje de jugador no registrado.
-- [ ] **A17** Ingresar cédula válida con clave errónea y verificar mensaje de clave incorrecta.
-- [ ] **A18** Ingresar cédula y clave válidas y verificar ingreso al menú principal.
-- [ ] **A19** Presionar `Tab` en login y verificar foco visible.
-- [ ] **A20** Pasar mouse sobre botones y mantener clic, verificar hover y efecto de presión.
-- [ ] **A21** Presionar `Esc` en login y verificar cierre de aplicación.
+- [X] **A15** Clic en "Ingresar" sin llenar campos y verificar mensaje de campos vacíos.
+- [X] **A16** Ingresar cédula inexistente y verificar mensaje de jugador no registrado.
+- [X] **A17** Ingresar cédula válida con clave errónea y verificar mensaje de clave incorrecta.
+- [x] **A18** Ingresar cédula y clave válidas y verificar ingreso al menú principal.
+- [X] **A19** Presionar `Tab` en login y verificar foco visible.
+- [X] **A20** Pasar mouse sobre botones y mantener clic, verificar hover y efecto de presión.
+- [X] **A21** Presionar `Esc` en login y verificar cierre de aplicación.
 
 ---
 
