@@ -1,30 +1,47 @@
 import numpy as np
 from typing import Tuple
 
-def fill_from_mask(mask: np.ndarray, order: str='row', start: int=1) -> Tuple[np.ndarray, int]:
-    """Rellena con numeros una matriz a partir de una máscara booleana.
 
-    - mask: np.ndarray de tipo bool o 0/1 (n x n)
-    - order: 'row' (por filas), 'col' (por columnas), o 'spiral' (recorrido en espiral)
-    - start: numero inicial
-    Devuelve (matriz_numerada, next_start)
+def fill_from_mask(
+    mask: np.ndarray, order: str = "row", start: int = 1
+) -> Tuple[np.ndarray, int]:
+    """Rellenar una matriz numerada a partir de una máscara booleana.
+
+    Dada una máscara (n x n) con valores booleanos o 0/1, asigna números
+    consecutivos a las posiciones `True` siguiendo el orden indicado:
+    por filas ('row'), por columnas ('col') o en recorrido en espiral
+    ('spiral'). Devuelve la matriz numerada y el siguiente número libre.
+
+    Args:
+        mask: Matriz booleana o 0/1 que indica posiciones a llenar.
+        order: 'row' | 'col' | 'spiral' que indica el orden de llenado.
+        start: Número inicial a asignar.
+
+    Returns:
+        (matriz_numerada, next_start)
+
+    Notas:
+        - Normaliza la entrada a `numpy.array` para aceptar listas anidadas.
+        - Levanta `ValueError` si `order` no es uno de los valores esperados.
     """
+    # Aceptamos máscaras booleanas o matriciales; normalizamos a numpy array
+    mask = np.array(mask)
     n = mask.shape[0]
     mat = np.zeros((n, n), dtype=int)
     cont = start
-    if order == 'row':
+    if order == "row":
         for i in range(n):
             for j in range(n):
                 if mask[i, j]:
                     mat[i, j] = cont
                     cont += 1
-    elif order == 'col':
+    elif order == "col":
         for j in range(n):
             for i in range(n):
                 if mask[i, j]:
                     mat[i, j] = cont
                     cont += 1
-    elif order == 'spiral':
+    elif order == "spiral":
         (top, left) = (0, 0)
         (bottom, right) = (n - 1, n - 1)
         while top <= bottom and left <= right:

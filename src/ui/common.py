@@ -1,25 +1,76 @@
-"""Shared Pygame UI rendering helpers (non-OOP)."""
+"""Ayudantes compartidos de renderizado UI con Pygame (no OOP).
+
+Descripción:
+    Contiene funciones utilitarias para dibujar texto, botones, inputs y
+    paneles. También provee pequeñas utilidades visuales (mezcla de colores,
+    ajuste de texto) usadas por las pantallas de la UI.
+
+Notas:
+    - Estas funciones asumen que Pygame ya fue inicializado por el caller.
+    - Se documentan en español para facilitar la comprensión a usuarios
+      principiantes.
+"""
+
 from typing import Any, Dict, List, Optional, Tuple
 import pygame
-from src.config import COLOR_CHARCOAL, COLOR_MINT, COLOR_MOSS, COLOR_PINE, COLOR_RED_ALERT, COLOR_SAGE_LIGHT, COLOR_WHITE, WINDOW_HEIGHT, WINDOW_WIDTH
+from src.config import (
+    COLOR_CHARCOAL,
+    COLOR_MINT,
+    COLOR_MOSS,
+    COLOR_PINE,
+    COLOR_RED_ALERT,
+    COLOR_SAGE_LIGHT,
+    COLOR_WHITE,
+    WINDOW_HEIGHT,
+    WINDOW_WIDTH,
+)
 from src.ods.data import get_sdg_color, get_sdg_messages, get_sdg_name, list_sdg_ids
 
-def get_font(size: int, bold: bool=False) -> pygame.font.Font:
-    """Return a Pygame font for the given size."""
-    font = pygame.font.SysFont('Arial', size)
+
+def get_font(size: int, bold: bool = False) -> pygame.font.Font:
+    """Obtener una fuente Pygame para el tamaño solicitado.
+
+    Args:
+        size: Tamaño de la fuente en puntos.
+        bold: Indica si la fuente será en negrita.
+    """
+    font = pygame.font.SysFont("Arial", size)
     if bold:
         font.set_bold(True)
     return font
 
-def _blend_color(color_a: Tuple[int, int, int], color_b: Tuple[int, int, int], ratio: float) -> Tuple[int, int, int]:
-    """Blend two RGB colors by ratio (0.0 = color_a, 1.0 = color_b)."""
+
+def _blend_color(
+    color_a: Tuple[int, int, int], color_b: Tuple[int, int, int], ratio: float
+) -> Tuple[int, int, int]:
+    """Combinar dos colores RGB por una proporción.
+
+    ratio=0.0 -> color_a, ratio=1.0 -> color_b
+    """
     r = int(color_a[0] + (color_b[0] - color_a[0]) * ratio)
     g = int(color_a[1] + (color_b[1] - color_a[1]) * ratio)
     b = int(color_a[2] + (color_b[2] - color_a[2]) * ratio)
     return (r, g, b)
 
-def draw_text(surface: pygame.Surface, text: str, position: Tuple[int, int], font_size: int=24, color: Tuple[int, int, int]=COLOR_CHARCOAL, center: bool=False) -> pygame.Rect:
-    """Draw text on a surface and return its bounding rectangle."""
+
+def draw_text(
+    surface: pygame.Surface,
+    text: str,
+    position: Tuple[int, int],
+    font_size: int = 24,
+    color: Tuple[int, int, int] = COLOR_CHARCOAL,
+    center: bool = False,
+) -> pygame.Rect:
+    """Dibujar texto en una superficie y devolver su rectángulo de límite.
+
+    Args:
+        surface: Superficie Pygame donde dibujar.
+        text: Texto a renderizar.
+        position: Coordenada (x, y) usada como topleft o centro según `center`.
+        font_size: Tamaño de la fuente.
+        color: Color RGB del texto.
+        center: Si True, `position` es el centro del rectángulo; si False es topleft.
+    """
     font = get_font(font_size)
     rendered = font.render(str(text), True, color)
     rect = rendered.get_rect()
@@ -30,8 +81,26 @@ def draw_text(surface: pygame.Surface, text: str, position: Tuple[int, int], fon
     surface.blit(rendered, rect)
     return rect
 
-def draw_button(surface: pygame.Surface, text: str, rect: pygame.Rect, font_size: int=24, hovered: bool=False, active: bool=True, focused: bool=False) -> pygame.Rect:
-    """Draw a button with hover, focus and click feedback."""
+
+def draw_button(
+    surface: pygame.Surface,
+    text: str,
+    rect: pygame.Rect,
+    font_size: int = 24,
+    hovered: bool = False,
+    active: bool = True,
+    focused: bool = False,
+) -> pygame.Rect:
+    """Dibujar un botón con feedback visual (hover, focus y pressed).
+
+    Args:
+        surface: Superficie donde dibujar.
+        text: Texto del botón.
+        rect: Rectángulo que define la posición y tamaño.
+        hovered: Indica si el mouse está sobre el botón.
+        active: Si False, el botón aparece deshabilitado.
+        focused: Indica foco por teclado.
+    """
     pressed = hovered and pygame.mouse.get_pressed()[0] and active
     bg_color = COLOR_MOSS if active else COLOR_SAGE_LIGHT
     if (hovered or focused) and active:
@@ -41,21 +110,41 @@ def draw_button(surface: pygame.Surface, text: str, rect: pygame.Rect, font_size
     pygame.draw.rect(surface, bg_color, rect, border_radius=6)
     border_width = 4 if focused else 2
     pygame.draw.rect(surface, COLOR_CHARCOAL, rect, width=border_width, border_radius=6)
-    text_color = COLOR_WHITE if (hovered or focused or pressed) and active else COLOR_CHARCOAL
+    text_color = (
+        COLOR_WHITE if (hovered or focused or pressed) and active else COLOR_CHARCOAL
+    )
     offset = 2 if pressed else 0
-    draw_text(surface, text, (rect.centerx + offset, rect.centery + offset), font_size=font_size, color=text_color, center=True)
+    draw_text(
+        surface,
+        text,
+        (rect.centerx + offset, rect.centery + offset),
+        font_size=font_size,
+        color=text_color,
+        center=True,
+    )
     return rect
 
-def draw_input(surface: pygame.Surface, value: str, rect: pygame.Rect, focused: bool=False, mask: bool=False, placeholder: str='') -> pygame.Rect:
-    """Draw a text input field and return its rectangle."""
+
+def draw_input(
+    surface: pygame.Surface,
+    value: str,
+    rect: pygame.Rect,
+    focused: bool = False,
+    mask: bool = False,
+    placeholder: str = "",
+) -> pygame.Rect:
+    """Dibujar un campo de texto simple y devolver su rectángulo.
+
+    Si `focused` se muestra un cursor; si `mask` es True se enmascara el texto.
+    """
     bg_color = COLOR_WHITE if focused else COLOR_MINT
     pygame.draw.rect(surface, bg_color, rect)
     border_color = COLOR_PINE if focused else COLOR_SAGE_LIGHT
     pygame.draw.rect(surface, border_color, rect, width=2)
     text_color = COLOR_CHARCOAL
-    display_text = ''
+    display_text = ""
     if value:
-        display_text = '*' * len(value) if mask else value
+        display_text = "*" * len(value) if mask else value
     elif not focused:
         display_text = placeholder
         text_color = COLOR_SAGE_LIGHT
@@ -67,28 +156,49 @@ def draw_input(surface: pygame.Surface, value: str, rect: pygame.Rect, focused: 
         cursor_x = text_rect.right + 2
         cursor_top = rect.y + 8
         cursor_bottom = rect.bottom - 8
-        pygame.draw.line(surface, COLOR_CHARCOAL, (cursor_x, cursor_top), (cursor_x, cursor_bottom), 2)
+        pygame.draw.line(
+            surface,
+            COLOR_CHARCOAL,
+            (cursor_x, cursor_top),
+            (cursor_x, cursor_bottom),
+            2,
+        )
     return rect
 
-def draw_panel(surface: pygame.Surface, rect: pygame.Rect, title: Optional[str]=None) -> None:
-    """Draw a simple panel with an optional title."""
+
+def draw_panel(
+    surface: pygame.Surface, rect: pygame.Rect, title: Optional[str] = None
+) -> None:
+    """Dibujar un panel simple con título opcional."""
     pygame.draw.rect(surface, COLOR_WHITE, rect, border_radius=8)
     pygame.draw.rect(surface, COLOR_SAGE_LIGHT, rect, width=2, border_radius=8)
     if title:
-        draw_text(surface, title, (rect.x + 15, rect.y + 10), font_size=22, color=COLOR_PINE)
+        draw_text(
+            surface, title, (rect.x + 15, rect.y + 10), font_size=22, color=COLOR_PINE
+        )
 
-def draw_error_message(surface: pygame.Surface, message: str, position: Tuple[int, int], font_size: int=20) -> None:
-    """Draw an error message in alert color."""
+
+def draw_error_message(
+    surface: pygame.Surface,
+    message: str,
+    position: Tuple[int, int],
+    font_size: int = 20,
+) -> None:
+    """Dibujar un mensaje de error con color de alerta."""
     draw_text(surface, message, position, font_size=font_size, color=COLOR_RED_ALERT)
 
-def wrap_text(text: str, max_width: int, font_size: int=20) -> List[str]:
-    """Wrap text into lines that fit within max_width pixels."""
+
+def wrap_text(text: str, max_width: int, font_size: int = 20) -> List[str]:
+    """Ajustar texto en varias líneas para que quepa en `max_width` píxeles.
+
+    Usa la medida de la fuente para cortar en palabras y construir líneas.
+    """
     font = get_font(font_size)
     words = str(text).split()
     lines = []
-    current_line = ''
+    current_line = ""
     for word in words:
-        test_line = f'{current_line} {word}'.strip()
+        test_line = f"{current_line} {word}".strip()
         if font.size(test_line)[0] <= max_width:
             current_line = test_line
         else:
@@ -99,21 +209,29 @@ def wrap_text(text: str, max_width: int, font_size: int=20) -> List[str]:
         lines.append(current_line)
     return lines
 
-def draw_message_panel(surface: pygame.Surface, state: Dict[str, Any], sdg_id: Optional[int]=None, panel_height: int=55) -> None:
-    """Draw a bottom panel with a rotating SDG allusive message.
 
-    If sdg_id is not provided, the panel uses a random ODS stored in the
-    session. Once the session has an active SDG (e.g. after game configuration),
-    callers should pass it so the messages refer to the selected ODS.
+def draw_message_panel(
+    surface: pygame.Surface,
+    state: Dict[str, Any],
+    sdg_id: Optional[int] = None,
+    panel_height: int = 55,
+) -> None:
+    """Dibujar un panel inferior con mensajes rotativos relacionados al ODS.
+
+    Si `sdg_id` no se pasa, se intenta recuperar uno almacenado en la sesión
+    o se elige uno aleatoriamente.
     """
     import random
-    panel_rect = pygame.Rect(0, WINDOW_HEIGHT - panel_height, WINDOW_WIDTH, panel_height)
-    session = state.get('session', {})
+
+    panel_rect = pygame.Rect(
+        0, WINDOW_HEIGHT - panel_height, WINDOW_WIDTH, panel_height
+    )
+    session = state.get("session", {})
     if sdg_id is None:
-        sdg_id = session.get('bottom_sdg_id')
+        sdg_id = session.get("bottom_sdg_id")
         if sdg_id is None:
             sdg_id = random.choice(list_sdg_ids())
-            session['bottom_sdg_id'] = sdg_id
+            session["bottom_sdg_id"] = sdg_id
     sdg_color = get_sdg_color(sdg_id)
     soft_bg = _blend_color(COLOR_WHITE, sdg_color, 0.12)
     pygame.draw.rect(surface, soft_bg, panel_rect)
@@ -127,17 +245,28 @@ def draw_message_panel(surface: pygame.Surface, state: Dict[str, Any], sdg_id: O
     badge_center = (panel_rect.x + 35, panel_rect.centery)
     pygame.draw.circle(surface, sdg_color, badge_center, badge_radius)
     pygame.draw.circle(surface, COLOR_WHITE, badge_center, badge_radius, width=2)
-    draw_text(surface, str(sdg_id), badge_center, font_size=15, color=COLOR_WHITE, center=True)
+    draw_text(
+        surface, str(sdg_id), badge_center, font_size=15, color=COLOR_WHITE, center=True
+    )
     title_x = badge_center[0] + badge_radius + 12
     title_y = panel_rect.y + 8
-    draw_text(surface, f'ODS {sdg_id}: {sdg_name}', (title_x, title_y), font_size=12, color=sdg_color, center=False)
+    draw_text(
+        surface,
+        f"ODS {sdg_id}: {sdg_name}",
+        (title_x, title_y),
+        font_size=12,
+        color=sdg_color,
+        center=False,
+    )
     quote_font = get_font(22, bold=True)
-    quote_surface = quote_font.render('"', True, _blend_color(sdg_color, COLOR_WHITE, 0.6))
+    quote_surface = quote_font.render(
+        '"', True, _blend_color(sdg_color, COLOR_WHITE, 0.6)
+    )
     surface.blit(quote_surface, (title_x + 360, title_y - 6))
     max_width = WINDOW_WIDTH - title_x - 90
     message_font = get_font(14, bold=True)
     lines = wrap_text(message, max_width, font_size=14)
     line_height = 18
-    for (index, line) in enumerate(lines[:2]):
+    for index, line in enumerate(lines[:2]):
         rendered = message_font.render(line, True, COLOR_CHARCOAL)
         surface.blit(rendered, (title_x, title_y + 18 + index * line_height))

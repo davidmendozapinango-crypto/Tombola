@@ -1,4 +1,10 @@
-"""Game persistence helpers (non-OOP) using binary append-safe records."""
+"""Persistencia de partidas: lectura/escritura de registros binarios.
+
+Descripción:
+    Utiliza pickling secuencial para almacenar registros de juego en un
+    archivo binario. Proporciona utilidades para crear registros, calcular
+    resúmenes y convertir tiradas en marcas sobre las tarjetas.
+"""
 
 import pickle
 from datetime import datetime
@@ -9,20 +15,33 @@ from src.core.card_figures import get_card_type, get_figure_pattern, is_figure_c
 
 
 def _append_game_record(file_path: str, game: Dict[str, Any]) -> None:
-    """Append a single game record to the binary file without overwriting."""
+    """
+    Añade un registro de juego al final del archivo binario sin sobrescribir
+    el contenido existente (modo append).
+
+    Args:
+        file_path: Ruta del archivo de partidas.
+        game: Diccionario con los datos crudos de la partida.
+    """
     with open(file_path, "ab") as file:
         pickle.dump(game, file)
 
 
 def load_games(file_path: str = str(GAMES_FILE)) -> List[Dict[str, Any]]:
-    """Load all game records from the binary file using sequential reads."""
+    """
+    Carga todos los registros de juego desde el archivo binario leyendo
+    secuencialmente objetos pickled hasta EOF.
+
+    Args:
+        file_path: Ruta al archivo de partidas.
+
+    Returns:
+        List[Dict[str, Any]]: Lista de registros de juego.
+    """
     games: List[Dict[str, Any]] = []
     try:
         with open(file_path, "rb") as file:
-            # Read sequential pickled records until EOF. Replacing the
-            # previous `while True` + `break` pattern with an `eof` flag to
-            # control termination keeps semantics identical while avoiding
-            # `break` usage.
+            # Leer registros pickled secuencialmente hasta EOF.
             eof = False
             while not eof:
                 try:
@@ -38,12 +57,24 @@ def load_games(file_path: str = str(GAMES_FILE)) -> List[Dict[str, Any]]:
 
 
 def save_game(file_path: str, game: Dict[str, Any]) -> None:
-    """Persist a single game record using append-safe binary I/O."""
+    """
+    Persiste un único registro de juego usando escritura en modo append.
+
+    Args:
+        file_path: Ruta al archivo donde guardar.
+        game: Registro de juego a persistir.
+    """
     _append_game_record(file_path, game)
 
 
 def save_games(games: List[Dict[str, Any]], file_path: str = str(GAMES_FILE)) -> None:
-    """Persist the game history to the binary file (legacy bulk overwrite)."""
+    """
+    Persiste la lista completa de partidas sobrescribiendo el archivo.
+
+    Args:
+        games: Lista de registros de juego.
+        file_path: Ruta al archivo destino.
+    """
     with open(file_path, "wb") as file:
         for game in games:
             pickle.dump(game, file)
@@ -52,7 +83,17 @@ def save_games(games: List[Dict[str, Any]], file_path: str = str(GAMES_FILE)) ->
 def add_game(
     games: List[Dict[str, Any]], game: Dict[str, Any], file_path: str = str(GAMES_FILE)
 ) -> List[Dict[str, Any]]:
-    """Append a new game record and return the updated in-memory list."""
+    """
+    Añade un nuevo registro de juego a la lista en memoria y lo persiste.
+
+    Args:
+        games: Lista en memoria de partidas.
+        game: Registro a añadir.
+        file_path: Ruta del archivo de persistencia.
+
+    Returns:
+        List[Dict[str, Any]]: Lista actualizada de partidas.
+    """
     games.append(game)
     save_game(file_path, game)
     return games
@@ -66,7 +107,15 @@ def make_game_record(
     complement_card: List[List[int]],
     drawn_numbers: List[int],
 ) -> Dict[str, Any]:
-    """Create a game record dictionary with only raw data (no calculated fields)."""
+    """
+    Crear un diccionario representando una partida con datos crudos.
+
+    No incluye campos derivados como puntaje o ganador; esos se calculan con
+    `calculate_game_summary` cuando se necesiten.
+
+    Returns:
+        Dict[str, Any]: Registro de partida listo para persistir.
+    """
     return {
         "player_id": player_id,
         "played_at": datetime.now(),
@@ -79,13 +128,32 @@ def make_game_record(
 
 
 def _marks_from_drawn(card: List[List[int]], drawn_numbers: List[int]) -> Set[int]:
-    """Return the set of marked numbers on a card given the drawn numbers."""
+    """
+    Calcula el conjunto de números de un cartón que han sido sorteados.
+
+    Args:
+        card: Matriz del cartón.
+        drawn_numbers: Lista de números sorteados.
+
+    Returns:
+        Set[int]: Conjunto de valores marcados.
+    """
     drawn = set(drawn_numbers)
     return {value for row in card for value in row if value in drawn}
 
 
 def calculate_game_summary(game: Dict[str, Any]) -> Dict[str, Any]:
-    """Calculate points and winner from a raw game record."""
+    """
+    Calcula el resumen de una partida: puntos para cada cartón, puntos totales
+    y determina si existe un cartón ganador según el patrón de figura.
+
+    Args:
+        game: Registro de partida (ver `make_game_record`).
+
+    Returns:
+        Dict[str, Any]: Diccionario con keys: 'main_points', 'complement_points',
+        'total_points', 'winning_card'.
+    """
     main_card = game["main_card"]
     complement_card = game["complement_card"]
     drawn_numbers = game.get("drawn_numbers", [])

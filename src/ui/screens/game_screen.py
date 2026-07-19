@@ -1,4 +1,12 @@
-"""Tombola gameplay screen (non-OOP)."""
+"""
+Pantalla de juego (Tómbola) - controladores y dibujo (no-OOP).
+
+Descripción:
+  Contiene la lógica de presentación para la partida: dibujo de cartones,
+  extracción de números, simulación completa, modal de victoria y persistencia
+  final de la partida. Todas las funciones operan sobre el diccionario global
+  `state` compartido por la aplicación.
+"""
 
 from typing import Any, Dict, List, Set
 import pygame
@@ -28,7 +36,12 @@ from src.ui.common import (
 
 
 def _layout() -> Dict[str, pygame.Rect]:
-    """Return the UI rectangles for the game screen."""
+    """
+    Devuelve los rectángulos (posiciones) usados por la pantalla de juego.
+
+    Returns:
+        Dict[str, pygame.Rect]: Mapeo de identificadores a rectángulos usados en la UI.
+    """
     return {
         "draw": pygame.Rect(WINDOW_WIDTH // 2 - 100, 120, 200, 45),
         "simulate": pygame.Rect(WINDOW_WIDTH // 2 - 100, 175, 200, 45),
@@ -39,7 +52,13 @@ def _layout() -> Dict[str, pygame.Rect]:
 
 
 def _card_numbers(*cards: Any) -> Set[int]:
-    """Return the union of all numbered cells across the given cards."""
+    """
+    Devuelve la unión de todos los números presentes en las matrices de
+    cartones provistas.
+
+    Esto se usa para construir una "piscina" de números posibles cuando los
+    cartones ya han sido generados.
+    """
     numbers: Set[int] = set()
     for card in cards:
         for row in card:
@@ -50,7 +69,12 @@ def _card_numbers(*cards: Any) -> Set[int]:
 
 
 def init_game(state: Dict[str, Any]) -> None:
-    """Initialize gameplay screen state."""
+    """
+    Inicializa el estado de la pantalla de juego.
+
+    - Prepara la `number_pool` si no existe (la lista de números a sortear).
+    - Define controles enfocables y carga partidas previas en memoria.
+    """
     session = state["session"]
     dimension = session.get("dimension", 5)
     if not session.get("number_pool"):
@@ -69,7 +93,10 @@ def init_game(state: Dict[str, Any]) -> None:
 
 
 def _cell_size(dimension: int) -> int:
-    """Choose a cell size that fits the available area."""
+    """
+    Calcula un tamaño de celda (pixeles) adecuado para la dimension del
+    cartón, ajustando entre límites para mantener una interfaz legible.
+    """
     max_side = 280
     return max(20, min(50, max_side // dimension))
 
@@ -83,7 +110,19 @@ def _draw_card(
     title: str,
     sdg_color: Any,
 ) -> None:
-    """Draw a single NxN card grid."""
+    """
+    Dibuja un cartón NxN en la posición `top_left` pintando las celdas marcadas
+    con el color temático `sdg_color`.
+
+    Args:
+        surface: Superficie para dibujar.
+        card: Matriz que representa el cartón (lista de listas).
+        marked: Conjunto de números ya marcados.
+        top_left: Tupla (x,y) de la esquina superior izquierda.
+        cell_size: Tamaño en pixeles de cada celda.
+        title: Titulo del cartón a mostrar arriba.
+        sdg_color: Color temático para celdas marcadas.
+    """
     draw_text(surface, title, (top_left[0], top_left[1] - 30), font_size=20)
     for row_index, row in enumerate(card):
         for col_index, value in enumerate(row):
@@ -113,7 +152,14 @@ def _draw_card(
 
 
 def _draw_number(state: Dict[str, Any]) -> str:
-    """Draw the next tombola number and update game state."""
+    """
+    Extrae el siguiente número de la `number_pool` y actualiza el estado del
+    juego: añade a `drawn_numbers`, marca las celdas correspondientes y verifica
+    si hay un ganador. Si hay ganador persiste la partida.
+
+    Returns:
+        str: Nombre de la pantalla que se debe mostrar a continuación.
+    """
     session = state["session"]
     pool = session.get("number_pool", [])
     number = draw_next(pool)
@@ -142,13 +188,17 @@ def _draw_number(state: Dict[str, Any]) -> str:
 
 
 def _simulate_game(state: Dict[str, Any]) -> str:
-    """Run the full tombola draw simulation until a winner is found."""
+    """
+    Ejecuta la simulación completa extrayendo números hasta agotar la piscina
+    o hasta que `game_over` sea True. Para preservar claridad seguimos una
+    estrategia sin `break`: una vez `game_over` se omiten iteraciones restantes.
+    """
     max_draws = len(state["session"].get("number_pool", []))
-    # Use the `game_over` flag to skip further draws once a winner is
-    # found. The original code used `break` to exit the loop early; here we
-    # avoid `break` by checking the flag and simply continuing iterations
-    # without work once the game is over. This preserves semantics while
-    # complying with the requirement to remove `break` usage.
+    # Usar la bandera `game_over` para omitir posteriores extracciones una vez
+    # que se detecta un ganador. El código original usaba `break` para salir
+    # del bucle anticipadamente; aquí evitamos `break` comprobando la bandera y
+    # continuando las iteraciones sin trabajo una vez que el juego termina.
+    # Esto preserva la semántica original mientras se elimina el uso de `break`.
     for _ in range(max_draws):
         if state["session"].get("game_over"):
             # Skip drawing further numbers; loop continues but does no work.
@@ -158,7 +208,10 @@ def _simulate_game(state: Dict[str, Any]) -> str:
 
 
 def _save_game(state: Dict[str, Any]) -> None:
-    """Persist the completed game to the binary file with raw data only."""
+    """
+    Persiste la partida completada en el repositorio de partidas. Crea un
+    registro usando `make_game_record` y lo añade al listado en `state`.
+    """
     session = state["session"]
     player = session.get("player")
     if player is None:
@@ -175,7 +228,10 @@ def _save_game(state: Dict[str, Any]) -> None:
 
 
 def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
-    """Process a Pygame event and return the next screen name."""
+    """
+    Maneja eventos de entrada (ratón/teclado) para la pantalla de juego y
+    devuelve la siguiente pantalla a mostrar.
+    """
     rects = state.get("rects") or _layout()
     state["rects"] = rects
     focused = get_focused(state)
@@ -197,7 +253,10 @@ def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
 
 
 def _activate(state: Dict[str, Any], name: str) -> str:
-    """Activate a control on the game screen."""
+    """
+    Ejecuta la acción asociada a un control de la pantalla de juego (sacar
+    número, simular, volver al menú, etc.).
+    """
     session = state["session"]
     if name == "draw" and (not session.get("game_over")):
         return _draw_number(state)
@@ -211,7 +270,9 @@ def _activate(state: Dict[str, Any], name: str) -> str:
 
 
 def _draw_trophy_icon(surface: pygame.Surface, rect: pygame.Rect) -> None:
-    """Draw a simple trophy icon."""
+    """
+    Dibuja un icono de trofeo sencillo usado en la pantalla de victoria.
+    """
     (cx, cy) = rect.center
     pygame.draw.polygon(
         surface,
@@ -235,7 +296,11 @@ def _draw_victory_modal(
     hovered: Dict[str, bool],
     focused: str,
 ) -> None:
-    """Draw a centered modal declaring the winner."""
+    """
+    Dibuja un modal centrado que presenta el resultado de la partida: quien
+    ganó, suma de celdas, puntaje ODS y un mensaje temático. También muestra
+    botones para volver al menú.
+    """
     session = state["session"]
     sdg_id = session.get("sdg_id", 1)
     dimension = session.get("dimension", 5)
@@ -382,7 +447,10 @@ def _draw_victory_modal(
 
 
 def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
-    """Render the gameplay screen."""
+    """
+    Renderiza la pantalla de juego completa: cartones, botones, estado de
+    extracción y modal de victoria cuando corresponda.
+    """
     surface.fill(COLOR_MINT)
     rects = _layout()
     state["rects"] = rects

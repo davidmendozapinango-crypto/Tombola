@@ -1,4 +1,9 @@
-"""Card generation helpers (non-OOP)."""
+"""Ayudantes para la generación y manipulación de tarjetas (no orientado a objetos).
+
+Descripción:
+    Funciones para crear tarjetas NxN, marcar números, calcular puntos y
+    obtener sumas. Están diseñadas para ser simples y fácilmente testeables.
+"""
 
 import random
 from typing import Any, Container, Dict, List, Optional, Sequence, Set, Tuple
@@ -7,11 +12,36 @@ from typing import Any, Container, Dict, List, Optional, Sequence, Set, Tuple
 def generate_card(
     dimension: int, pattern: Optional[Set[Tuple[int, int]]] = None
 ) -> List[List[Optional[int]]]:
-    """Generate an NxN card.
+    """Generar una tarjeta NxN con o sin patrón.
 
-    If a figure pattern is provided, only those cells receive numbers from the
-    range 1..N*N; the rest are left as None. Without a pattern the whole grid is
-    filled, preserving backward compatibility for tests and demos.
+    Descripción:
+        Crea una matriz (lista de listas) de tamaño `dimension` x `dimension`.
+        Si se proporciona `pattern`, sólo las celdas indicadas por el conjunto
+        recibirán números; el resto quedará como `None`. Si `pattern` es None,
+        se rellenan todas las celdas con números únicos entre 1 y dimension**2.
+
+    Args:
+        dimension (int): Tamaño N de la tarjeta (N x N).
+        pattern (Optional[Set[Tuple[int, int]]]): Conjunto de coordenadas
+            (fila, columna) que deben recibir números. Si es `None`, se
+            rellenan todas las celdas.
+
+    Returns:
+        List[List[Optional[int]]]: Matriz de la tarjeta, con `None` en las
+        celdas no numeradas.
+
+    Notas/Teoría:
+        - Se usan números únicos en la tarjeta generada cuando se rellena.
+        - `random.shuffle` garantiza un orden aleatorio de los números.
+        - No se valida que `pattern` esté dentro de los límites; se descartan
+          coordenadas fuera del rango.
+
+    Ejemplo:
+        >>> generate_card(3)
+        [[8, 1, 5], [3, 2, 9], [4, 6, 7]]  # ejemplo no determinista
+
+    Complejidad:
+        O(N) en tiempo y O(N) en espacio, con N = dimension**2.
     """
     grid: List[List[Optional[int]]] = [
         [None for _ in range(dimension)] for _ in range(dimension)
@@ -37,10 +67,20 @@ def make_cards(
     main_pattern: Optional[Set[Tuple[int, int]]] = None,
     complement_pattern: Optional[Set[Tuple[int, int]]] = None,
 ) -> Dict[str, Any]:
-    """Create a main and complement card pair.
+    """Crear un par de tarjetas: principal y complementaria.
 
-    When patterns are supplied, only the figure cells are numbered. Otherwise the
-    full grid is filled for compatibility with demos and legacy callers.
+    Descripción:
+        Devuelve un diccionario con dos tarjetas generadas mediante
+        `generate_card`. Si se proporcionan patrones, solo las celdas
+        especificadas recibirán números.
+
+    Args:
+        dimension (int): Tamaño de las tarjetas.
+        main_pattern (Optional[Set[Tuple[int, int]]]): Patrón para la tarjeta principal.
+        complement_pattern (Optional[Set[Tuple[int, int]]]): Patrón para la tarjeta complementaria.
+
+    Returns:
+        Dict[str, Any]: Diccionario con claves "main" y "complement".
     """
     return {
         "main": generate_card(dimension, main_pattern),
@@ -49,7 +89,14 @@ def make_cards(
 
 
 def card_sum(card: Sequence[Sequence[Optional[int]]]) -> int:
-    """Return the sum of all numbered cells in a card."""
+    """Calcular la suma de todos los valores numerados en una tarjeta.
+
+    Args:
+        card: Matriz de la tarjeta con enteros o `None` en celdas vacías.
+
+    Returns:
+        int: Suma de los valores presentes (ignora `None`).
+    """
     total = 0
     for row in card:
         for value in row:
@@ -61,15 +108,34 @@ def card_sum(card: Sequence[Sequence[Optional[int]]]) -> int:
 def mark_number(
     card: Sequence[Sequence[Optional[int]]], marked: Set[int], number: int
 ) -> bool:
-    """Mark a number on a card if present. Return True if found."""
-    # Use a local flag to indicate whether the number was located on the
-    # card. The original implementation used `break` to exit early; here we
-    # avoid `break` by checking `found` at the top of the loop and
-    # short-circuiting further work once the number is discovered.
+    """Marcar un número en la tarjeta si está presente.
+
+    Descripción:
+        Busca el `number` en la tarjeta; si se encuentra, lo añade al conjunto
+        `marked` y devuelve True. Si no se encuentra, devuelve False.
+
+    Args:
+        card: Matriz de la tarjeta.
+        marked: Conjunto mutable donde se almacenan los números ya marcados.
+        number: Número a marcar.
+
+    Returns:
+        bool: True si el número estaba en la tarjeta y fue marcado; False si no.
+
+    Notas:
+        - La implementación evita el uso de `break` y, en su lugar, usa una
+          bandera local `found` para indicar que el número fue hallado.
+        - Complejidad: en el peor caso recorre todas las celdas -> O(N)
+          con N = dimension**2. En promedio es O(N/2).
+    """
+    # Usar una bandera local para indicar si el número fue localizado en la
+    # tarjeta. La implementación original usaba `break` para salir temprano;
+    # aquí evitamos `break` comprobando `found` al inicio de cada iteración y
+    # saltando trabajo adicional una vez que se descubre el número.
     found = False
     for row in card:
         if found:
-            # We've already found the number; skip remaining rows.
+            # Ya se encontró el número; saltar las filas restantes.
             continue
         if number in row:
             found = True
@@ -80,7 +146,11 @@ def mark_number(
 
 
 def is_fully_marked(card: Sequence[Sequence[Optional[int]]], marked: Set[int]) -> bool:
-    """Return True when every numbered cell on the card has been marked."""
+    """Comprobar si todas las celdas numeradas han sido marcadas.
+
+    Returns:
+        bool: True si no hay ninguna celda numerada que no esté en `marked`.
+    """
     for row in card:
         for value in row:
             if value is not None and value not in marked:
@@ -89,7 +159,15 @@ def is_fully_marked(card: Sequence[Sequence[Optional[int]]], marked: Set[int]) -
 
 
 def card_points(card: Sequence[Sequence[Optional[int]]], marked: Container[int]) -> int:
-    """Return the sum of marked numbered cells on a card."""
+    """Calcular los puntos de la tarjeta sumando los números marcados.
+
+    Args:
+        card: Matriz de la tarjeta.
+        marked: Contenedor (por ejemplo, set) con los números marcados.
+
+    Returns:
+        int: Suma de los valores que están presentes en `marked`.
+    """
     total = 0
     for row in card:
         for value in row:

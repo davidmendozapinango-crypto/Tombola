@@ -1,4 +1,13 @@
-"""Reports screen (non-OOP) with section selection and individual txt export."""
+"""
+Pantalla de reportes (estilo funcional, no-OOP) con seleccion de secciones y
+exportacion de informes individuales en .txt.
+
+Descripción:
+  Contiene utilidades para filtrar partidas por fecha, construir diferentes
+  secciones de informe (jugadores, top, frecuencia, historial) y exportarlas
+  a archivos de texto. Las funciones de dibujo separan la logica de presentacion
+  del armado del texto del informe.
+"""
 
 from collections import Counter
 from datetime import datetime
@@ -44,7 +53,12 @@ _SECTION_LABELS = {
 
 
 def _layout() -> Dict[str, pygame.Rect]:
-    """Return the UI rectangles for the reports screen."""
+    """
+    Devuelve los rectángulos (posiciones) usados por la pantalla de reportes.
+
+    Devuelve:
+        Dict[str, pygame.Rect]: Mapeo de nombres de control a rectángulos.
+    """
     center_x = WINDOW_WIDTH // 2
     return {
         "date_start": pygame.Rect(center_x - 220, 90, 200, 32),
@@ -63,7 +77,14 @@ def _layout() -> Dict[str, pygame.Rect]:
 
 
 def init_reports(state: Dict[str, Any]) -> None:
-    """Initialize reports screen state."""
+    """
+    Inicializa el estado necesario para la pantalla de reportes.
+
+    Args:
+        state (Dict[str, Any]): Estado global de la aplicación (mutado in-place).
+
+    Devuelve: None (mutación en `state`).
+    """
     state["inputs"] = {"date_start": "", "date_end": ""}
     state["focusable"] = [
         "date_start",
@@ -87,7 +108,11 @@ def init_reports(state: Dict[str, Any]) -> None:
 
 
 def _parse_date(text: str) -> Optional[datetime]:
-    """Parse a YYYY-MM-DD string into a datetime or return None."""
+    """
+    Parsea una cadena en formato YYYY-MM-DD a un objeto datetime.
+
+    Devuelve None si el texto no es un fech valido.
+    """
     try:
         return datetime.strptime(text.strip(), "%Y-%m-%d")
     except ValueError:
@@ -97,7 +122,18 @@ def _parse_date(text: str) -> Optional[datetime]:
 def _filter_games_by_date(
     games: List[Dict[str, Any]], start_text: str, end_text: str
 ) -> Tuple[List[Dict[str, Any]], Optional[str]]:
-    """Return games within the requested date range and an optional error."""
+    """
+    Filtra la lista de partidas para incluir solo las jugadas dentro del rango
+    especificado por `start_text` y `end_text`.
+
+    Args:
+        games (List[Dict[str, Any]]): Lista de partidas (diccionarios).
+        start_text (str): Fecha de inicio en YYYY-MM-DD o cadena vacia.
+        end_text (str): Fecha de fin en YYYY-MM-DD o cadena vacia.
+
+    Returns:
+        Tuple[List[Dict[str, Any]], Optional[str]]: (juegos_filtrados, error)
+    """
     start_date = _parse_date(start_text)
     end_date = _parse_date(end_text)
     if start_text.strip() and start_date is None:
@@ -118,7 +154,9 @@ def _filter_games_by_date(
 
 
 def _player_game_counts(players, games):
-    """Return a list of (player_id, full_name, count)."""
+    """
+    Devuelve una lista de tuplas (player_id, full_name, partidas_jugadas).
+    """
     counts = {player["player_id"]: 0 for player in players}
     for game in games:
         pid = game.get("player_id")
@@ -131,14 +169,18 @@ def _player_game_counts(players, games):
 
 
 def _player_lookup(players) -> Dict[str, Dict[str, Any]]:
-    """Return a mapping from player_id to player record."""
+    """
+    Construye un mapeo rapido de player_id a registro de jugador.
+    """
     return {player["player_id"]: player for player in players}
 
 
 def _top_players(players, games, limit=5):
-    """Return top players by accumulated total points.
+    """
+    Calcula los jugadores con mayor puntaje acumulado.
 
-    Each entry contains: (player_id, full_name, state_code, game_count, points).
+    Cada entrada del resultado es una tupla:
+    (player_id, full_name, state_code, game_count, points)
     """
     player_info = {
         player["player_id"]: (
@@ -168,7 +210,9 @@ def _top_players(players, games, limit=5):
 
 
 def _gantt_numbers(games, limit=10):
-    """Return the most frequently drawn numbers across the filtered games."""
+    """
+    Devuelve los numeros mas frecuentes extraidos de las partidas filtradas.
+    """
     counter = Counter()
     for game in games:
         for number in game.get("drawn_numbers", []):
@@ -177,7 +221,9 @@ def _gantt_numbers(games, limit=10):
 
 
 def _report_header(title: str, date_start: str = "", date_end: str = "") -> List[str]:
-    """Return the standard header lines for a report."""
+    """
+    Construye las lineas del encabezado estandar para un informe de texto.
+    """
     lines: List[str] = []
     lines.append("=" * 60)
     lines.append(f"REPORTE TOMBOLA - ODS: {title.upper()}")
@@ -191,7 +237,9 @@ def _report_header(title: str, date_start: str = "", date_end: str = "") -> List
 def _build_players_report(
     players, games, date_start: str = "", date_end: str = ""
 ) -> str:
-    """Build the players and games report as a table."""
+    """
+    Construye el informe de jugadores y partidas como un texto con columnas.
+    """
     lines = _report_header("Jugadores y partidas", date_start, date_end)
     lines.append("")
     lines.append("JUGADORES Y PARTIDAS REGISTRADOS")
@@ -214,7 +262,9 @@ def _build_players_report(
 
 
 def _build_top_report(players, games, date_start: str = "", date_end: str = "") -> str:
-    """Build the TOP 5 players report."""
+    """
+    Construye el informe TOP 5 de jugadores.
+    """
     lines = _report_header("TOP 5 jugadores", date_start, date_end)
     lines.append("")
     lines.append("TOP 5: JUGADORES DESTACADOS")
@@ -237,7 +287,9 @@ def _build_top_report(players, games, date_start: str = "", date_end: str = "") 
 
 
 def _build_frequency_report(games, date_start: str = "", date_end: str = "") -> str:
-    """Build the most frequent numbers report."""
+    """
+    Construye el informe de numeros mas frecuentes (TOP 10).
+    """
     lines = _report_header("Frecuencia de numeros", date_start, date_end)
     lines.append("")
     lines.append("FRECUENCIA DE NUMEROS (TOP 10)")
@@ -262,7 +314,9 @@ def _build_frequency_report(games, date_start: str = "", date_end: str = "") -> 
 def _build_history_report(
     players, games, date_start: str = "", date_end: str = ""
 ) -> str:
-    """Build the game history report as a table."""
+    """
+    Construye el informe de historial de partidas con una fila por partida.
+    """
     player_map = _player_lookup(players)
     lines = _report_header("Historial historico de partidas", date_start, date_end)
     lines.append("")
@@ -314,7 +368,9 @@ def _build_history_report(
 def _build_report_text(
     players, games, section: str, date_start: str = "", date_end: str = ""
 ) -> str:
-    """Build the report text for the selected section."""
+    """
+    Genera el texto del informe para la seccion seleccionada.
+    """
     if section == "players":
         return _build_players_report(players, games, date_start, date_end)
     if section == "top":
@@ -327,7 +383,11 @@ def _build_report_text(
 
 
 def _export_reports(state: Dict[str, Any]) -> str:
-    """Export the selected report to a physical text file and return the path."""
+    """
+    Exporta la seccion seleccionada a un archivo .txt y devuelve la ruta.
+
+    El directorio `reports/` se crea si no existe.
+    """
     report_dir = Path("reports")
     report_dir.mkdir(exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -345,7 +405,10 @@ def _export_reports(state: Dict[str, Any]) -> str:
 
 
 def _apply_date_filter(state: Dict[str, Any]) -> None:
-    """Apply the date filter and store the result or an error."""
+    """
+    Aplica el filtro de fechas almacenado en `state['inputs']` y actualiza
+    `state['filtered_games']`. En caso de error define `state['error_message']`.
+    """
     from src.ui.app_state import set_error
 
     (games, error) = _filter_games_by_date(
@@ -361,13 +424,19 @@ def _apply_date_filter(state: Dict[str, Any]) -> None:
 
 
 def _select_report(state: Dict[str, Any], section: str) -> None:
-    """Switch the currently selected report section."""
+    """
+    Cambia la seccion de informe seleccionada y limpia la ruta de exportacion.
+    """
     state["selected_report"] = section
     state["report_export_path"] = None
 
 
 def handle_event(state: Dict[str, Any], event: pygame.event.Event) -> str:
-    """Process a Pygame event and return the next screen name."""
+    """Procesar un evento de Pygame y devolver el nombre de la pantalla siguiente.
+
+    Maneja clics del ratón y teclas (TAB, ENTER, ESCAPE) y actualiza el
+    estado de filtros/selección/exportación.
+    """
     rects = state.get("rects") or _layout()
     state["rects"] = rects
     focused = get_focused(state)
@@ -437,7 +506,11 @@ def _draw_section_button(
     focused: bool,
     selected: bool,
 ) -> None:
-    """Draw a report section selection button."""
+    """Dibujar un botón para seleccionar la sección del informe.
+
+    El estilo cambia según si está seleccionado, enfocado o si el ratón lo
+    pasa por encima.
+    """
     bg_color = COLOR_PINE if selected else COLOR_WHITE
     text_color = COLOR_WHITE if selected else COLOR_CHARCOAL
     border_color = COLOR_PINE if focused or selected else COLOR_CHARCOAL
@@ -457,13 +530,11 @@ def _draw_first_wrapped_line(
     font_size: int = 11,
     color: Any = COLOR_CHARCOAL,
 ) -> None:
-    """
-    Draw only the first line produced by wrap_text for `text`.
+    """Dibujar sólo la primera línea resultante de `wrap_text` para `text`.
 
-    This helper replaces the previous pattern that used a loop with an
-    immediate `break` to draw only the first wrapped line. We use a local
-    boolean flag `drawn` to ensure only the first iteration performs work,
-    avoiding any use of `break` while keeping semantics identical.
+    Este helper reemplaza el patrón anterior que usaba `break`. Usamos una
+    bandera local `drawn` para ejecutar trabajo solo en la primera iteración,
+    preservando la semántica sin usar `break`.
     """
     drawn = False  # local flag to indicate the first line has been drawn
     for line in wrap_text(text, max_width, font_size=font_size):
@@ -475,7 +546,10 @@ def _draw_first_wrapped_line(
 
 
 def _draw_players_report(surface, players, games, content_x, content_y, content_w):
-    """Draw the players and games report as a table."""
+    """Dibujar el informe de jugadores y partidas como una tabla.
+
+    Presenta columnas con cédula, nombre, estado y cantidad de partidas.
+    """
     draw_text(
         surface,
         "JUGADORES Y PARTIDAS REGISTRADOS",
@@ -543,7 +617,10 @@ def _draw_players_report(surface, players, games, content_x, content_y, content_
 
 
 def _draw_top_report(surface, players, games, content_x, content_y, content_w):
-    """Draw the TOP 5 players report as styled ranking cards."""
+    """Dibujar el informe TOP 5 de jugadores como tarjetas de ranking.
+
+    Muestra el puesto, nombre, región, partidas y puntos.
+    """
     draw_text(
         surface,
         "TOP 5: JUGADORES DESTACADOS",
@@ -617,7 +694,10 @@ def _draw_top_report(surface, players, games, content_x, content_y, content_w):
 
 
 def _draw_frequency_report(surface, games, content_x, content_y, content_w):
-    """Draw a Gantt-style bar chart for the most frequent drawn numbers."""
+    """Dibujar un gráfico tipo Gantt con los números más frecuentes extraídos.
+
+    Muestra barras proporcionales a la frecuencia de aparición por número.
+    """
     draw_text(
         surface,
         "Frecuencia de numeros (TOP 10)",
@@ -690,7 +770,10 @@ def _draw_frequency_report(surface, games, content_x, content_y, content_w):
 
 
 def _draw_history_report(surface, players, games, content_x, content_y, content_w):
-    """Draw the game history report as a table."""
+    """Dibujar el informe de historial de partidas como una tabla.
+
+    Cada fila representa una partida con fecha, jugador, tema ODS y puntaje.
+    """
     player_map = _player_lookup(players)
     draw_text(
         surface,
@@ -813,7 +896,7 @@ def _draw_report_content(
     content_y: int,
     content_w: int,
 ) -> None:
-    """Draw the content area for the selected report section."""
+    """Dibujar el área de contenido para la sección de informe seleccionada."""
     if section == "players":
         _draw_players_report(surface, players, games, content_x, content_y, content_w)
     elif section == "top":
@@ -827,7 +910,11 @@ def _draw_report_content(
 
 
 def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
-    """Render the reports screen."""
+    """Renderizar la pantalla de reportes.
+
+    Dibuja controles de filtro, selección de sección y la tabla o gráfico
+    correspondiente a la sección activa.
+    """
     surface.fill(COLOR_MINT)
     rects = _layout()
     state["rects"] = rects
