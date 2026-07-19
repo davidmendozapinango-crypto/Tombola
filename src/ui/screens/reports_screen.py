@@ -275,7 +275,7 @@ def _build_top_report(players, games, date_start: str = "", date_end: str = "") 
         ):
             partidas = "partida" if game_count == 1 else "partidas"
             lines.append(
-                f"{rank}. {name} - Region: {state_code} - {game_count} {partidas} - {points} ODS puntos"
+                f"{rank}. Cedula: {pid} - {name} - Region: {state_code} - {game_count} {partidas} - {points} ODS puntos"
             )
     else:
         lines.append("No hay partidas registradas.")
@@ -638,7 +638,11 @@ def _draw_top_report(surface, players, games, content_x, content_y, content_w):
             center=True,
         )
         draw_text(
-            surface, name, (content_x + 55, y + 10), font_size=18, color=COLOR_CHARCOAL
+            surface,
+            f"{name} ({pid})",
+            (content_x + 55, y + 10),
+            font_size=18,
+            color=COLOR_CHARCOAL,
         )
         partidas = "partida" if game_count == 1 else "partidas"
         draw_text(

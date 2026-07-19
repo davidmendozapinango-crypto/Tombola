@@ -42,12 +42,14 @@ def _layout() -> Dict[str, pygame.Rect]:
     Returns:
         Dict[str, pygame.Rect]: Mapeo de identificadores a rectángulos usados en la UI.
     """
+    center_x = WINDOW_WIDTH // 2
+    button_width = 220
+    button_gap = 24
     return {
-        "draw": pygame.Rect(WINDOW_WIDTH // 2 - 100, 120, 200, 45),
-        "simulate": pygame.Rect(WINDOW_WIDTH // 2 - 100, 175, 200, 45),
-        "result": pygame.Rect(WINDOW_WIDTH // 2 - 100, 120, 200, 45),
-        "menu": pygame.Rect(WINDOW_WIDTH // 2 - 100, 640, 200, 45),
-        "victory": pygame.Rect(WINDOW_WIDTH // 2 - 150, 540, 300, 45),
+        "draw": pygame.Rect(center_x - button_width - button_gap // 2, 110, button_width, 45),
+        "simulate": pygame.Rect(center_x + button_gap // 2, 110, button_width, 45),
+        "menu": pygame.Rect(center_x - 100, 640, 200, 45),
+        "victory": pygame.Rect(center_x - 150, 540, 300, 45),
     }
 
 
@@ -94,11 +96,12 @@ def init_game(state: Dict[str, Any]) -> None:
 
 def _cell_size(dimension: int) -> int:
     """
-    Calcula un tamaño de celda (pixeles) adecuado para la dimension del
-    cartón, ajustando entre límites para mantener una interfaz legible.
+    Calcula un tamaño de celda fijo para cada cartón, manteniendo el área de
+    la matriz dentro de un espacio constante y evitando que choque con el
+    botón central.
     """
-    max_side = 280
-    return max(20, min(50, max_side // dimension))
+    matrix_side = 380
+    return max(12, matrix_side // dimension)
 
 
 def _draw_card(
@@ -123,7 +126,15 @@ def _draw_card(
         title: Titulo del cartón a mostrar arriba.
         sdg_color: Color temático para celdas marcadas.
     """
-    draw_text(surface, title, (top_left[0], top_left[1] - 30), font_size=20)
+    card_width = len(card[0]) * cell_size if card and card[0] else cell_size
+    draw_text(
+        surface,
+        title,
+        (top_left[0] + card_width // 2, top_left[1] - 30),
+        font_size=20,
+        color=COLOR_CHARCOAL,
+        center=True,
+    )
     for row_index, row in enumerate(card):
         for col_index, value in enumerate(row):
             rect = pygame.Rect(
@@ -141,11 +152,12 @@ def _draw_card(
             pygame.draw.rect(surface, fill_color, rect)
             pygame.draw.rect(surface, COLOR_CHARCOAL, rect, width=1)
             text_color = COLOR_WHITE if is_marked else COLOR_CHARCOAL
+            number_font_size = max(8, min(18, int(cell_size * 0.7)))
             draw_text(
                 surface,
                 str(value),
                 rect.center,
-                font_size=max(12, min(cell_size - 4, 24)),
+                font_size=number_font_size,
                 color=text_color,
                 center=True,
             )
@@ -467,7 +479,11 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         color=COLOR_PINE,
         center=True,
     )
-    left_card_pos = (80, 180)
+    card_width = dimension * cell_size
+    card_gap = 60
+    total_width = card_width * 2 + card_gap
+    left_card_pos = ((WINDOW_WIDTH - total_width) // 2, 210)
+    right_card_pos = (left_card_pos[0] + card_width + card_gap, 210)
     _draw_card(
         surface,
         session["main_card"],
@@ -477,7 +493,6 @@ def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:
         f"Principal - {sdg_name}",
         COLOR_PINE,
     )
-    right_card_pos = (WINDOW_WIDTH - 80 - dimension * cell_size, 180)
     _draw_card(
         surface,
         session["complement_card"],

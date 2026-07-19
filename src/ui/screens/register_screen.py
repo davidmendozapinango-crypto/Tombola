@@ -86,7 +86,7 @@ def _draw_lock_icon(surface: pygame.Surface, rect: pygame.Rect) -> None:
 def _draw_check_icon(surface: pygame.Surface, rect: pygame.Rect, met: bool) -> None:
     """Dibuja un marcador de check (cumplido) o cruz (no cumplido)."""
     (cx, cy) = rect.center
-    color = COLOR_MOSS if met else COLOR_CHARCOAL
+    color = COLOR_WHITE if met else COLOR_CHARCOAL
     if met:
         pygame.draw.circle(surface, COLOR_MOSS, (cx, cy), 8)
         pygame.draw.line(surface, COLOR_WHITE, (cx - 4, cy), (cx - 1, cy + 4), 2)
@@ -467,16 +467,16 @@ def _draw_validator_panel(surface: pygame.Surface, state: Dict[str, Any]) -> Non
         surface,
         "VALIDADOR DE CLAVE",
         (panel_rect.x + 54, panel_rect.y + 20),
-        font_size=18,
-        color=COLOR_WHITE,
+        font_size=22,
+        color=(255, 255, 255),
         center=False,
     )
     draw_text(
         surface,
         "Criterios Algorítmicos Recursivos",
-        (panel_rect.x + 54, panel_rect.y + 40),
-        font_size=12,
-        color=COLOR_MOSS,
+        (panel_rect.x + 54, panel_rect.y + 45),
+        font_size=14,
+        color=(255, 255, 255),
         center=False,
     )
     pygame.draw.line(
@@ -487,14 +487,19 @@ def _draw_validator_panel(surface: pygame.Surface, state: Dict[str, Any]) -> Non
         1,
     )
     intro_text = "El juego requiere claves de acceso robustas conforme con los estándares gubernamentales para proteger la bitácora JUGADORES.bin contra intrusiones:"
-    intro_lines = wrap_text(intro_text, right_w - 40, font_size=12)
-    italic_font = get_font(12)
-    italic_font.set_italic(True)
-    line_y = panel_rect.y + 90
+    intro_lines = wrap_text(intro_text, right_w - 40, font_size=16.5)
+    line_y = panel_rect.y + 82
     for line in intro_lines[:3]:
-        rendered = italic_font.render(line, True, COLOR_MOSS)
-        surface.blit(rendered, (panel_rect.x + 18, line_y))
-        line_y += 16
+        draw_text(
+            surface,
+            line,
+            (panel_rect.x + 18, line_y),
+            font_size=16.5,
+            color=COLOR_WHITE,
+            center=False,
+            italic=True,
+        )
+        line_y += 22
     access_key = state["inputs"].get("access_key", "")
     confirm_key = state["inputs"].get("confirm_key", "")
     criteria = check_password_criteria(access_key)
@@ -539,14 +544,14 @@ def _draw_validator_panel(surface: pygame.Surface, state: Dict[str, Any]) -> Non
             surface,
             f"{index + 1}. {title}",
             (panel_rect.x + 58, y),
-            font_size=13,
+            font_size=16.5,
             color=COLOR_WHITE,
             center=False,
         )
         words = description.split()
         line = ""
-        line_y = y + 18
-        font = get_font(11)
+        line_y = y + 22
+        font = get_font(16)
         max_width = right_w - 80
         for word in words:
             test = f"{line} {word}".strip()
@@ -557,44 +562,22 @@ def _draw_validator_panel(surface: pygame.Surface, state: Dict[str, Any]) -> Non
                     surface,
                     line,
                     (panel_rect.x + 58, line_y),
-                    font_size=11,
-                    color=COLOR_MOSS,
+                    font_size=16.5,
+                    color=COLOR_WHITE,
                     center=False,
                 )
                 line = word
-                line_y += 16
+                line_y += 22
         if line:
             draw_text(
                 surface,
                 line,
                 (panel_rect.x + 58, line_y),
-                font_size=11,
-                color=COLOR_MOSS,
+                font_size=16.5,
+                color=COLOR_WHITE,
                 center=False,
             )
-        y += 56
-    suggestion = _suggest_password()
-    draw_text(
-        surface,
-        "Sugerencia de Clave Válida:",
-        (panel_rect.x + 18, panel_rect.bottom - 65),
-        font_size=12,
-        color=COLOR_WHITE,
-        center=False,
-    )
-    suggestion_text = f"{suggestion}, que cumple con las restricciones y se encriptará de forma simétrica antes de empaquetarse."
-    suggestion_lines = wrap_text(suggestion_text, right_w - 40, font_size=11)
-    line_y = panel_rect.bottom - 47
-    for line in suggestion_lines[:3]:
-        draw_text(
-            surface,
-            line,
-            (panel_rect.x + 18, line_y),
-            font_size=11,
-            color=COLOR_MOSS,
-            center=False,
-        )
-        line_y += 16
+        y = line_y + 30
 
 
 def draw(surface: pygame.Surface, state: Dict[str, Any]) -> None:

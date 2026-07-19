@@ -488,12 +488,12 @@ def _draw_card(
     draw_text(
         surface,
         title,
-        (rect.x + 82, rect.y + 30),
+        (rect.x + 82, rect.y + 24),
         font_size=18,
         color=COLOR_BORDE_CONTENEDOR,
     )
     max_width = rect.width - 100
-    y_offset = 58
+    y_offset = 48
     for line in _wrap_description(description, max_width):
         draw_text(
             surface,

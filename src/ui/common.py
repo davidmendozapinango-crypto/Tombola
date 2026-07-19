@@ -100,20 +100,28 @@ def _blend_color(
     return (r, g, b)
 
 
-def draw_text(surface, 
-              text, 
-              position, 
-              font_size=16, 
-              color=(0,0,0), 
-              center=False, 
-              font_name="assets/fonts/ChildosArabic.ttf"):
-    try:
-        # Intenta cargar la fuente de Canva instalada localmente
-        font = pygame.font.Font(font_name, font_size)
-    except IOError:
-        # En caso de error, usa una del sistema amigable/redondeada similar al estilo Canva
-        font = pygame.font.SysFont("ubuntu", font_size, bold=True)
-    
+def draw_text(
+    surface,
+    text,
+    position,
+    font_size=20,
+    color=(0, 0, 0),
+    center=False,
+    font_name: Optional[str] = None,
+    italic=False,
+):
+    font_size = int(round(font_size))
+    font = None
+    if font_name:
+        try:
+            font = pygame.font.Font(font_name, font_size)
+        except Exception:
+            font = None
+    if font is None:
+        font = get_font(font_size)
+    if italic:
+        font.set_italic(True)
+
     text_surface = font.render(text, True, color)
     rect = text_surface.get_rect()
     if center:
